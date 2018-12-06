@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  s.name         = "XDSlideView"
+  s.name         = "XDPagesView"
   s.version      = "1.0.0"
   s.summary      = "多控制器列表"
 
