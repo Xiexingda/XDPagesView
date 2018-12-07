@@ -1,7 +1,10 @@
 # XDSlideView
 一个可以添加header的多子视图横向滚动列表
-![image](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
-![image](https://github.com/Xiexingda/XDPagesView/blob/master/showc.gif)
+# 展示
+通常用法：
+![shows style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
+更新页面：
+![showc style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/showc.gif)
 # 使用方法
 1，导入头文件,并添加代理XDSlideViewDataSourceAndDelegate
 ```
