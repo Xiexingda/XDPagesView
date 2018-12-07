@@ -55,7 +55,7 @@
     */
     _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:layout];
     
-    //设置缓存数（最大同时存在页数），默认为MAXFLOAT
+    //设置缓存数（最大同时存在页数），默认为50
     //_pagesView.cacheNumber = 10;
     
     //设置时候有横向反弹效果，默认为NO
@@ -63,7 +63,7 @@
     
     //pagesView上方空余类似contentInset.top
     //_pagesView.edgeInsetTop = 0;
-    
+
     //添加header,不加header为标题栏吸顶状态
     UIImageView *header = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
     header.backgroundColor = [UIColor yellowColor];
