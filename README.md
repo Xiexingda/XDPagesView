@@ -5,10 +5,17 @@
 ![shows style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
 更新页面：
 ![showc style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/showc.gif)
+
+# 功能介绍
+1, XDPagesView可以实现新闻客户端的多页列表，如“天天快报”首页
+2, XDPagesView在多控制器列表的同时可以自由的添加header，如“饿了么”的店铺详情页
+3, XDPagesView提供扩展按钮的实现，或者你也可以自定义扩展按钮
+4, XDPagesView针对首个标题需要Icon的需求（如，展示gif中的第一个标题加了icon）提供了对应实现
+
 # 使用方法
 1，导入头文件,并添加代理XDPagesViewDataSourceAndDelegate
 ```
-#import "XDSlideView.h"
+#import "XDPagesView.h"
 @interface ViewController ()<XDPagesViewDataSourceDelegate>
 ```
 
