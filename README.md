@@ -22,11 +22,11 @@
 @property (nonatomic, strong) __block NSArray   *titles;
 @end
 ```
-###### 创建一个标题组，类似于collectionview的numberOfItems，因此不管需不需要标题栏，都需要返回这个数组
+#### 创建一个标题组，类似于collectionview的numberOfItems，因此不管需不需要标题栏，都需要返回这个数组
 ```
 _titles = @[@"page_0",@"page_1",@"page_2",@"page_3",@"page_4",@"page_5",@"page_6",@"page_7",@"page_8",@"page_9",@"page_10"];
 ```
-###### 创建pagesView
+#### 创建pagesView
 一. 默认方式（如果只是创建一个控制器列表，则向下面那样就可以了）
 ```
 _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:nil];
@@ -45,26 +45,26 @@ layout.needBarRightButten = YES;//需要右按钮，此时如果没有自定义�
 layout.barRightButtenImage = [UIImage imageNamed:@"demo_bar_rightimage.png"];//设置默认按钮背景图片
 
 /*
-如果需要自定义按钮则需要传入一个自定义视图或者按钮，并且此时不会创建默认按钮
+    如果需要自定义按钮则需要传入一个自定义视图或者按钮，并且此时不会创建默认按钮
 
-UIButton *mybtn = [UIButton buttonWithType:UIButtonTypeSystem];
-[mybtn setFrame:CGRectMake(0, 0, 100, 50)];
-[mybtn addTarget:self action:@selector(btnTap) forControlEvents:UIControlEventTouchUpInside];
-[mybtn setTitle:@"自定义" forState:UIControlStateNormal];
-[mybtn setTintColor:[UIColor redColor]];
-[mybtn setBackgroundColor:[UIColor lightGrayColor]];
-layout.barRightCustomView = mybtn;
+    UIButton *mybtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    [mybtn setFrame:CGRectMake(0, 0, 100, 50)];
+    [mybtn addTarget:self action:@selector(btnTap) forControlEvents:UIControlEventTouchUpInside];
+    [mybtn setTitle:@"自定义" forState:UIControlStateNormal];
+    [mybtn setTintColor:[UIColor redColor]];
+    [mybtn setBackgroundColor:[UIColor lightGrayColor]];
+    layout.barRightCustomView = mybtn;
 */
 
 //创建pagesView
 _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:layout];
 ```
-######添加header
+#### 添加header
 ```
 //如果需要header，添加header和tableview一样。
 _pagesView.headerView = yourHeader;
 ```
-######pagesView其他属性
+#### pagesView其他属性
 ```
 //设置缓存数（最大同时存在页数），默认为50
 _pagesView.cacheNumber = 10;
@@ -75,35 +75,35 @@ _pagesView.bounces = YES;
 //pagesView上方空余类似contentInset.top
 _pagesView.edgeInsetTop = 0;
 ```
-######代理方法
+#### 代理方法
 一. 两个必须实现的代理，用于返回标题组，和子控制器
 ```
 #pragma mark -- 必须实现的代理
 - (NSArray<NSString *> *)xd_pagesViewPageTitles {
-return _titles;
+    return _titles;
 }
 
 - (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)slideView forIndex:(NSInteger)index {
 
-//复用缓存
-UIViewController *pageVc = [slideView dequeueReusablePageForIndex:index];
+    //复用缓存
+    UIViewController *pageVc = [slideView dequeueReusablePageForIndex:index];
 
-if (!pageVc) {
-//这里可以通过自定义控制器的init实现控制器传参，用于控制器的review
-//注意:该子控制器中的必须包含一个可滚动的子view
-pageVc = [[Page alloc]initWithTag:index];
+    if (!pageVc) {
+        //这里可以通过自定义控制器的init实现控制器传参，用于控制器的review
+        //注意:该子控制器中的必须包含一个可滚动的子view
+        pageVc = [[Page alloc]initWithTag:index];
 
-/*
-如果控制器不同，可以通过索引(index==0)，或者title ([_titles[index] isEqualToString:@"page_0"])分别返回
-if (index == 0) {
-pageVc = [[Page alloc]initWithTag:index];
-} else {
-pageVc = [[Page_other alloc]initWithTag:index];
-}
-*/
-}
+        /*
+        如果控制器不同，可以通过索引(index==0)，或者title ([_titles[index] isEqualToString:@"page_0"])分别返回
+        if (index == 0) {
+            pageVc = [[Page alloc]initWithTag:index];
+        } else {
+            pageVc = [[Page_other alloc]initWithTag:index];
+        }
+        */
+    }
 
-return pageVc;
+    return pageVc;
 }
 
 ```
@@ -111,25 +111,25 @@ return pageVc;
 ```
 #pragma mark -- 非必须实现代理
 - (void)xd_pagesViewTitleBarRightBtnTap {
-NSLog(@"点击右边按钮");
+    NSLog(@"点击右边按钮");
 }
 
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
-//页面已经变化时调用
-NSLog(@"XDPagesView_title:%@ --- index: %ld",pageTitle, (long)pageIndex);
+    //页面已经变化时调用
+    NSLog(@"XDPagesView_title:%@ --- index: %ld",pageTitle, (long)pageIndex);
 }
 
 - (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy {
-//垂直变动
-NSLog(@"XDPagesView_Y:%f",changedy);
+    //垂直变动
+    NSLog(@"XDPagesView_Y:%f",changedy);
 }
 
 - (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx {
-//水平变动
-NSLog(@"XDPagesView_X:%f",changedx);
+    //水平变动
+    NSLog(@"XDPagesView_X:%f",changedx);
 }
 ```
-######pagesView的炫酷方法
+#### pagesView的炫酷方法
 
 情况一: 
 如果你想通过其他按钮去跳转pagesView中的子控制器，而不是通过点击标题栏，那么你可以使用下面方法
