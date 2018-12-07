@@ -1,4 +1,4 @@
-# XDSlideView
+# XDPagesView
 一个可以添加header的多子视图横向滚动列表
 # 展示
 通常用法：
@@ -6,7 +6,7 @@
 更新页面：
 ![showc style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/showc.gif)
 # 使用方法
-1，导入头文件,并添加代理XDSlideViewDataSourceAndDelegate
+1，导入头文件,并添加代理XDPagesViewDataSourceAndDelegate
 ```
 #import "XDSlideView.h"
 @interface ViewController ()<XDPagesViewDataSourceDelegate>
