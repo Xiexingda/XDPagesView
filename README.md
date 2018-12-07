@@ -1,6 +1,6 @@
 # XDPagesView
 一个可以添加header的多子视图横向滚动列表
-# 展示（DN视频首页）
+# 展示（DN视频 - 首页）
 通常用法：
 ![shows style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
 更新页面：
