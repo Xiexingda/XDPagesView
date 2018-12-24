@@ -83,10 +83,10 @@ _pagesView.edgeInsetTop = 0;
     return _titles;
 }
 
-- (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)slideView forIndex:(NSInteger)index {
+- (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index {
 
     //复用缓存
-    UIViewController *pageVc = [slideView dequeueReusablePageForIndex:index];
+    UIViewController *pageVc = [pagesView dequeueReusablePageForIndex:index];
 
     if (!pageVc) {
         //这里可以通过自定义控制器的init实现控制器传参，用于控制器的review
