@@ -93,6 +93,7 @@
          如果控制器不同，可以通过索引，或者title分别返回
         if (index == 0) {
             pageVc = [[Page alloc]initWithTag:index];
+         
         } else {
             pageVc = [[Page_other alloc]initWithTag:index];
         }
