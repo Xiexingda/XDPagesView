@@ -53,7 +53,7 @@
     [mybtn setBackgroundColor:[UIColor lightGrayColor]];
     layout.barRightCustomView = mybtn;
     */
-    _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:layout];
+    _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout];
     
     //设置缓存数（最大同时存在页数），默认为50
     //_pagesView.cacheNumber = 10;

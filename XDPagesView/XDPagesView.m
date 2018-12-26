@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
         if (delegate) {
             self.clipsToBounds = YES;
             _currentPage    = beginPage;
-            _bufferPage     = 0;
+            _bufferPage     = beginPage;
             _dataSource = delegate;
             _currentController = delegate;
             _xdCache = [[XDPagesCache alloc]init];
