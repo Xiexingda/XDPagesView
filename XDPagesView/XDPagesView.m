@@ -206,6 +206,15 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     return [_xdCache.caches_vc objectForKey:title];
 }
 
+//复原手势（一定要在换页之前）
+- (void)rebackGestureToLastScroll {
+    if (!_needSlideByHeader) {
+        return;
+    }
+    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
+    [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
+}
+
 //滑动到某页
 - (void)changeToPage:(NSInteger)page {
     UIViewController *pageVc = [self.dataSource xd_pagesViewChildControllerToPagesView:self forIndex:page];
@@ -224,6 +233,8 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
         
         //加入缓存顺序表
         [self pushDataToStack:pageTitle];
+        //复原手势（一定要在换页之前）
+        [self rebackGestureToLastScroll];
         //赋值当前页，并更换监听
         self.currentPage = page;
         //同步左右页
