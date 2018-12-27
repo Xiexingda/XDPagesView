@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface XDPagesCache : NSObject
 @property (nonatomic, strong) NSMutableDictionary        *caches_vc;       //子控制器缓存

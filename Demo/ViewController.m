@@ -69,7 +69,7 @@
     header.backgroundColor = [UIColor yellowColor];
     header.image = [UIImage imageNamed:@"App_header_cover"];
     _pagesView.headerView = header;
-    
+    _pagesView.needSlideByHeader = YES;
     [self.view addSubview:_pagesView];
 }
 

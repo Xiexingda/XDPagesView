@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     HCS_Ceiling     //headerContener吸顶
 };
 
-@interface XDPagesView()<UIScrollViewDelegate>
+@interface XDPagesView()<UIScrollViewDelegate, UIGestureRecognizerDelegate>
 @property (nonatomic, weak) id <XDPagesViewDataSourceDelegate> dataSource;
 
 @property (nonatomic,   weak) __block UIViewController *currentController;  //子控制器容器控制器
@@ -31,6 +31,11 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 @end
 
 @implementation XDPagesView
+//用于解决scrollview和系统侧滑的冲突,多手势并存
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
 
 - (void)dealloc {
     //清除监听
@@ -719,6 +724,21 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     while (_xdCache.caches_table.count > _xdCache.cachenumber) {
         [self popDataOnStack];
     }
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    return _needSlideByHeader ? [self gestureChangeByView:view] : view;
+}
+
+- (UIView *)gestureChangeByView:(UIView *)view {
+    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
+    if ([view isDescendantOfView:_headerContener]) {
+        [_headerContener addGestureRecognizer:currentScrollView.panGestureRecognizer];
+    } else {
+        [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
+    }
+    return view;
 }
 
 @end

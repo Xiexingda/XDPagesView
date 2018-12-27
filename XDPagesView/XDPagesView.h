@@ -70,6 +70,9 @@
 //靠边后是否可滑动，默认为NO
 @property (nonatomic, assign) BOOL bounces;
 
+//需要通过header上下滑动列表（默认为NO）
+@property (nonatomic, assign) BOOL needSlideByHeader;
+
 //slideview上方空余空间 (其值要大于0)
 @property (nonatomic, assign) CGFloat edgeInsetTop;
 
