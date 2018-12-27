@@ -1,5 +1,13 @@
 # XDPagesView
 一个可以添加header的多子视图横向滚动列表
+
+# 最新动态
+由于之前没有需求所以一直没弄，最近看有人提到要通过header来滑动列表，所以新添了一个属性needSlideByHeader（默认NO）
+
+如果有别的需求或发现了问题还请issue。
+
+特别说明：个人不喜欢头部放大效果，所以我是不会添加个功能的😄，有需要的可以issue我，我会告诉你怎么改，其实很简单只需要改一个地方就行，
+
 # 展示（DN视频 - 首页）
 通常用法：
 ![shows style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
