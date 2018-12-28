@@ -739,12 +739,13 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     UIView *view = [super hitTest:point withEvent:event];
-    return _needSlideByHeader ? [self gestureChangeByView:view] : view;
+    return _needSlideByHeader ? [self gestureChangeByView:view point:point] : view;
 }
 
-- (UIView *)gestureChangeByView:(UIView *)view {
+- (UIView *)gestureChangeByView:(UIView *)view point:(CGPoint)point {
+    CGPoint relative_point = [self convertPoint:point toView:_headerContener];
     UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
-    if ([view isDescendantOfView:_headerContener]) {
+    if ([_headerContener.layer containsPoint:relative_point]) {
         [_headerContener addGestureRecognizer:currentScrollView.panGestureRecognizer];
     } else {
         [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
