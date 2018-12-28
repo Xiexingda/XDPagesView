@@ -71,6 +71,9 @@ _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self begi
 ```
 //如果需要header，添加header和tableview一样。
 _pagesView.headerView = yourHeader;
+
+//可以通过滑动表头滑动列表
+_pagesView.needSlideByHeader = YES;
 ```
 #### pagesView其他属性
 ```

@@ -69,6 +69,7 @@
     header.backgroundColor = [UIColor yellowColor];
     header.image = [UIImage imageNamed:@"App_header_cover"];
     _pagesView.headerView = header;
+    //可以通过滑动表头滑动列表
     _pagesView.needSlideByHeader = YES;
     [self.view addSubview:_pagesView];
 }

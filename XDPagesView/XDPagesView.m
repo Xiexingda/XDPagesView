@@ -206,17 +206,11 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     return [_xdCache.caches_vc objectForKey:title];
 }
 
-//复原手势（一定要在换页之前）
-- (void)rebackGestureToLastScroll {
-    if (!_needSlideByHeader) {
-        return;
-    }
-    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
-    [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
-}
-
 //滑动到某页
 - (void)changeToPage:(NSInteger)page {
+    //复原手势（一定要在换页之前）
+    [self gestureToScrollSelf];
+    
     UIViewController *pageVc = [self.dataSource xd_pagesViewChildControllerToPagesView:self forIndex:page];
     NSString *pageTitle = _xdCache.caches_titles[page];
     
@@ -233,8 +227,6 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
         
         //加入缓存顺序表
         [self pushDataToStack:pageTitle];
-        //复原手势（一定要在换页之前）
-        [self rebackGestureToLastScroll];
         //赋值当前页，并更换监听
         self.currentPage = page;
         //同步左右页
@@ -737,20 +729,37 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     }
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-    UIView *view = [super hitTest:point withEvent:event];
-    return _needSlideByHeader ? [self gestureChangeByView:view point:point] : view;
+//把手势转交给自己
+- (void)gestureToScrollSelf {
+    if (!_needSlideByHeader) {
+        return;
+    }
+    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
+    [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
+}
+
+//把手势转交给headercontent
+- (void)gestureToHeaderContent {
+    if (!_needSlideByHeader) {
+        return;
+    }
+    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
+    [_headerContener addGestureRecognizer:currentScrollView.panGestureRecognizer];
 }
 
 - (UIView *)gestureChangeByView:(UIView *)view point:(CGPoint)point {
     CGPoint relative_point = [self convertPoint:point toView:_headerContener];
-    UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
     if ([_headerContener.layer containsPoint:relative_point]) {
-        [_headerContener addGestureRecognizer:currentScrollView.panGestureRecognizer];
+        [self gestureToHeaderContent];
     } else {
-        [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
+        [self gestureToScrollSelf];
     }
     return view;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    return _needSlideByHeader ? [self gestureChangeByView:view point:point] : view;
 }
 
 @end
