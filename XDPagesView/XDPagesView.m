@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     Right_Locked
 };
 
-@interface XDPagesView()<UIScrollViewDelegate, UIGestureRecognizerDelegate>
+@interface XDPagesView()<UIScrollViewDelegate>
 @property (nonatomic, weak) id <XDPagesViewDataSourceDelegate> dataSource;
 
 @property (nonatomic,   weak) __block UIViewController *currentController;  //子控制器容器控制器
@@ -55,11 +55,6 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 @end
 
 @implementation XDPagesView
-//用于解决scrollview和系统侧滑的冲突,多手势并存
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
 
 - (void)dealloc {
     //清除监听

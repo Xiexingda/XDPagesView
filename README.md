@@ -2,11 +2,15 @@
 一个可以添加header的多子视图横向滚动列表
 
 # 最新动态
-由于之前没有需求所以一直没弄，最近看有人提到要通过header来滑动列表，所以新添了一个属性needSlideByHeader（默认NO）
+进阶改版：将列表分为了两种风格 ，初始化列表时只需在原有基础上添加一个style 便可随心所欲的选择不同的风格
+1. XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端 （之前的风格）
+2. XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置 （新增风格）
+
+_pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleTablesFirst];
 
 如果有别的需求或发现了问题还请issue。
 
-特别说明：个人不喜欢头部放大效果，所以我是不会添加个功能的😄，有需要的可以issue我，我会告诉你怎么改，其实很简单只需要改一个地方就行
+特别说明：个人不喜欢头部放大效果，所以我是不会添加个功能的😄
 
 # 展示（DN视频 - 首页）
 通常用法：
@@ -20,6 +24,7 @@
 3. 采用类似‘懒加载’的方式加载子控制器，避免多控制器同时创建，并且可以灵活的设置缓存页数
 4. 可以灵活的添加或删除header
 5. 可以灵活的刷新子控制器列表
+6. 可以通过header上下拖动列表
 
 # 使用方法
 ###### 引入头文件 XDPagesView 并添加代理 XDPagesViewDataSourceDelegate
