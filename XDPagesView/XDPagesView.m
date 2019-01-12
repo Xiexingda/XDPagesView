@@ -763,6 +763,12 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     
     //所监听scrollview是否是当前window中的scrollview
     if (scrollView == [self scrollViewByTitle:_xdCache.caches_titles[self.currentPage]]) {
+        
+        /*
+            其实这里分为两种算法只是一种优化，其实完全可以用列表优先算法全权代替，
+            虽然第一个算法不能实现列表优先，但是当header优先时第一种算法要更轻量
+         */
+        
         if (_xd_style == XDPagesViewStyleHeaderFirst) {
             //表头优先（统一按照headerContener在tableview顶部处理）
             if (S_Y <= -HC_Height && self.headerContener.frame.origin.y != 0) {
