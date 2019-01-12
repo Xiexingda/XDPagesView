@@ -226,6 +226,11 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     return [_xdCache.caches_vc objectForKey:title];
 }
 
+- (void)scrollUnLock {
+    _leftLockStatus = Left_UnLock;
+    _rightLockStatus = Right_UnLock;
+}
+
 //滑动到某页
 - (void)changeToPage:(NSInteger)page {
     /*此函数内的方法调用都是有逻辑顺序的，一定不要更换调用顺序*/
@@ -233,8 +238,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     [self gestureToScrollSelf];
     [self clearKVO];
     //解除锁定
-    _leftLockStatus = Left_UnLock;
-    _rightLockStatus = Right_UnLock;
+    [self scrollUnLock];
     //赋值当前headercontener的offset.y 用作变动参照点
     self.currentRefe_H_Y = self.headerContener.frame.origin.y;
     
@@ -540,7 +544,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                 CGFloat child_y = child.contentOffset.y;
                 
                 if (Header_y >= 0) {
-                    if (child_y >= -HC_Height && child_y != -HC_Height) {
+                    if (child_y != -HC_Height) {
                         child.contentOffset = CGPointMake(0, -HC_Height);
                     }
                     
@@ -575,9 +579,8 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 
                 if (Header_y >= 0) {
                     if (child_y <= -HC_Height - Header_y) {
-                        if (child_y < -HC_Height && child_y != -HC_Height) {
-                            child.contentOffset = CGPointMake(0, -HC_Height);
-                        }
+                        child.contentOffset = CGPointMake(0, -HC_Height);
+                        
                     } else {
                         child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
                     }
@@ -655,7 +658,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
             switch (status) {
                     //headerContener触顶
                 case HCS_Top:
-                    if (child_y >= -HC_Height && child_y != -HC_Height) {
+                    if (child_y != -HC_Height) {
                         child.contentOffset = CGPointMake(0, -HC_Height);
                     }
                     break;
@@ -694,14 +697,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
             switch (status) {
                     //headerContener触顶
                 case HCS_Top:
-                    if (child_y <= -HC_Height - Header_y) {
-                        if (child_y < -HC_Height && child_y != -HC_Height) {
-                            child.contentOffset = CGPointMake(0, -HC_Height);
-                        }
-                    } else {
-                        child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
-                    }
-                    
+                    child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
                     break;
                     
                     //headerContener的origin变动中，子滚动页的Offset随着headerContener的origin.y同步变化
@@ -715,13 +711,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     
                     //headerContener吸顶
                 case HCS_Ceiling:
-                    if (child_y <= -HC_Height - Header_y) {
-                        if (child_y < -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
-                            child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
-                        }
-                    } else {
-                        child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
-                    }
+                    child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
                     break;
                     
                 default:
@@ -817,6 +807,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     CGRect frame = self.headerContener.frame;
                     if (_current_DragingStatus != Draging_Up) {
                         _current_DragingStatus = Draging_Up;
+                        [self scrollUnLock];
                         _currentRefe_H_Y = frame.origin.y;
                     }
                     //当tableview的offset.y 在 headercontener之下时按照headercontener在tableview顶部去处理（这样处理的原因是计算新旧点距是有一定误差的，当下拉后快速上滑会在headercontener和tableview之间产生间隙，但按顶部处理不会出现这样的情况）
@@ -851,6 +842,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     CGRect frame = self.headerContener.frame;
                     if (_current_DragingStatus != Draging_Down) {
                         _current_DragingStatus = Draging_Down;
+                        [self scrollUnLock];
                         _currentRefe_H_Y = frame.origin.y;
                     }
                     frame.origin.y = -S_Y-HC_Height;

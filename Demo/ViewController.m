@@ -59,7 +59,7 @@
      1.XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
      2.XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
      */
-    _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleHeaderFirst];
+    _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleTablesFirst];
     
     //设置缓存数（最大同时存在页数），默认为50
     //_pagesView.cacheNumber = 10;
