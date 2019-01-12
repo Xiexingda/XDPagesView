@@ -22,6 +22,7 @@
     if (self) {
         _caches_vc = @{}.mutableCopy;
         _caches_sview = @{}.mutableCopy;
+        _caches_headery = @{}.mutableCopy;
         _caches_titles = @[].copy;
         _caches_table = @[].mutableCopy;
         _caches_kvo = @[].mutableCopy;

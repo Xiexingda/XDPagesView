@@ -17,6 +17,21 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     HCS_Ceiling     //headerContener吸顶
 };
 
+typedef NS_ENUM(NSInteger, DragingStatus) {
+    Draging_Up = 1, //向上拖动
+    Draging_Down    //向下拖动
+};
+
+typedef NS_ENUM(NSInteger, LeftScrollOffsetLockStatus) {
+    Left_UnLock,
+    Left_Locked
+};
+
+typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
+    Right_UnLock,
+    Right_Locked
+};
+
 @interface XDPagesView()<UIScrollViewDelegate, UIGestureRecognizerDelegate>
 @property (nonatomic, weak) id <XDPagesViewDataSourceDelegate> dataSource;
 
@@ -28,6 +43,15 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 @property (nonatomic, assign) __block NSInteger currentPage;    //当前window中的页面索引
 @property (nonatomic, assign) __block NSInteger bufferPage;     //缓冲页（用于掌控页面跳转）
 
+@property (nonatomic, assign) __block XDPagesViewStyle xd_style;
+@property (nonatomic, assign) __block DragingStatus current_DragingStatus;
+
+@property (nonatomic, assign) __block LeftScrollOffsetLockStatus leftLockStatus;
+@property (nonatomic, assign) __block CGFloat leftLocked_S_Y;
+@property (nonatomic, assign) __block RightScrollOffsetLockStatus rightLockStatus;
+@property (nonatomic, assign) __block CGFloat rightLocked_S_Y;
+
+@property (nonatomic, assign) __block CGFloat currentRefe_H_Y; //当前headercontener的offset.y的参照点
 @end
 
 @implementation XDPagesView
@@ -100,7 +124,7 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     [self resetAllScrollOffset];
 }
 
-- (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout {
+- (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout style:(XDPagesViewStyle)style {
     self = [super initWithFrame:frame];
     if (!delegate) {
         __assert(0, "需要加入当前控制器代理，具体用法请看demo", __LINE__);
@@ -109,9 +133,11 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     if (self) {
         if (delegate) {
             self.clipsToBounds = YES;
+            _xd_style = (style == XDPagesViewStyleHeaderFirst || style == XDPagesViewStyleTablesFirst) ? style : XDPagesViewStyleHeaderFirst;
+            _currentRefe_H_Y  = 0;
             _currentPage    = beginPage;
             _bufferPage     = beginPage;
-            _dataSource = delegate;
+            _dataSource     = delegate;
             _currentController = delegate;
             _xdCache = [[XDPagesCache alloc]init];
             
@@ -190,10 +216,9 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     }
     
     _pagesContener.contentSize = CGSizeMake(self.bounds.size.width * titles.count, self.bounds.size.height);
-    _xdCache.caches_titles = titles;
+    [self cacheTitles:titles];
     self.headerContener.titleBarTitles(titles);
     [self resectAllScrollFrame];
-    [self resetAllScrollOffset];
     [self jumpToPage:page];
 }
 
@@ -208,8 +233,15 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 
 //滑动到某页
 - (void)changeToPage:(NSInteger)page {
+    /*此函数内的方法调用都是有逻辑顺序的，一定不要更换调用顺序*/
     //复原手势（一定要在换页之前）
     [self gestureToScrollSelf];
+    [self clearKVO];
+    //解除锁定
+    _leftLockStatus = Left_UnLock;
+    _rightLockStatus = Right_UnLock;
+    //赋值当前headercontener的offset.y 用作变动参照点
+    self.currentRefe_H_Y = self.headerContener.frame.origin.y;
     
     UIViewController *pageVc = [self.dataSource xd_pagesViewChildControllerToPagesView:self forIndex:page];
     NSString *pageTitle = _xdCache.caches_titles[page];
@@ -227,10 +259,28 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
         
         //加入缓存顺序表
         [self pushDataToStack:pageTitle];
-        //赋值当前页，并更换监听
-        self.currentPage = page;
+        //缓存headery同步之前处理
+        [self headeryHandleBeforeSyncByPage:_currentPage];
         //同步左右页
         [self synchronizeCurrentPageWithRightAndLeftWhenChangeToPage:page];
+        
+        //赋值当前页，并更换监听
+        self.currentPage = page;
+    }
+}
+
+- (void)headeryHandleBeforeSyncByPage:(NSInteger)page {
+    if (_xd_style == XDPagesViewStyleTablesFirst) {
+        //左边视图
+        if (page-1 >= 0) {
+            [self cacheHeaderyForPageTitle:_xdCache.caches_titles[page-1]];
+        }
+        //当前视图
+        [self cacheHeaderyForPageTitle:_xdCache.caches_titles[page]];
+        //右边视图
+        if (page+1 < _xdCache.caches_titles.count) {
+            [self cacheHeaderyForPageTitle:_xdCache.caches_titles[page+1]];
+        }
     }
 }
 
@@ -286,8 +336,7 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     if ([_pagesContener isDescendantOfView:self]) {
         [self.currentController addChildViewController:pageVc];
         [pageVc didMoveToParentViewController:self.currentController];
-        [_xdCache.caches_vc setObject:pageVc forKey:_xdCache.caches_titles[index]];
-
+        [self cachePageVc:pageVc byTitle:_xdCache.caches_titles[index]];
         [self resectCurrentScrollFrameByPageVc:pageVc Index:index];
         [self resetCurrentScrollContentOffetAndEdgeInsetByTitle:_xdCache.caches_titles[index]];
     } else {
@@ -368,18 +417,14 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     //滚动页的offset_Y
     CGFloat scroll_y = scrollview.contentOffset.y;
     
-    if (Header_y >= 0) {
-        if (scroll_y >= -HC_Height && scroll_y != -HC_Height) {
-            scrollview.contentOffset = CGPointMake(0, -HC_Height);
-        }
+    if (Header_y >= 0 && scroll_y != -HC_Height) {
+        scrollview.contentOffset = CGPointMake(0, -HC_Height);
         
-    } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && scrollview.contentOffset.y != -HC_Height-Header_y) {
+    } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && scroll_y != -HC_Height-Header_y) {
         scrollview.contentOffset = CGPointMake(0, -HC_Height-Header_y);
         
-    } else if (Header_y <= HB_Height + HB_Top - HC_Height) {
-        if (scroll_y <= -HB_Height-HB_Top && scroll_y != -HB_Height-HB_Top) {
-            scrollview.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
-        }
+    } else if (Header_y <= HB_Height + HB_Top - HC_Height && scroll_y != -HB_Height-HB_Top) {
+        scrollview.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
     }
 }
 
@@ -439,31 +484,16 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     return scrollview;
 }
 
-//去掉被删掉的子控制器
-- (void)cancelPageVcByTitle:(NSString *)title {
-    UIViewController *pageVc = [_xdCache.caches_vc objectForKey:title];
-    if (pageVc) {
-        [pageVc.view removeFromSuperview];
-        pageVc.view = nil;
-        [pageVc willMoveToParentViewController:nil];
-        [pageVc removeFromParentViewController];
-        pageVc = nil;
-        [_xdCache.caches_vc removeObjectForKey:title];
-        [_xdCache.caches_sview removeObjectForKey:title];
-        [_xdCache.caches_table removeObject:title];
-    }
-}
-
 /*
  这里是一个优化策略，原来的思路是直接同步除了当前视图外的其他所有子视图的contentOffset,
  但是当子视图多时，这么多的view联动会非常消耗性能，所以改为现在分两种情况去同步。
  这样每次所需同步数只需要联动两个view
  
  情况1：更改界面时同步（根据headerContent的y去同步当前和左右三个界面的offset）。
- 情况2：上下滚动子tableview时同步（根据该tableview的contentOffset.y同步左右两边的子tableview的contentOffset.y）。
+ 情况2：上下滚动子tableview时联动（根据该tableview的contentOffset.y联动左右两边的子tableview的contentOffset.y）。
  */
 
-//情况1
+//情况1 （同步）
 - (void)synchronizeCurrentPageWithRightAndLeftWhenChangeToPage:(NSInteger)page {
     
     //headerContener的总高度（header+bar）
@@ -478,12 +508,13 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     //headerContent的y
     CGFloat Header_y = self.headerContener.frame.origin.y;
     
+    if (HB_Top < 0) {
+        HB_Top = 0;
+    }
+    
     //当headercontener没有变动空间时直接返回
     if (HB_Top >= HC_Height-HB_Height) {
         return;
-        
-    } else if (HB_Top < 0) {
-        HB_Top = 0;
     }
     
     //所需同步数组
@@ -504,32 +535,82 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     
     __weak typeof(self) weakSelf = self;
     
-    [needSynArray enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIScrollView *child = [weakSelf scrollViewByTitle:obj];
-        if (child) {
-            
-            //子滚动页的offset_Y
-            CGFloat child_y = child.contentOffset.y;
-            
-            if (Header_y >= 0) {
-                if (child_y >= -HC_Height && child_y != -HC_Height) {
-                    child.contentOffset = CGPointMake(0, -HC_Height);
-                }
+    if (_xd_style == XDPagesViewStyleHeaderFirst) {
+        //表头优先时同步算法
+        [needSynArray enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UIScrollView *child = [weakSelf scrollViewByTitle:obj];
+            if (child) {
                 
-            } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && child.contentOffset.y != -HC_Height-Header_y) {
-                child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
+                //子滚动页的offset_Y
+                CGFloat child_y = child.contentOffset.y;
                 
-            } else if (Header_y <= HB_Height + HB_Top - HC_Height) {
-                if (child_y <= -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
-                    child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
+                if (Header_y >= 0) {
+                    if (child_y >= -HC_Height && child_y != -HC_Height) {
+                        child.contentOffset = CGPointMake(0, -HC_Height);
+                    }
+                    
+                } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && child.contentOffset.y != -HC_Height-Header_y) {
+                    child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
+                    
+                } else if (Header_y <= HB_Height + HB_Top - HC_Height) {
+                    if (child_y <= -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
+                        child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
+                    }
                 }
             }
-        }
-    }];
+        }];
+        
+    } else if (_xd_style == XDPagesViewStyleTablesFirst) {
+        //列表优先时同步算法
+        
+        [needSynArray enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UIScrollView *child = [weakSelf scrollViewByTitle:obj];
+            if (child) {
+                NSNumber *cacheNum = [weakSelf.xdCache.caches_headery objectForKey:obj];
+                CGFloat cache_H_Y;
+                if (cacheNum) {
+                    cache_H_Y = cacheNum.floatValue;
+                } else {
+                    [weakSelf cacheHeaderyForPageTitle:obj];
+                    cache_H_Y = weakSelf.headerContener.frame.origin.y;
+                }
+                
+                //子滚动页的offset_Y
+                CGFloat child_y = child.contentOffset.y;
+
+                if (Header_y >= 0) {
+                    if (child_y <= -HC_Height - Header_y) {
+                        if (child_y < -HC_Height && child_y != -HC_Height) {
+                            child.contentOffset = CGPointMake(0, -HC_Height);
+                        }
+                    } else {
+                        child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
+                    }
+                    
+                } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && child.contentOffset.y != -HC_Height-Header_y) {
+                    
+                    if (child_y <= -HC_Height - Header_y) {
+                        child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
+                    } else {
+                        child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
+                    }
+
+                } else if (Header_y <= HB_Height + HB_Top - HC_Height) {
+                    if (child_y <= -HC_Height - Header_y) {
+                        if (child_y < -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
+                            child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
+                        }
+                    } else {
+                        child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
+                    }
+                }
+            }
+        }];
+    }
 }
 
-//情况2
-- (void)synchronizeRightAndLeftWhenScrollByHCStatus:(HeaderContentStatus)status withCurrentPage:(NSInteger) page {
+//情况2 （联动）
+- (void)synchronizeRightAndLeftWhenScrollByHCStatus:(HeaderContentStatus)status distance:(CGFloat)distance withCurrentPage:(NSInteger) page {
     
     //headerContener的总高度（header+bar）
     CGFloat  HC_Height = self.headerContener.headerContentHeight;
@@ -543,12 +624,13 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     //headerContent的y
     CGFloat Header_y = self.headerContener.frame.origin.y;
     
+    if (HB_Top < 0) {
+        HB_Top = 0;
+    }
+    
     //当headercontener没有变动空间时直接返回
     if (HB_Top >= HC_Height-HB_Height) {
         return;
-        
-    } else if (HB_Top < 0) {
-        HB_Top = 0;
     }
     
     //所需同步数组
@@ -559,6 +641,7 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
         [needSynArray addObject:_xdCache.caches_titles[page-1]];
     }
     
+    
     //右边视图
     if (page+1 < _xdCache.caches_titles.count) {
         [needSynArray addObject:_xdCache.caches_titles[page+1]];
@@ -568,11 +651,11 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     
     [needSynArray enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIScrollView *child = [weakSelf scrollViewByTitle:obj];
-        if (child) {
-            
-            //子滚动页的offset_Y
-            CGFloat child_y = child.contentOffset.y;
-            
+        //子滚动页的offset_Y
+        CGFloat child_y = child.contentOffset.y;
+        
+        if (child && weakSelf.xd_style == XDPagesViewStyleHeaderFirst) {
+            //表头优先时联动算法
             //状态判定
             switch (status) {
                     //headerContener触顶
@@ -591,6 +674,58 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
                 case HCS_Ceiling:
                     if (child_y <= -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
                         child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+        } else if (child && weakSelf.xd_style == XDPagesViewStyleTablesFirst) {
+            //列表优先时联动算法
+            //锁定左右scroll的offset.y
+            if (idx == 0 && weakSelf.leftLockStatus != Left_Locked) {
+                weakSelf.leftLockStatus = Left_Locked;
+                weakSelf.leftLocked_S_Y = child_y;
+                
+            } else if (idx == 1 && weakSelf.rightLockStatus != Right_Locked) {
+                weakSelf.rightLockStatus = Right_Locked;
+                weakSelf.rightLocked_S_Y = child_y;
+            }
+            
+            CGFloat currentLocked_S_Y = idx == 0 ? weakSelf.leftLocked_S_Y : weakSelf.rightLocked_S_Y;
+            
+            //状态判定
+            switch (status) {
+                    //headerContener触顶
+                case HCS_Top:
+                    if (child_y <= -HC_Height - Header_y) {
+                        if (child_y < -HC_Height && child_y != -HC_Height) {
+                            child.contentOffset = CGPointMake(0, -HC_Height);
+                        }
+                    } else {
+                        child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
+                    }
+                    
+                    break;
+                    
+                    //headerContener的origin变动中，子滚动页的Offset随着headerContener的origin.y同步变化
+                case HCS_Changeing:
+                    if (child_y <= -HC_Height - Header_y) {
+                        child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
+                    } else {
+                        child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
+                    }
+                    break;
+                    
+                    //headerContener吸顶
+                case HCS_Ceiling:
+                    if (child_y <= -HC_Height - Header_y) {
+                        if (child_y < -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
+                            child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
+                        }
+                    } else {
+                        child.contentOffset = CGPointMake(0, currentLocked_S_Y - distance);
                     }
                     break;
                     
@@ -619,52 +754,128 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     //headerTitleBar的高度
     CGFloat HB_Height = _headerContener.headerBarHeight;
     
+    //headerContent的y
+    CGFloat Header_y = self.headerContener.frame.origin.y;
+    
+    if (HB_Top < 0) {
+        HB_Top = 0;
+    }
+    
     //当headercontener没有变动空间时直接返回
     if (HB_Top >= HC_Height-HB_Height) {
         return;
-        
-    } else if (HB_Top < 0) {
-        HB_Top = 0;
     }
     
     //所监听scrollview是否是当前window中的scrollview
     if (scrollView == [self scrollViewByTitle:_xdCache.caches_titles[self.currentPage]]) {
+        if (_xd_style == XDPagesViewStyleHeaderFirst) {
+            //表头优先（统一按照headerContener在tableview顶部处理）
+            if (S_Y <= -HC_Height && self.headerContener.frame.origin.y != 0) {
+                //headerContener触顶
+                CGRect frame = self.headerContener.frame;
+                frame.origin.y = 0;
+                self.headerContener.frame = frame;
+                [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Top
+                                                         distance:0
+                                                  withCurrentPage:self.currentPage];
+                
+            } else if(S_Y > -HC_Height && S_Y < -HB_Height-HB_Top) {
+                //headerContener的origin变动中（由于有触顶和吸顶两个边界值，在变动范围内的滑动过快越级不会产生影响）
+                CGRect frame = self.headerContener.frame;
+                frame.origin.y = -S_Y - HC_Height;
+                self.headerContener.frame = frame;
+                [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Changeing
+                                                         distance:0
+                                                  withCurrentPage:self.currentPage];
+                
+            } else if (S_Y >= -HB_Height-HB_Top && self.headerContener.frame.origin.y != HB_Height + HB_Top - HC_Height) {
+                //headerContener吸顶
+                CGRect frame = self.headerContener.frame;
+                frame.origin.y = HB_Height + HB_Top - HC_Height;
+                self.headerContener.frame = frame;
+                [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Ceiling
+                                                         distance:0
+                                                  withCurrentPage:self.currentPage];
+                
+            }
+            
+        } else if (_xd_style == XDPagesViewStyleTablesFirst) {
+            //列表优先（headerContener可能不在tableview顶部）
+            CGPoint oldPoint;
+                id oldValue = [change objectForKey:NSKeyValueChangeOldKey];
+                [(NSValue*)oldValue getValue:&oldPoint];
+            
+            CGPoint newPoint;
+                id newValue = [change objectForKey:NSKeyValueChangeNewKey];
+                [(NSValue*)newValue getValue:&newPoint];
+            
+            if (oldPoint.y < newPoint.y) {
+                //向上拉动
+                //如果当前headercontener处于吸顶和触顶之间,并把联动效果限定到HC_Height内，防止触顶时tableView反弹时的联动触发
+                if (Header_y <= 0 && Header_y != -HC_Height+HB_Height+HB_Top && S_Y > -HC_Height) {
+                    CGRect frame = self.headerContener.frame;
+                    if (_current_DragingStatus != Draging_Up) {
+                        _current_DragingStatus = Draging_Up;
+                        _currentRefe_H_Y = frame.origin.y;
+                    }
+                    //当tableview的offset.y 在 headercontener之下时按照headercontener在tableview顶部去处理（这样处理的原因是计算新旧点距是有一定误差的，当下拉后快速上滑会在headercontener和tableview之间产生间隙，但按顶部处理不会出现这样的情况）
+                    if (S_Y < -HC_Height - Header_y) {
+                        frame.origin.y = -S_Y-HC_Height;
+                        
+                    } else {
+                        //否则按照headercontener未在tableview顶部去处理（当不在顶部时只能通过新旧点距去处理联动）
+                        frame.origin.y = Header_y - (newPoint.y - oldPoint.y);
+                    }
+                    
+                    //当超出限度后，把frame定位在边界值，避免越级
+                    if (frame.origin.y > -HC_Height+HB_Height+HB_Top) {
+                        self.headerContener.frame = frame;
+                        [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Changeing
+                                                                 distance:frame.origin.y - _currentRefe_H_Y
+                                                          withCurrentPage:self.currentPage];
+                        
+                    } else if (frame.origin.y <= -HC_Height+HB_Height+HB_Top) {
+                        frame.origin.y = -HC_Height+HB_Height+HB_Top;
+                        self.headerContener.frame = frame;
+                        [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Ceiling
+                                                                 distance:frame.origin.y - _currentRefe_H_Y
+                                                          withCurrentPage:self.currentPage];
+                    }
+                }
+                
+            } else if (oldPoint.y > newPoint.y) {
+                //向下拉动
+                //当子tableview 的 contentoffset.y 在headercontener 之下时触发联动
+                if (S_Y < -HC_Height - Header_y && Header_y != 0) {
+                    CGRect frame = self.headerContener.frame;
+                    if (_current_DragingStatus != Draging_Down) {
+                        _current_DragingStatus = Draging_Down;
+                        _currentRefe_H_Y = frame.origin.y;
+                    }
+                    frame.origin.y = -S_Y-HC_Height;
+                    if (frame.origin.y < 0) {
+                        self.headerContener.frame = frame;
+                        [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Changeing
+                                                                 distance:frame.origin.y - _currentRefe_H_Y
+                                                          withCurrentPage:self.currentPage];
+                        
+                    } else if (frame.origin.y >= 0) {
+                        frame.origin.y = 0;
+                        self.headerContener.frame = frame;
+                        [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Top
+                                                                 distance:frame.origin.y - _currentRefe_H_Y
+                                                          withCurrentPage:self.currentPage];
+                    }
+                }
+                
+            } else {
+                //没有拉动
+            }
+        }
         
-        if (S_Y <= -HC_Height && self.headerContener.frame.origin.y != 0) {
-            //headerContener触顶
-            CGRect frame = self.headerContener.frame;
-            frame.origin.y = 0;
-            self.headerContener.frame = frame;
-            [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Top
-                                              withCurrentPage:self.currentPage];
-            
-            if ([self.dataSource respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-                [self.dataSource xd_pagesViewVerticalScrollOffsetyChanged:0];
-            }
-            
-        } else if(S_Y > -HC_Height && S_Y < -HB_Height-HB_Top) {
-            //headerContener的origin变动中（由于有触顶和吸顶两个边界值，在变动范围内的滑动过快越级不会产生影响）
-            CGRect frame = self.headerContener.frame;
-            frame.origin.y = -S_Y - HC_Height;
-            self.headerContener.frame = frame;
-            [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Changeing
-                                              withCurrentPage:self.currentPage];
-            
-            if ([self.dataSource respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-                [self.dataSource xd_pagesViewVerticalScrollOffsetyChanged:-S_Y - HC_Height];
-            }
-            
-        } else if (S_Y >= -HB_Height-HB_Top && self.headerContener.frame.origin.y != HB_Height + HB_Top - HC_Height) {
-            //headerContener吸顶
-            CGRect frame = self.headerContener.frame;
-            frame.origin.y = HB_Height + HB_Top - HC_Height;
-            self.headerContener.frame = frame;
-            [self synchronizeRightAndLeftWhenScrollByHCStatus:HCS_Ceiling
-                                              withCurrentPage:self.currentPage];
-            
-            if ([self.dataSource respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-                [self.dataSource xd_pagesViewVerticalScrollOffsetyChanged:HB_Height + HB_Top - HC_Height];
-            }
+        //触发代理
+        if ([self.dataSource respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
+            [self.dataSource xd_pagesViewVerticalScrollOffsetyChanged:self.headerContener.frame.origin.y];
         }
     }
 }
@@ -696,20 +907,20 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 
 #pragma mark -- chache
 #pragma mark -- 缓存处理
-//清空缓存顺序表及对应对象
-- (void)clearStack {
-    while (_xdCache.caches_table.count > 0) {
-        [self popDataOnStack];
-    }
+//缓存标题
+- (void)cacheTitles:(NSArray<NSString *> *)titles {
+    _xdCache.caches_titles = titles;
 }
 
-//数据出缓存（同时要删除对应的控制器）
-- (void)popDataOnStack {
-    NSString *title = _xdCache.caches_table.lastObject;
-    UIViewController *controller = [_xdCache.caches_vc objectForKey:title];
-    if (controller) {
-        [self cancelPageVcByTitle:title];
-    }
+//缓存控制器
+- (void)cachePageVc:(UIViewController *)pageVc byTitle:(NSString *)title {
+    [_xdCache.caches_vc setObject:pageVc forKey:title];
+}
+
+//缓存headery
+- (void)cacheHeaderyForPageTitle:(NSString *)title {
+    NSNumber *offsety = @(self.headerContener.frame.origin.y);
+    [_xdCache.caches_headery setObject:offsety forKey:title];
 }
 
 //添加数据入缓存
@@ -729,6 +940,40 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
     }
 }
 
+//去掉被删掉的子控制器及缓存
+- (void)cancelPageVcByTitle:(NSString *)title {
+    UIViewController *pageVc = [_xdCache.caches_vc objectForKey:title];
+    if (pageVc) {
+        [pageVc.view removeFromSuperview];
+        pageVc.view = nil;
+        [pageVc willMoveToParentViewController:nil];
+        [pageVc removeFromParentViewController];
+        pageVc = nil;
+        [_xdCache.caches_vc removeObjectForKey:title];
+        [_xdCache.caches_sview removeObjectForKey:title];
+        [_xdCache.caches_table removeObject:title];
+        [_xdCache.caches_headery removeObjectForKey:title];
+    }
+}
+
+//数据出缓存（同时要删除对应的控制器）
+- (void)popDataOnStack {
+    NSString *title = _xdCache.caches_table.lastObject;
+    UIViewController *controller = [_xdCache.caches_vc objectForKey:title];
+    if (controller) {
+        [self cancelPageVcByTitle:title];
+    }
+}
+
+//清空缓存顺序表及对应对象
+- (void)clearStack {
+    while (_xdCache.caches_table.count > 0) {
+        [self popDataOnStack];
+    }
+}
+
+#pragma mark --
+#pragma mark -- 手势处理
 //把手势转交给自己
 - (void)gestureToScrollSelf {
     if (!_needSlideByHeader) {
@@ -748,12 +993,15 @@ typedef NS_ENUM(NSInteger, HeaderContentStatus) {
 }
 
 - (UIView *)gestureChangeByView:(UIView *)view point:(CGPoint)point {
-    CGPoint relative_point = [self convertPoint:point toView:_headerContener];
-    if ([_headerContener.layer containsPoint:relative_point]) {
-        [self gestureToHeaderContent];
-    } else {
-        [self gestureToScrollSelf];
+    if (_headerView) {
+        CGPoint relative_point = [self convertPoint:point toView:_headerContener];
+        if ([_headerView.layer containsPoint:relative_point]) {
+            [self gestureToHeaderContent];
+        } else {
+            [self gestureToScrollSelf];
+        }
     }
+
     return view;
 }
 

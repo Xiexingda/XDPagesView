@@ -10,6 +10,11 @@
 #import "XDTitleBarLayout.h"
 @class XDPagesView;
 
+typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
+    XDPagesViewStyleHeaderFirst,//表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
+    XDPagesViewStyleTablesFirst //列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
+};
+
 @protocol XDPagesViewDataSourceDelegate <NSObject>
 @required
 /**
@@ -83,9 +88,10 @@
  @param delegate 代理
  @param beginPage  开始页
  @param titleBarLayout 标题栏布局配置
+ @param style 两种算法
  @return slideview
  */
-- (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout;
+- (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout style:(XDPagesViewStyle)style;
 /**
  缓存复用
 

@@ -6,7 +6,7 @@
 
 如果有别的需求或发现了问题还请issue。
 
-特别说明：个人不喜欢头部放大效果，所以我是不会添加个功能的😄，有需要的可以issue我，我会告诉你怎么改，其实很简单只需要改一个地方就行，
+特别说明：个人不喜欢头部放大效果，所以我是不会添加个功能的😄，有需要的可以issue我，我会告诉你怎么改，其实很简单只需要改一个地方就行
 
 # 展示（DN视频 - 首页）
 通常用法：
@@ -37,7 +37,13 @@ _titles = @[@"page_0",@"page_1",@"page_2",@"page_3",@"page_4",@"page_5",@"page_6
 #### 创建pagesView
 一. 默认方式（如果只是创建一个控制器列表，则向下面那样就可以了）
 ```
-_pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:nil];
+/*
+style 有两种形式
+1.XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
+2.XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
+*/
+
+_pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:nil style:XDPagesViewStyleTablesFirst];
 ```
 二. 自定义标题栏样式（如果需要对标题栏进行一些操作，那可以像下面这样写）
 ```
@@ -64,8 +70,12 @@ layout.barRightButtenImage = [UIImage imageNamed:@"demo_bar_rightimage.png"];//�
     layout.barRightCustomView = mybtn;
 */
 
-//创建pagesView
-_pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:layout];
+/*
+style 有两种形式
+1.XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
+2.XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
+*/
+_pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleTablesFirst];
 ```
 #### 添加header
 ```

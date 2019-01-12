@@ -12,6 +12,7 @@
 @interface XDPagesCache : NSObject
 @property (nonatomic, strong) NSMutableDictionary        *caches_vc;       //子控制器缓存
 @property (nonatomic, strong) NSMutableDictionary        *caches_sview;    //子控制器ScrollView缓存
+@property (nonatomic, strong) NSMutableDictionary        *caches_headery;  //每个页面变动前对应的headery
 @property (nonatomic, strong) NSArray<NSString *>        *caches_titles;   //所有标题缓存
 @property (nonatomic, strong) NSMutableArray<NSString *> *caches_table;    //当前缓存顺序表
 @property (nonatomic, strong) NSMutableArray<NSString *> *caches_kvo;      //当前所有添加了观察者的对象标题
