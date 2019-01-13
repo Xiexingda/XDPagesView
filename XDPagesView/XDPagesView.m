@@ -988,7 +988,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 - (UIView *)gestureChangeByView:(UIView *)view point:(CGPoint)point {
     if (_headerView) {
         CGPoint relative_point = [self convertPoint:point toView:_headerContener];
-        if ([_headerView.layer containsPoint:relative_point]) {
+        if ([_headerContener.layer containsPoint:relative_point] && relative_point.y <= _headerContener.headerContentHeight - _headerContener.headerBarHeight) {
             [self gestureToHeaderContent];
         } else {
             [self gestureToScrollSelf];
