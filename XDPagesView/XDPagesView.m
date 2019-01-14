@@ -639,7 +639,6 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
         [needSynArray addObject:_xdCache.caches_titles[page-1]];
     }
     
-    
     //右边视图
     if (page+1 < _xdCache.caches_titles.count) {
         [needSynArray addObject:_xdCache.caches_titles[page+1]];
