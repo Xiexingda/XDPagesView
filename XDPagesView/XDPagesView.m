@@ -791,13 +791,8 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
             
         } else if (_xd_style == XDPagesViewStyleTablesFirst) {
             //列表优先（headerContener可能不在tableview顶部）
-            CGPoint oldPoint;
-                id oldValue = [change objectForKey:NSKeyValueChangeOldKey];
-                [(NSValue*)oldValue getValue:&oldPoint];
-            
-            CGPoint newPoint;
-                id newValue = [change objectForKey:NSKeyValueChangeNewKey];
-                [(NSValue*)newValue getValue:&newPoint];
+            CGPoint oldPoint = [[change objectForKey:NSKeyValueChangeOldKey] CGPointValue];
+            CGPoint newPoint = [[change objectForKey:NSKeyValueChangeNewKey] CGPointValue];
             
             if (oldPoint.y < newPoint.y) {
                 //向上拉动
