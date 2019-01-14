@@ -37,10 +37,6 @@
     return self;
 }
 
-- (void)reloadLayout {
-    [self prepareLayout];
-}
-
 //当collection开始布局时调用zz
 - (void)prepareLayout {
     [super prepareLayout];

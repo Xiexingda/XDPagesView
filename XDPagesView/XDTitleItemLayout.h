@@ -10,5 +10,4 @@
 
 @interface XDTitleItemLayout : UICollectionViewLayout
 @property (nonatomic, strong) CGSize(^itemSizeBlock)(NSIndexPath *indexPath);//获取item大小
-- (void)reloadLayout;
 @end
