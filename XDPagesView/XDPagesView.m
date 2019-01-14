@@ -571,14 +571,15 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     cache_H_Y = cacheNum.floatValue;
                 } else {
                     [weakSelf cacheHeaderyForPageTitle:obj];
-                    cache_H_Y = weakSelf.headerContener.frame.origin.y;
+                    cache_H_Y = Header_y;
                 }
                 
                 //子滚动页的offset_Y
                 CGFloat child_y = child.contentOffset.y;
 
                 if (Header_y >= 0) {
-                    if (child_y <= -HC_Height - Header_y) {
+                    //-HC_Height - cache_H_Y 是同步之前的headerContener偏移，由于当前child_y是同步之前的，所以一定要和之前的headerContener偏移比较
+                    if (child_y <= -HC_Height - cache_H_Y) {
                         child.contentOffset = CGPointMake(0, -HC_Height);
                         
                     } else {
@@ -587,14 +588,14 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     
                 } else if (Header_y > HB_Height + HB_Top - HC_Height && Header_y < 0 && child.contentOffset.y != -HC_Height-Header_y) {
                     
-                    if (child_y <= -HC_Height - Header_y) {
+                    if (child_y <= -HC_Height - cache_H_Y) {
                         child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
                     } else {
                         child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
                     }
 
                 } else if (Header_y <= HB_Height + HB_Top - HC_Height) {
-                    if (child_y <= -HC_Height - Header_y) {
+                    if (child_y <= -HC_Height - cache_H_Y) {
                         if (child_y < -HB_Height-HB_Top && child_y != -HB_Height-HB_Top) {
                             child.contentOffset = CGPointMake(0, -HB_Height-HB_Top);
                         }
@@ -701,6 +702,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                     
                     //headerContener的origin变动中，子滚动页的Offset随着headerContener的origin.y同步变化
                 case HCS_Changeing:
+                    //联动在同步之后，此时child_y都是相对当前headerContener同步之后的，所以直接拿child_y 和 当前的headerContener偏移进行比较就行
                     if (child_y <= -HC_Height - Header_y) {
                         child.contentOffset = CGPointMake(0, -HC_Height-Header_y);
                     } else {
@@ -760,7 +762,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
         
         if (_xd_style == XDPagesViewStyleHeaderFirst) {
             //表头优先（统一按照headerContener在tableview顶部处理）
-            if (S_Y <= -HC_Height && self.headerContener.frame.origin.y != 0) {
+            if (S_Y <= -HC_Height && Header_y != 0) {
                 //headerContener触顶
                 CGRect frame = self.headerContener.frame;
                 frame.origin.y = 0;
@@ -778,7 +780,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                                                          distance:0
                                                   withCurrentPage:self.currentPage];
                 
-            } else if (S_Y >= -HB_Height-HB_Top && self.headerContener.frame.origin.y != HB_Height + HB_Top - HC_Height) {
+            } else if (S_Y >= -HB_Height-HB_Top && Header_y != HB_Height + HB_Top - HC_Height) {
                 //headerContener吸顶
                 CGRect frame = self.headerContener.frame;
                 frame.origin.y = HB_Height + HB_Top - HC_Height;
