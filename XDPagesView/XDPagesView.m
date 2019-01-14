@@ -805,7 +805,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                         _currentRefe_H_Y = frame.origin.y;
                     }
                     //当tableview的offset.y 在 headercontener之下时按照headercontener在tableview顶部去处理（这样处理的原因是计算新旧点距是有一定误差的，当下拉后快速上滑会在headercontener和tableview之间产生间隙，但按顶部处理不会出现这样的情况）
-                    if (S_Y < -HC_Height - Header_y) {
+                    if (S_Y <= -HC_Height - Header_y) {
                         frame.origin.y = -S_Y-HC_Height;
                         
                     } else {
@@ -832,7 +832,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
             } else if (oldPoint.y > newPoint.y) {
                 //向下拉动
                 //当子tableview 的 contentoffset.y 在headercontener 之下时触发联动
-                if (S_Y < -HC_Height - Header_y && Header_y != 0) {
+                if (S_Y <= -HC_Height - Header_y && Header_y != 0) {
                     CGRect frame = self.headerContener.frame;
                     if (_current_DragingStatus != Draging_Down) {
                         _current_DragingStatus = Draging_Down;
