@@ -27,6 +27,14 @@
     
 }
 
+- (void)beginRefresh {
+    NSLog(@"下拉刷新");
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [weakSelf.tableView.refreshControl endRefreshing];
+    });
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     UIColor *red = [UIColor redColor];
@@ -38,6 +46,10 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
+    
+    UIRefreshControl *downRefresh = [[UIRefreshControl alloc]init];
+    [downRefresh addTarget:self action:@selector(beginRefresh) forControlEvents:UIControlEventValueChanged];
+    [_tableView setRefreshControl:downRefresh];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

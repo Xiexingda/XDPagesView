@@ -51,16 +51,14 @@
     [self.contentView addSubview:_followLine];
 }
 
-- (void)configItemByTitle:(NSString *)title titleFont:(UIFont *)titleFont textColor:(UIColor *)textColor textSelectedColor:(UIColor *)textSelectedColor needIcon:(BOOL)needIcon iconImage:(UIImage *)iconImage selectedIconImage:(UIImage *)selectedIconImage needFollowLine:(BOOL)needFollowLine followLineColor:(UIColor *)followLineColor followPercent:(CGFloat)followPercent barTag:(id)barTag index:(NSIndexPath *)index selectedIndex:(NSInteger)selectedIndex {
-    
-    _followLine.backgroundColor = followLineColor;
-    self.title.font = titleFont;
+- (void)configItemByTitle:(NSString *)title index:(NSIndexPath *)index selectedIndex:(NSInteger)selectedIndex titleBarLayout:(XDTitleBarLayout *)titleBarLayout {
     self.title.text = title;
+    self.title.font = titleBarLayout.barTextFont;
     
     CGFloat xd_width = self.bounds.size.width;
     CGFloat xd_height = self.bounds.size.height;
     
-    if (needIcon && index.row == 0) {
+    if (titleBarLayout.needBarFirstItemIcon && index.row == 0) {
         self.icon.hidden = NO;
         self.icon.frame = CGRectMake(Icon_Edge, 0, ItemIconSize, xd_height);
         self.title.frame = CGRectMake(CGRectGetMaxX(self.icon.frame), 0, xd_width-Icon_Edge-ItemIconSize, self.frame.size.height);
@@ -72,27 +70,30 @@
     
     //选中时的状态
     if (index.row == selectedIndex) {
-        self.title.textColor = textSelectedColor;
+        self.backgroundColor = titleBarLayout.currentItemBackGroundColor;
+        self.title.textColor = titleBarLayout.barTextSelectedColor;
         if (!self.icon.isHidden) {
-            self.icon.image = [selectedIconImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];;
+            self.icon.image = [titleBarLayout.firstItemIconSelected imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];;
         }
-        [self bottomLineHandleByNeedLine:needFollowLine isSelected:YES percent:followPercent];
+        [self bottomLineHandleByNeedLine:titleBarLayout.needBarFollowLine isSelected:YES color:titleBarLayout.barFollowLineColor percent:titleBarLayout.barFollowLinePercent];
         
     } else {
-        self.title.textColor = textColor;
+        self.backgroundColor = [UIColor clearColor];
+        self.title.textColor = titleBarLayout.barTextColor;
         if (!self.icon.isHidden) {
-            self.icon.image = [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            self.icon.image = [titleBarLayout.firstItemIconNormal imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         }
-        [self bottomLineHandleByNeedLine:needFollowLine isSelected:NO percent:followPercent];
+        [self bottomLineHandleByNeedLine:titleBarLayout.needBarFollowLine isSelected:NO color:titleBarLayout.barFollowLineColor percent:titleBarLayout.barFollowLinePercent];
     }
 }
 
-- (void)bottomLineHandleByNeedLine:(BOOL)needLine isSelected:(BOOL)isSelected percent:(CGFloat)percent {
+- (void)bottomLineHandleByNeedLine:(BOOL)needLine isSelected:(BOOL)isSelected color:(UIColor *)color percent:(CGFloat)percent {
     percent = percent < 0 ? 0 : percent > 1 ? 1 : percent;
     if (!needLine) {
         _followLine.hidden = YES;
         return;
     }
+    _followLine.backgroundColor = color;
     CGFloat xd_width = self.bounds.size.width;
     CGFloat xd_height = self.bounds.size.height;
     CGFloat lineWidth = xd_width * percent;

@@ -544,7 +544,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                 CGFloat child_y = child.contentOffset.y;
                 
                 if (Header_y >= 0) {
-                    if (child_y != -HC_Height) {
+                    if (child_y >= -HC_Height &&  child_y != -HC_Height) {
                         child.contentOffset = CGPointMake(0, -HC_Height);
                     }
                     
@@ -580,7 +580,9 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
                 if (Header_y >= 0) {
                     //-HC_Height - cache_H_Y 是同步之前的headerContener偏移，由于当前child_y是同步之前的，所以一定要和之前的headerContener偏移比较
                     if (child_y <= -HC_Height - cache_H_Y) {
-                        child.contentOffset = CGPointMake(0, -HC_Height);
+                        if (child_y >= -HC_Height &&  child_y != -HC_Height) {
+                            child.contentOffset = CGPointMake(0, -HC_Height);
+                        }
                         
                     } else {
                         child.contentOffset = CGPointMake(0, child_y - (Header_y - cache_H_Y));
@@ -948,10 +950,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 //数据出缓存（同时要删除对应的控制器）
 - (void)popDataOnStack {
     NSString *title = _xdCache.caches_table.lastObject;
-    UIViewController *controller = [_xdCache.caches_vc objectForKey:title];
-    if (controller) {
-        [self cancelPageVcByTitle:title];
-    }
+    [self cancelPageVcByTitle:title];
 }
 
 //清空缓存顺序表及对应对象

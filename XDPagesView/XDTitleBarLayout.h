@@ -14,8 +14,13 @@
 @property (nonatomic, assign) BOOL needBar;             //默认为YES
 @property (nonatomic, assign) CGFloat barMarginTop;     //标题栏距顶端边距
 @property (nonatomic, assign) CGSize barItemSize;       //标题item大小，默认为80*40
+@property (nonatomic, strong) UIColor *barBackGroundColor; //背景颜色
+@property (nonatomic, strong) UIImage *barBackGroundImage; //背景图片
 @property (nonatomic, assign) BOOL barBounces;
 @property (nonatomic, assign) BOOL barAlwaysBounceHorizontal;
+
+//标题
+@property (nonatomic, strong) UIColor *currentItemBackGroundColor;  //当前item的背景颜色
 
 //标题栏首个标题是否需要图标
 @property (nonatomic, assign) BOOL needBarFirstItemIcon;

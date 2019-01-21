@@ -21,6 +21,7 @@
 @property (nonatomic, strong) XDTitleItemLayout *layout;         //collectionView的布局（_bar）
 @property (nonatomic, strong) XDTitleBarLayout  *barLayout;      //titleBar的布局(self)
 @property (nonatomic, strong) UICollectionView  *bar;
+@property (nonatomic, strong) UIImageView *backGroundImageView;
 @property (nonatomic, strong) UIView *rightBtn;
 @property (nonatomic, strong) UIImageView *rightBtnImage;
 @property (nonatomic, strong) UIView *bottomLine;
@@ -29,6 +30,15 @@
 @end
 
 @implementation XDTitleBar
+- (UIImageView *)backGroundImageView {
+    if (!_backGroundImageView) {
+        _backGroundImageView = [[UIImageView alloc]init];
+        _backGroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _backGroundImageView.clipsToBounds = YES;
+    }
+    return _backGroundImageView;
+}
+
 - (UIView *)rightBtn {
     if (!_rightBtn) {
         _rightBtn = [[UIView alloc]initWithFrame:CGRectZero];
@@ -65,7 +75,12 @@
 - (instancetype)initWithFrame:(CGRect)frame titleBarLayout:(XDTitleBarLayout *)titleBarLayout titleBarRightBtn:(void(^)(void))titleBarRightBtnBlock {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = titleBarLayout.barBackGroundColor;
+        if (titleBarLayout.barBackGroundImage && [titleBarLayout.barBackGroundImage isKindOfClass:[UIImage class]]) {
+            [self.backGroundImageView setFrame:self.bounds];
+            [self.backGroundImageView setImage:titleBarLayout.barBackGroundImage];
+            [self addSubview:self.backGroundImageView];
+        }
         self.barLayout = titleBarLayout;
         _selectedIndex = 0;
         [self creatMainUIByBarLayout:titleBarLayout itleBarRightBtn:titleBarRightBtnBlock];
@@ -120,7 +135,7 @@
     _bar.alwaysBounceHorizontal = titleBarLayout.barAlwaysBounceHorizontal;
     _bar.showsVerticalScrollIndicator = NO;
     _bar.showsHorizontalScrollIndicator = NO;
-    _bar.backgroundColor = [UIColor whiteColor];
+    _bar.backgroundColor = [UIColor clearColor];
     [self addSubview:_bar];
     _bar.hidden = rightBtnWidth == self.bounds.size.width ? YES : NO;
     
@@ -156,18 +171,9 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     XDTitleItem *item = [collectionView dequeueReusableCellWithReuseIdentifier:itemID forIndexPath:indexPath];
     [item configItemByTitle:_titles[indexPath.row]
-                  titleFont:_barLayout.barTextFont
-                  textColor:_barLayout.barTextColor
-          textSelectedColor:_barLayout.barTextSelectedColor
-                   needIcon:_barLayout.needBarFirstItemIcon
-                  iconImage:_barLayout.firstItemIconNormal
-          selectedIconImage:_barLayout.firstItemIconSelected
-             needFollowLine:_barLayout.needBarFollowLine
-            followLineColor:_barLayout.barFollowLineColor
-              followPercent:_barLayout.barFollowLinePercent
-                     barTag:_barLayout.barTag
                       index:indexPath
-              selectedIndex:_selectedIndex];
+              selectedIndex:_selectedIndex
+             titleBarLayout:_barLayout];
     return item;
 }
 

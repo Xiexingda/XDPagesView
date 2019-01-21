@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "XDTitleBarLayout.h"
 
 #define ItemIconSize 18
 
@@ -28,17 +29,9 @@
  @param index 每个item对应的index
  @param selectedIndex 当前选中的index
  */
+
 - (void)configItemByTitle:(NSString *)title
-                titleFont:(UIFont *)titleFont
-                textColor:(UIColor *)textColor
-        textSelectedColor:(UIColor *)textSelectedColor
-                 needIcon:(BOOL)needIcon
-                iconImage:(UIImage *)iconImage
-        selectedIconImage:(UIImage *)selectedIconImage
-           needFollowLine:(BOOL)needFollowLine
-          followLineColor:(UIColor *)followLineColor
-            followPercent:(CGFloat)followPercent
-                   barTag:(id)barTag
                     index:(NSIndexPath *)index
-            selectedIndex:(NSInteger)selectedIndex;
+            selectedIndex:(NSInteger)selectedIndex
+           titleBarLayout:(XDTitleBarLayout *)titleBarLayout;
 @end

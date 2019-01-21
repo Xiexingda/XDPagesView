@@ -33,12 +33,15 @@
     
     //标题栏布局，这点很酷，你完全可以在XDSlideBarLayout类里加入自定义的属性去更改标题栏的显示
     XDTitleBarLayout *layout = [[XDTitleBarLayout alloc]init];
-    //layout.needBar = YES; //默认为YES,当设置为NO时不会创建标题栏
+    layout.needBar = YES; //默认为YES,当设置为NO时不会创建标题栏
+    //layout.barBackGroundColor = [UIColor redColor];//标题栏背景颜色（默认白色）
+    layout.barBackGroundImage = [UIImage imageNamed:@"demo_bar_back.png"];//标题栏背景图片
+    //layout.currentItemBackGroundColor = [UIColor yellowColor];//当前标题背景颜色（默认透明）
     layout.barMarginTop = 64;//标题栏距上方的悬停距离，默认为0
     //layout.barItemSize = CGSizeMake(75, 50); //标题item的大小，默认为80*40
-    layout.needBarFirstItemIcon = YES; //需要第一个标题有图标
-    layout.firstItemIconNormal = [UIImage imageNamed:@"demo_bar_icon.png"]; //第一个标题的图标
-    layout.firstItemIconSelected = [UIImage imageNamed:@"demo_bar_iconSelected.png"];//第一个标题选中时的图标
+    //layout.needBarFirstItemIcon = YES; //需要第一个标题有图标
+    //layout.firstItemIconNormal = [UIImage imageNamed:@"demo_bar_icon.png"]; //第一个标题的图标
+    //layout.firstItemIconSelected = [UIImage imageNamed:@"demo_bar_iconSelected.png"];//第一个标题选中时的图标
     layout.needBarRightButten = YES;//需要右按钮，此时如果没有自定义按钮就会创建一个默认按钮
     layout.barRightButtenImage = [UIImage imageNamed:@"demo_bar_rightimage.png"];//设置默认按钮背景图片
     
@@ -73,7 +76,7 @@
     //添加header,不加header为标题栏吸顶状态
     UIImageView *header = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
     header.backgroundColor = [UIColor yellowColor];
-    header.image = [UIImage imageNamed:@"App_header_cover"];
+    header.image = [UIImage imageNamed:@"demo_bar_header.png"];
     _pagesView.headerView = header;
     //可以通过滑动表头滑动列表
     _pagesView.needSlideByHeader = YES;

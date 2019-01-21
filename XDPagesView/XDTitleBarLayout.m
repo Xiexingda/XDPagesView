@@ -15,8 +15,12 @@
         _needBar = YES;
         _barItemSize = CGSizeMake(80, 40);
         _barMarginTop = 0;
+        _barBackGroundColor = [UIColor whiteColor];
+        _barBackGroundImage = nil;
         _barBounces = YES;
         _barAlwaysBounceHorizontal = NO;
+        
+        _currentItemBackGroundColor = [UIColor clearColor];
         
         _needBarFirstItemIcon = NO;
         _needBarRightButten = NO;
