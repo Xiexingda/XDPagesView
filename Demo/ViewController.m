@@ -70,6 +70,9 @@
     //设置时候有横向反弹效果，默认为NO
     //_pagesView.bounces = YES;
     
+    //可否通过滑动翻页，默认yes
+    //_pagesView.slidePageTurningEnable = NO;
+    
     //pagesView上方空余类似contentInset.top
     //_pagesView.edgeInsetTop = 0;
 

@@ -75,6 +75,9 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
 //靠边后是否可滑动，默认为NO
 @property (nonatomic, assign) BOOL bounces;
 
+//是否可滑动翻页，默认为yes
+@property (nonatomic, assign) BOOL slidePageTurningEnable;
+
 //需要通过header上下滑动列表（默认为NO）
 @property (nonatomic, assign) BOOL needSlideByHeader;
 

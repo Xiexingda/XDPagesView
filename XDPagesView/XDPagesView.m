@@ -100,6 +100,13 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     _pagesContener.bounces = bounces;
 }
 
+- (void)setSlidePageTurningEnable:(BOOL)slidePageTurningEnable {
+    _slidePageTurningEnable = slidePageTurningEnable;
+    if (_pagesContener) {
+        _pagesContener.scrollEnabled = slidePageTurningEnable;
+    }
+}
+
 - (void)setHeaderView:(UIView *)headerView {
     if (!self.headerContener) {
         return;
