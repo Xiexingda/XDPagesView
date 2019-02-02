@@ -61,6 +61,8 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     [self clearKVO];
     //清除缓存
     [self clearStack];
+    //释放成功
+    NSLog(@"__________XDPagesView:已释放__________");
 }
 
 //清除监听
@@ -133,17 +135,18 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     }
     
     if (self) {
+        self.clipsToBounds = YES;
+        _xdCache = [[XDPagesCache alloc]init];
+        _xd_style = (style == XDPagesViewStyleHeaderFirst || style == XDPagesViewStyleTablesFirst) ? style : XDPagesViewStyleHeaderFirst;
+        _currentRefe_H_Y  = 0;
+        _currentPage    = beginPage;
+        _bufferPage     = beginPage;
+        
         if (delegate) {
-            self.clipsToBounds = YES;
-            _xd_style = (style == XDPagesViewStyleHeaderFirst || style == XDPagesViewStyleTablesFirst) ? style : XDPagesViewStyleHeaderFirst;
-            _currentRefe_H_Y  = 0;
-            _currentPage    = beginPage;
-            _bufferPage     = beginPage;
-            _dataSource     = delegate;
-            _currentController = delegate;
-            _xdCache = [[XDPagesCache alloc]init];
+            self.dataSource         = delegate;
+            self.currentController  = delegate;
             
-            //只有实现了代理才会创建UI
+            //只有实现了必要代理方法才会创建UI
             if ([self.dataSource respondsToSelector:@selector(xd_pagesViewPageTitles)]&&[self.dataSource respondsToSelector:@selector(xd_pagesViewChildControllerToPagesView:forIndex:)]) {
                 [self creatMainUIByTitleBarLayout:titleBarLayout ? titleBarLayout : [[XDTitleBarLayout alloc]init]];
             }
