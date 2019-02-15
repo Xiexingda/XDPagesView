@@ -99,7 +99,7 @@ _pagesView.needSlideByHeader = YES;
 //设置缓存数（最大同时存在页数），默认为50
 _pagesView.cacheNumber = 10;
 
-//设置时候有横向反弹效果，默认为NO
+//设置时候有横向反弹效果，默认为YES
 _pagesView.bounces = YES;
 
 //pagesView上方空余类似contentInset.top

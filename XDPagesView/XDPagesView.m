@@ -109,6 +109,16 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     }
 }
 
+- (void)setNeedSlideByHeader:(BOOL)needSlideByHeader {
+    if (needSlideByHeader == _needSlideByHeader) {
+        return;
+    }
+    _needSlideByHeader = needSlideByHeader;
+    if (!needSlideByHeader) {
+        [self gestureToScrollSelf];
+    }
+}
+
 - (void)setHeaderView:(UIView *)headerView {
     if (!self.headerContener) {
         return;
@@ -136,6 +146,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     
     if (self) {
         self.clipsToBounds = YES;
+        _needSlideByHeader = YES;
         _xdCache = [[XDPagesCache alloc]init];
         _xd_style = (style == XDPagesViewStyleHeaderFirst || style == XDPagesViewStyleTablesFirst) ? style : XDPagesViewStyleHeaderFirst;
         _currentRefe_H_Y  = 0;
@@ -245,7 +256,9 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 - (void)changeToPage:(NSInteger)page {
     /*此函数内的方法调用都是有逻辑顺序的，一定不要更换调用顺序*/
     //复原手势（一定要在换页之前）
-    [self gestureToScrollSelf];
+    if (_needSlideByHeader) {
+        [self gestureToScrollSelf];
+    }
     [self clearKVO];
     //解除锁定
     [self scrollUnLock];
@@ -974,18 +987,12 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 #pragma mark -- 手势处理
 //把手势转交给自己
 - (void)gestureToScrollSelf {
-    if (!_needSlideByHeader) {
-        return;
-    }
     UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
     [currentScrollView addGestureRecognizer:currentScrollView.panGestureRecognizer];
 }
 
 //把手势转交给headercontent
 - (void)gestureToHeaderContent {
-    if (!_needSlideByHeader) {
-        return;
-    }
     UIScrollView *currentScrollView = [self scrollViewByTitle:_xdCache.caches_titles[_currentPage]];
     [_headerContener addGestureRecognizer:currentScrollView.panGestureRecognizer];
 }

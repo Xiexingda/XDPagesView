@@ -81,8 +81,8 @@
     header.backgroundColor = [UIColor yellowColor];
     header.image = [UIImage imageNamed:@"demo_bar_header.png"];
     _pagesView.headerView = header;
-    //可以通过滑动表头滑动列表
-    _pagesView.needSlideByHeader = YES;
+    //可以通过滑动表头滑动列表(默认yes)
+//    _pagesView.needSlideByHeader = YES;
     [self.view addSubview:_pagesView];
 }
 
