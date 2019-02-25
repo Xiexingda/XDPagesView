@@ -8,7 +8,11 @@
 
 _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleTablesFirst];
 
-如果有别的需求或发现了问题还请issue。
+如果有别的需求或发现了问题还请issue 或加群提问：
+
+群：659700776
+
+暗号：iOS
 
 ## 特别说明：
 1. 个人不喜欢头部放大效果，所以我是不会添加个功能的😄
