@@ -308,11 +308,15 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 
 //直接跳转到某页
 - (void)jumpToPage:(NSInteger)page {
+    [self jumpToPage:page animate:YES];
+}
+
+- (void)jumpToPage:(NSInteger)page animate:(BOOL)animate {
     if (page >= _xdCache.caches_titles.count || page < 0) {
         return;
     }
     [self changeToPage:page];
-    _pagesContener.contentOffset = CGPointMake(page*self.bounds.size.width, 0);
+    [_pagesContener setContentOffset:CGPointMake(page*self.bounds.size.width, 0) animated:animate];
 }
 
 //页面已经更换处理
@@ -329,6 +333,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
     CGFloat c_w = CGRectGetWidth(self.frame);
     NSInteger page_forward = floor(xValue/c_w);     //前页
     NSInteger page_later   = ceil(xValue/c_w);      //后页
+
     //更新缓冲页
     if (_bufferPage < page_forward) {
         _bufferPage = page_forward;
