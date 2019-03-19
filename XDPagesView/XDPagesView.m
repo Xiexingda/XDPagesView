@@ -308,7 +308,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 
 //直接跳转到某页
 - (void)jumpToPage:(NSInteger)page {
-    [self jumpToPage:page animate:YES];
+    [self jumpToPage:page animate:NO];
 }
 
 - (void)jumpToPage:(NSInteger)page animate:(BOOL)animate {
