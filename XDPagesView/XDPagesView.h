@@ -109,6 +109,7 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
  @param page 页面索引
  */
 - (void)jumpToPage:(NSInteger)page;
+- (void)jumpToPage:(NSInteger)page animate:(BOOL)animate;
 
  /**
   刷新控制器列表，并定位到页
