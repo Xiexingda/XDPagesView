@@ -378,12 +378,8 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
         UIView *childView = pageVc.view;
         //如果子视图已经存在那么直接更改位置，否则设置位置并添加子视图
         CGFloat d_bottom = childView.frame.size.height - self.bounds.size.height;
-        CGRect childFrame = self.bounds;
-        childFrame.origin.x = idx * self.bounds.size.width;
-        childFrame.origin.y = 0;
-        childView.frame = childFrame;
-        
-        //由于改变了子控制器视图的大小，但是由于子控制器内的子视图的frame是在控制器开空间的时候渲染的，所以这里需要手动更改子控制器的子视图的大小，由于上端,左右是保持一定的，所以只需要更改宽度和距离下边的大小
+        childView.frame = [self positionFrameAtPage:idx];
+    //由于改变了子控制器视图的大小，但是由于子控制器内的子视图的frame是在控制器开空间的时候渲染的，所以这里需要手动更改子控制器的子视图的大小，由于上端,左右是保持一定的，所以只需要更改宽度和距离下边的大小
         UIScrollView *scrollview = [self scrollViewByTitle:_xdCache.caches_titles[idx]];
         CGRect relateRect = [scrollview convertRect:scrollview.bounds toView:scrollview.superview];
         CGRect scFrame = scrollview.frame;
@@ -395,6 +391,13 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
             [self.pagesContener addSubview:childView];
         }
     }
+}
+
+//获取对应位置的frame
+- (CGRect)positionFrameAtPage:(NSInteger)page {
+    CGRect pFrame = self.bounds;
+    pFrame.origin.x = page * self.bounds.size.width;
+    return pFrame;
 }
 
 //重置所有子控制器子view的frame
