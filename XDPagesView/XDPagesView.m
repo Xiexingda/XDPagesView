@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 //清除监听
 - (void)clearKVO {
     while (_xdCache.caches_kvo.count) {
-        [[self scrollViewByTitle:_xdCache.caches_kvo.lastObject] removeObserver:self forKeyPath:@"contentOffset"];
+        [[self scrollViewByTitle:_xdCache.caches_kvo.lastObject] removeObserver:self forKeyPath:@"contentOffset" context:@"XDPagesView"];
         [_xdCache.caches_kvo removeLastObject];
     }
 }
