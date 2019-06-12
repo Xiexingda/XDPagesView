@@ -27,7 +27,7 @@
     [super viewDidLoad];
     
     //很关键，数组中的名字不能有重复项，该数组不止用于返回标题，还用于返回控制器的计数，类似于collectionview的numberOfItems，因此不管需不需要标题栏，都需要返回这个数组
-    _titles = @[@"page_0",@"page_1",@"page_2",@"page_3",@"page_4",@"page_5",@"page_6",@"page_7",@"page_8",@"page_9",@"page_10",@"page_11",@"page_12",@"page_13",@"page_14",@"page_15",@"page_16",@"page_17",@"page_18",@"page_19",@"page_20",@"page_21",@"page_22",@"page_23",@"page_24",@"page_25",@"page_26",@"page_27",@"page_28",@"page_29"];
+    _titles = @[@"page_088888888888",@"page_1",@"page_2",@"page_3",@"page_4",@"page_5",@"page_6",@"page_7",@"page_8",@"page_9",@"page_10",@"page_11",@"page_12",@"page_13",@"page_14",@"page_15",@"page_16",@"page_17",@"page_18",@"page_19",@"page_20",@"page_21",@"page_22",@"page_23",@"page_24",@"page_25",@"page_26",@"page_27",@"page_28",@"page_29"];
     
     CGRect rect = self.view.bounds;
     

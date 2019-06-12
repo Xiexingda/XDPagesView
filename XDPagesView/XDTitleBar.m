@@ -118,14 +118,18 @@
     
     _layout = [[XDTitleItemLayout alloc]init];
     _layout.itemSizeBlock = ^CGSize(NSIndexPath *indexPath) {
+        CGSize baseSize = [weakSelf autoSizeWithBase:titleBarLayout.barItemSize string:weakSelf.titles[indexPath.row] font:titleBarLayout.barTextFont];
+        CGFloat itemWidth = baseSize.width + 20 < titleBarLayout.barItemSize.width ? titleBarLayout.barItemSize.width : baseSize.width + 20;
+        
+        
         if (indexPath.row == 0) {
-            CGSize firstItemSize = titleBarLayout.barItemSize;
+            CGSize firstItemSize = CGSizeMake(itemWidth, titleBarLayout.barItemSize.height);
             if (titleBarLayout.needBarFirstItemIcon) {
-                firstItemSize.width = titleBarLayout.barItemSize.width + ItemIconSize;
+                firstItemSize.width = itemWidth + ItemIconSize;
             }
             return firstItemSize;
         }
-        return titleBarLayout.barItemSize;
+        return CGSizeMake(itemWidth, titleBarLayout.barItemSize.height);
     };
     
     _bar = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width-rightBtnWidth, self.bounds.size.height) collectionViewLayout:_layout];
@@ -161,6 +165,16 @@
         self.bottomLine.backgroundColor = titleBarLayout.barBottomLineColor;
         [self.bottomLine setFrame:CGRectMake(0, CGRectGetHeight(self.bounds)-0.5, CGRectGetWidth(self.bounds), 0.5)];
     }
+}
+
+- (CGSize)autoSizeWithBase:(CGSize)baseSize string:(NSString *)str font:(UIFont *)font {
+    CGSize cSize = CGSizeMake(MAXFLOAT, baseSize.height);
+    CGSize c_msize = [str
+                      boundingRectWithSize:cSize
+                      options:NSStringDrawingUsesLineFragmentOrigin
+                      attributes:@{NSFontAttributeName:font}
+                      context:nil].size;
+    return c_msize;
 }
 
 #pragma mark -- datasource
