@@ -53,7 +53,7 @@ style 有两种形式
 1.XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
 2.XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
 */
-
+//这里的代理需要为当前控制器，即self(这很重要)
 _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:0 titleBarLayout:nil style:XDPagesViewStyleTablesFirst];
 ```
 二. 自定义标题栏样式（如果需要对标题栏进行一些操作，那可以像下面这样写）
@@ -88,6 +88,7 @@ style 有两种形式
 1.XDPagesViewStyleHeaderFirst 表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
 2.XDPagesViewStyleTablesFirst 列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
 */
+//这里的代理需要为当前控制器，即self(这很重要)
 _pagesView = [[XDPagesView alloc]initWithFrame:rect dataSourceDelegate:self beginPage:1 titleBarLayout:layout style:XDPagesViewStyleTablesFirst];
 ```
 #### 添加header

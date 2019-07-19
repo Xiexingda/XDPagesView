@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
  初始化XDSlideView
  
  @param frame frame
- @param delegate 代理
+ @param delegate 代理（必须得是当前控制器，因为需要添加子控制器）
  @param beginPage  开始页
  @param titleBarLayout 标题栏布局配置
  @param style 两种算法

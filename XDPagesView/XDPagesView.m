@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 
 - (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout style:(XDPagesViewStyle)style {
     self = [super initWithFrame:frame];
-    if (!delegate) {
+    if (!delegate || ![delegate isKindOfClass:[UIViewController class]]) {
         __assert(0, "需要加入当前控制器代理，具体用法请看demo", __LINE__);
     }
     
