@@ -312,7 +312,7 @@ typedef NS_ENUM(NSInteger, RightScrollOffsetLockStatus) {
 }
 
 - (void)jumpToPage:(NSInteger)page animate:(BOOL)animate {
-    if (page >= _xdCache.caches_titles.count || page < 0 || page == _currentPage) {
+    if (page >= _xdCache.caches_titles.count || page < 0) {
         return;
     }
     [self changeToPage:page];

@@ -84,6 +84,9 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
 //slideview上方空余空间 (其值要大于0)
 @property (nonatomic, assign) CGFloat edgeInsetTop;
 
+//当前页
+@property (nonatomic, readonly, assign) NSInteger currentPage;
+
 /**
  初始化XDSlideView
  
