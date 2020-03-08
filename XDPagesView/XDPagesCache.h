@@ -1,20 +1,32 @@
 //
 //  XDPagesCache.h
-//  XDSlideController
+//  XDPagesView
 //
-//  Created by 谢兴达 on 2018/8/11.
-//  Copyright © 2018年 谢兴达. All rights reserved.
-//
+//  Created by 谢兴达 on 2020/2/16.
+//  Copyright © 2020 xie. All rights reserved.
+//  缓存管理
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 @interface XDPagesCache : NSObject
-@property (nonatomic, strong) NSMutableDictionary        *caches_vc;       //子控制器缓存
-@property (nonatomic, strong) NSMutableDictionary        *caches_sview;    //子控制器ScrollView缓存
-@property (nonatomic, strong) NSMutableDictionary        *caches_headery;  //每个页面变动前对应的headery
-@property (nonatomic, strong) NSArray<NSString *>        *caches_titles;   //所有标题缓存
-@property (nonatomic, strong) NSMutableArray<NSString *> *caches_table;    //当前缓存顺序表
-@property (nonatomic, strong) NSMutableArray<NSString *> *caches_kvo;      //当前所有添加了观察者的对象标题
-@property (nonatomic, assign) NSUInteger                 cachenumber;      //最大缓存数
+@property (nonatomic,   weak) UIViewController *mainController;     //主控制器
+@property (nonatomic, strong) NSArray <NSString *>*titles;          //所有标题
+@property (nonatomic, strong) NSMutableArray<NSString *> *kvoTitles;//当前所有添加了观察者的对象标题
+@property (nonatomic, assign) NSInteger maxCacheCount;              //最大缓存个数
++ (instancetype)cache;
+
+- (void)setPage:(UIViewController *)page title:(NSString *)title;
+- (void)cancelPageForTitle:(NSString *)title;
+- (void)clearPages;
+
+//will动作，包括willAppear willDisAppear
+- (void)pageWillAppearHandle:(BOOL)need;
+//did动作，包括didAppear didDisAppear
+- (void)pageDidApearHandle:(BOOL)need;
+
+- (UIView *)viewForTitle:(NSString *)title;
+- (UIViewController *)controllerForTitle:(NSString *)title;
+- (NSArray <UIScrollView *>*)scrollViewsForTitle:(NSString *)title;
+
 @end

@@ -1,43 +1,41 @@
 //
-//  XDPagesView.m
-//  XDPagesController
+//  XDPagesView.h
+//  XDPagesView
 //
-//  Created by 谢兴达 on 2018/8/9.
-//  Copyright © 2018年 谢兴达. All rights reserved.
-//  滑动界面
+//  Created by 谢兴达 on 2020/2/13.
+//  Copyright © 2020 xie. All rights reserved.
+//  控制器列表页
 
 #import <UIKit/UIKit.h>
-#import "XDTitleBarLayout.h"
+#import "XDPagesConfig.h"
 @class XDPagesView;
 
-typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
-    XDPagesViewStyleHeaderFirst,//表头优先，只要header不在吸顶状态，所有列表都会相对于header复原到最顶端
-    XDPagesViewStyleTablesFirst //列表优先，不管header怎么变动，所有的列表都会保持自己上次与header的相对位置
+typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
+    XDPagesPullOnTop = 0,       //顶端下拉
+    XDPagesPullOnCenter = 1     //中间下拉
 };
 
-@protocol XDPagesViewDataSourceDelegate <NSObject>
+@protocol XDPagesViewDelegate <NSObject>
 @required
 /**
  数据代理，用于接受标题数组
-
  @return 标题数组
  */
 - (NSArray <NSString *> *)xd_pagesViewPageTitles;
 
 /**
  数据代理，用于接受当前控制器
-
  @param pagesView XDPagesView
  @param index 索引
+ @param title 对应标题
  @return 子控制器
  */
-- (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index;
+- (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title;
 
 @optional
 
 /**
  已经跳到的当前界面
-
  @param pageController 当前控制器
  @param pageTitle 标题
  @param pageIndex 索引
@@ -46,69 +44,41 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
 
 /**
  竖直滚动监听
- 该代理只有在有header时才会调用，且变动范围为header的高度范围
  @param changedy 竖直offset.y
  */
-- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy;
+- (void)xd_pagesViewVerticalScrollOffsetxChanged:(CGFloat)changedy;
 
 /**
  水平滚动监听
-
  @param changedx 水平offset.x
  */
 - (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx;
-
-/**
- 标题栏右边按钮点击事件
- */
-- (void)xd_pagesViewTitleBarRightBtnTap;
-
 @end
 
 @interface XDPagesView : UIView
-//设置header
-@property (nonatomic, strong) UIView *headerView;
+@property (nonatomic, weak) id <XDPagesViewDelegate> delegate;
+@property (nonatomic, strong) UIView *pagesHeader;
 
-//最大缓存页数，默认为不限制
-@property (nonatomic, assign) NSUInteger cacheNumber;
-
-//靠边后是否可滑动，默认为NO
-@property (nonatomic, assign) BOOL bounces;
-
-//是否可滑动翻页，默认为yes
-@property (nonatomic, assign) BOOL slidePageTurningEnable;
-
-//需要通过header上下滑动列表（默认为NO）
-@property (nonatomic, assign) BOOL needSlideByHeader;
-
-//slideview上方空余空间 (其值要大于0)
-@property (nonatomic, assign) CGFloat edgeInsetTop;
-
-//当前页
-@property (nonatomic, readonly, assign) NSInteger currentPage;
+//系统下拉刷新（头部下拉只支持系统下拉刷新）
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 /**
- 初始化XDSlideView
- 
- @param frame frame
- @param delegate 代理（必须得是当前控制器，因为需要添加子控制器）
- @param beginPage  开始页
- @param titleBarLayout 标题栏布局配置
- @param style 两种算法
- @return slideview
+ 初始化
+ @param frame rect
+ @param config 配置信息
+ @param style 列表风格
  */
-- (instancetype)initWithFrame:(CGRect)frame dataSourceDelegate:(id)delegate beginPage:(NSInteger)beginPage titleBarLayout:(XDTitleBarLayout *)titleBarLayout style:(XDPagesViewStyle)style;
+- (instancetype)initWithFrame:(CGRect)frame config:(XDPagesConfig *)config style:(XDPagesPullStyle)style;
+
 /**
  缓存复用
-
  @param index 索引
  @return 缓存的子控制器
  */
 - (UIViewController *)dequeueReusablePageForIndex:(NSInteger)index;
 
 /**
- 定位到某页
-
+ 跳转到某页
  @param page 页面索引
  */
 - (void)jumpToPage:(NSInteger)page;
@@ -116,9 +86,8 @@ typedef NS_ENUM(NSInteger, XDPagesViewStyle) {
 
  /**
   刷新控制器列表，并定位到页
-
   @param page 刷新后定位到的页面索引
   */
  - (void)reloadataToPage:(NSInteger)page;
-
 @end
+
