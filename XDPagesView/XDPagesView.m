@@ -131,10 +131,10 @@ static NSString *const cellID = @"xdpagecell";
         [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
     }
 
-    if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetxChanged:)]) {
+    if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
         CGFloat offy = scrollView.contentOffset.y;
         offy = offy == [self headerVerticalCanChangedSpace] ? 0 : offy;
-        [self.delegate xd_pagesViewVerticalScrollOffsetxChanged:offy];
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:offy];
     }
 }
 

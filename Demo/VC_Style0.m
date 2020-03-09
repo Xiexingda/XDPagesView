@@ -77,7 +77,7 @@
 }
 
 //以下代理非必须实现
-- (void)xd_pagesViewVerticalScrollOffsetxChanged:(CGFloat)changedy {
+- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy {
     NSLog(@"竖直：%f",changedy);
 }
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {

@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
  竖直滚动监听
  @param changedy 竖直offset.y
  */
-- (void)xd_pagesViewVerticalScrollOffsetxChanged:(CGFloat)changedy;
+- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy;
 
 /**
  水平滚动监听
