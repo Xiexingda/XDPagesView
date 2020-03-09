@@ -27,7 +27,7 @@
 12. 支持对某个页面内或某个滚动控件的监听取消
 
 
-# 展示（DN视频 - 首页）
+# 展示
 通常用法：
 ![shows style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/shows.gif)
 更新页面：
@@ -111,5 +111,5 @@ _pagesView.pagesHeader = self.header;
 }
 ```
 
-# 其他炫酷用法请看demo或者跳转我的简书：
-[炫酷用法：简书](https://www.jianshu.com/p/b8aa3f98af78)
+# 其他炫酷用法请看demo或简书：
+[炫酷用法：点此跳转我的简书](https://www.jianshu.com/p/b8aa3f98af78)
