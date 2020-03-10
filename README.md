@@ -21,11 +21,13 @@ XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新
 
 # 展示
 顶部刷新：
-![show1.gif](https://github.com/Xiexingda/XDPagesView/blob/master/show1.gif)
+![show1 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show1.gif)
+
 列表刷新：
-![show2.gif](https://github.com/Xiexingda/XDPagesView/blob/master/show2.gif)
+![show2 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show2.gif)
+
 标题一体：
-<img src="https://github.com/Xiexingda/XDPagesView/blob/br/2.x/images/show3.gif" alt="show" />
+![show3 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show3.gif)
 
 # XDPagesView2.0使用方法
 ###### 引入头文件 XDPagesView 并添加代理 XDPagesViewDelegate
