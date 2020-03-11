@@ -22,9 +22,7 @@ XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新
 # 展示
 
 ![show1 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show1.gif)
-
 ![show2 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show2.gif)
-
 ![show3 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show3.gif)
 
 # XDPagesView2.0使用方法
