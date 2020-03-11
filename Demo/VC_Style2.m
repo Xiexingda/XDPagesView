@@ -36,6 +36,7 @@
           如果需要其他刷新，可以自行把XDPagesView.m内的mainTable移到.h文件中。（只可用来做刷新，不可更改其属性，frame等）
      */
     UIRefreshControl *downRefresh = [[UIRefreshControl alloc]init];
+    downRefresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"XDPagesView"];
     [downRefresh addTarget:self action:@selector(beginRefresh) forControlEvents:UIControlEventValueChanged];
     [_pages setRefreshControl:downRefresh];
     
