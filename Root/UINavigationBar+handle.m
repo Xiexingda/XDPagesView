@@ -64,8 +64,7 @@ static char backClear_key, lineClear_key, myNavView_key, hiddenBottom_key;
         CGFloat barHeight = self.bounds.size.height;
         CGRect barBounds = self.bounds;
         barBounds.size.height = statusHeight + barHeight;
-        self.myNavView = [[MyNavView alloc]initWithFrame:barBounds];
-        [self navBarBottomLineHidden:self.hiddenBottom];
+        [[self customNavBar]setFrame:barBounds];
     }
     
     self.myNavView.alpha = alpha;
@@ -85,9 +84,7 @@ static char backClear_key, lineClear_key, myNavView_key, hiddenBottom_key;
         
         CGRect barBounds = self.bounds;
         barBounds.size.height = statusHeight + barHeight;
-        
-        self.myNavView = [[MyNavView alloc]initWithFrame:barBounds];
-        [self navBarBottomLineHidden:self.hiddenBottom];
+        [[self customNavBar]setFrame:barBounds];
     }
     
     if (color) {
@@ -107,12 +104,7 @@ static char backClear_key, lineClear_key, myNavView_key, hiddenBottom_key;
     height = height < 0 ? 0 : height;
     
     [self clearSystemLayerIsOpaque:opaque];
-    
-    if (!self.myNavView) {
-        self.myNavView = [[MyNavView alloc]init];
-        [self navBarBottomLineHidden:self.hiddenBottom];
-    }
-    [self.myNavView setFrame:CGRectMake(0, 0, self.bounds.size.width, height)];
+    [[self customNavBar]setFrame:CGRectMake(0, 0, self.bounds.size.width, height)];
 
     //通过kvc找到系统导航栏背景层，把自定义层添加到背景层
     /* 亲测，系统背景层无法改变其属性 所以通过添加自定义层，改变自定义层上的属性去实现效果*/
@@ -120,23 +112,24 @@ static char backClear_key, lineClear_key, myNavView_key, hiddenBottom_key;
 }
 
 - (void)navBarBottomLineHidden:(BOOL)hidden {
+    if (self.hiddenBottom == hidden) return;
     self.hiddenBottom = hidden;
     //如果是自定义图层
-    if (self.myNavView && self.myNavView.hiddenBottomLine != hidden) {
+    [self customNavBar];
+    if (self.myNavView.hiddenBottomLine != hidden) {
         self.myNavView.hiddenBottomLine = hidden;
         
+    }
+    //如果是系统层
+    if (hidden) {
+        if (!self.lineClearImage) {
+            self.lineClearImage = [[UIImage alloc]init];
+            [self setShadowImage:self.lineClearImage];
+        }
     } else {
-        //如果是系统层
-        if (hidden) {
-            if (!self.lineClearImage) {
-                self.lineClearImage = [[UIImage alloc]init];
-                [self setShadowImage:self.lineClearImage];
-            }
-        } else {
-            if (self.lineClearImage) {
-                self.lineClearImage = nil;
-                [self setShadowImage:self.lineClearImage];
-            }
+        if (self.lineClearImage) {
+            self.lineClearImage = nil;
+            [self setShadowImage:self.lineClearImage];
         }
     }
 }
@@ -173,6 +166,13 @@ static char backClear_key, lineClear_key, myNavView_key, hiddenBottom_key;
         self.lineClearImage = [[UIImage alloc]init];
         [self setShadowImage:self.lineClearImage];
     }
+}
+
+- (MyNavView *)customNavBar {
+    if (!self.myNavView) {
+        self.myNavView = [[MyNavView alloc]init];
+    }
+    return self.myNavView;
 }
 @end
 

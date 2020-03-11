@@ -24,8 +24,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.navigationController.navigationBar navBarBottomLineHidden:YES];
     [self.navigationController.navigationBar navBarBackGroundColor:[UIColor clearColor] image:nil isOpaque:NO];
+    [self.navigationController.navigationBar navBarBottomLineHidden:YES];
 }
 
 - (void)viewDidLoad {
