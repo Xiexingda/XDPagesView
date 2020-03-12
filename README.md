@@ -66,7 +66,6 @@ _pagesView.pagesHeader = self.header;
 
     if (!pageVc) {
         //这里可以通过自定义控制器的init实现控制器传参，用于控制器的review
-        //注意:该子控制器中的必须包含一个可滚动的子view
         pageVc = [[Page alloc]initWithTag:index];
 
         /*
