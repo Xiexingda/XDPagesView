@@ -9,15 +9,13 @@
 /* Begin PBXBuildFile section */
 		8E12DE392401201000B32454 /* XDPagesValueLock.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E12DE382401201000B32454 /* XDPagesValueLock.m */; };
 		8E51FF9B23F5758A00DC5B2B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FF9A23F5758A00DC5B2B /* AppDelegate.m */; };
-		8E51FF9E23F5758A00DC5B2B /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FF9D23F5758A00DC5B2B /* SceneDelegate.m */; };
 		8E51FFA123F5758A00DC5B2B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FFA023F5758A00DC5B2B /* ViewController.m */; };
-		8E51FFA423F5758A00DC5B2B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E51FFA223F5758A00DC5B2B /* Main.storyboard */; };
 		8E51FFA623F5758C00DC5B2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E51FFA523F5758C00DC5B2B /* Assets.xcassets */; };
-		8E51FFA923F5758C00DC5B2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E51FFA723F5758C00DC5B2B /* LaunchScreen.storyboard */; };
 		8E51FFAC23F5758C00DC5B2B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FFAB23F5758C00DC5B2B /* main.m */; };
 		8E51FFB823F5769000DC5B2B /* XDPagesTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FFB723F5769000DC5B2B /* XDPagesTable.m */; };
 		8E51FFBB23F5771900DC5B2B /* XDPagesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FFBA23F5771900DC5B2B /* XDPagesView.m */; };
 		8E51FFBE23F5878800DC5B2B /* XDPagesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E51FFBD23F5878800DC5B2B /* XDPagesCell.m */; };
+		8E5F5D39241B1BEA001EE437 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E5F5D38241B1BEA001EE437 /* LaunchScreen.storyboard */; };
 		8EB1202C23F8E7880090A112 /* XDPagesMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EB1202B23F8E7880090A112 /* XDPagesMap.m */; };
 		8EB1202F23F8E7A10090A112 /* XDPagesNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EB1202E23F8E7A10090A112 /* XDPagesNode.m */; };
 		8EB1203223F8FAF40090A112 /* XDPagesCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EB1203123F8FAF40090A112 /* XDPagesCache.m */; };
@@ -49,13 +47,9 @@
 		8E51FF9623F5758A00DC5B2B /* XDPagesView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XDPagesView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E51FF9923F5758A00DC5B2B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8E51FF9A23F5758A00DC5B2B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8E51FF9C23F5758A00DC5B2B /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
-		8E51FF9D23F5758A00DC5B2B /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		8E51FF9F23F5758A00DC5B2B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		8E51FFA023F5758A00DC5B2B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		8E51FFA323F5758A00DC5B2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8E51FFA523F5758C00DC5B2B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8E51FFA823F5758C00DC5B2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8E51FFAA23F5758C00DC5B2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E51FFAB23F5758C00DC5B2B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8E51FFB623F5769000DC5B2B /* XDPagesTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XDPagesTable.h; sourceTree = "<group>"; };
@@ -64,6 +58,7 @@
 		8E51FFBA23F5771900DC5B2B /* XDPagesView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XDPagesView.m; sourceTree = "<group>"; };
 		8E51FFBC23F5878800DC5B2B /* XDPagesCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XDPagesCell.h; sourceTree = "<group>"; };
 		8E51FFBD23F5878800DC5B2B /* XDPagesCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XDPagesCell.m; sourceTree = "<group>"; };
+		8E5F5D38241B1BEA001EE437 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8EB1202A23F8E7880090A112 /* XDPagesMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XDPagesMap.h; sourceTree = "<group>"; };
 		8EB1202B23F8E7880090A112 /* XDPagesMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XDPagesMap.m; sourceTree = "<group>"; };
 		8EB1202D23F8E7A10090A112 /* XDPagesNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XDPagesNode.h; sourceTree = "<group>"; };
@@ -145,15 +140,12 @@
 			children = (
 				8E51FF9923F5758A00DC5B2B /* AppDelegate.h */,
 				8E51FF9A23F5758A00DC5B2B /* AppDelegate.m */,
-				8E51FF9C23F5758A00DC5B2B /* SceneDelegate.h */,
-				8E51FF9D23F5758A00DC5B2B /* SceneDelegate.m */,
 				8EC162E82414A2FB00DAA658 /* UINavigationBar+handle.h */,
 				8EC162E72414A2FB00DAA658 /* UINavigationBar+handle.m */,
 				8E51FF9F23F5758A00DC5B2B /* ViewController.h */,
 				8E51FFA023F5758A00DC5B2B /* ViewController.m */,
-				8E51FFA223F5758A00DC5B2B /* Main.storyboard */,
+				8E5F5D38241B1BEA001EE437 /* LaunchScreen.storyboard */,
 				8E51FFA523F5758C00DC5B2B /* Assets.xcassets */,
-				8E51FFA723F5758C00DC5B2B /* LaunchScreen.storyboard */,
 				8E51FFAA23F5758C00DC5B2B /* Info.plist */,
 				8E51FFAB23F5758C00DC5B2B /* main.m */,
 			);
@@ -289,10 +281,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8EC162D224132E9E00DAA658 /* xd_header.jpg in Resources */,
+				8E5F5D39241B1BEA001EE437 /* LaunchScreen.storyboard in Resources */,
 				8EC162D424132EF200DAA658 /* xd_back.jpg in Resources */,
-				8E51FFA923F5758C00DC5B2B /* LaunchScreen.storyboard in Resources */,
 				8E51FFA623F5758C00DC5B2B /* Assets.xcassets in Resources */,
-				8E51FFA423F5758A00DC5B2B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,7 +313,6 @@
 				8EC162EF2414D5A300DAA658 /* VC_Style2.m in Sources */,
 				8EC162C6240DEA6C00DAA658 /* Page_2.m in Sources */,
 				8E51FFAC23F5758C00DC5B2B /* main.m in Sources */,
-				8E51FF9E23F5758A00DC5B2B /* SceneDelegate.m in Sources */,
 				8EB1203223F8FAF40090A112 /* XDPagesCache.m in Sources */,
 				8EC162CC240DF06E00DAA658 /* Page_0.m in Sources */,
 				8EC162C9240DEB2500DAA658 /* Page_3.m in Sources */,
@@ -336,25 +326,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		8E51FFA223F5758A00DC5B2B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8E51FFA323F5758A00DC5B2B /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		8E51FFA723F5758C00DC5B2B /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8E51FFA823F5758C00DC5B2B /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		8E51FFAD23F5758C00DC5B2B /* Debug */ = {
@@ -470,7 +441,6 @@
 		8E51FFB023F5758C00DC5B2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6SALH2H58R;
@@ -489,7 +459,6 @@
 		8E51FFB123F5758C00DC5B2B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6SALH2H58R;
