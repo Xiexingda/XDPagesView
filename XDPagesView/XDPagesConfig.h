@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, SlideLineStyle) {
 @property (nonatomic, strong) UIColor *titleBarBackColor;           //标题栏背景色
 @property (nonatomic, strong) UIImage *titleBarBackImage;           //标题栏背景图
 @property (nonatomic, assign) BOOL titleBarHorizontalBounce;        //标题栏是否可以边界自由滑动（默认YES）
+@property (nonatomic, strong) UIView *customTitleBar;               //自定义标题栏
 
 @property (nonatomic, strong) UIColor *titleItemBackColor;          //标题背景颜色
 @property (nonatomic, strong) UIColor *titleItemBackHightlightColor;//标题选中时背景颜色

@@ -42,6 +42,7 @@
     _titleBarBackColor = [UIColor orangeColor];
     _titleBarBackImage = nil;
     _titleBarHorizontalBounce = YES;
+    _customTitleBar = nil;
     
     _titleItemBackColor = [UIColor clearColor];
     _titleItemBackHightlightColor = [UIColor clearColor];

@@ -59,7 +59,9 @@ static NSString *const cellID = @"xdpagecell";
 - (void)reloadataToPage:(NSInteger)page {
     __weak typeof(self)weakSelf = self;
     [self.mainCell reloadToPage:page finish:^(NSArray<NSString *> *titles) {
-        weakSelf.titleBar.refreshTitles(titles);
+        if (weakSelf.config.needTitleBar && !weakSelf.config.customTitleBar) {
+            weakSelf.titleBar.refreshTitles(titles);
+        }
     }];
 }
 
@@ -97,7 +99,7 @@ static NSString *const cellID = @"xdpagecell";
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    return _config.needTitleBar ? self.titleBar : nil;
+    return _config.needTitleBar ? (self.config.customTitleBar ? self.config.customTitleBar : self.titleBar) : nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -176,23 +178,27 @@ static NSString *const cellID = @"xdpagecell";
 }
 
 - (void)cell_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
-    self.titleBar.currentFocusIndex(pageIndex);
+    if (self.config.needTitleBar && !self.config.customTitleBar) {
+        self.titleBar.currentFocusIndex(pageIndex);
+    }
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewDidChangeToPageController:title:pageIndex:)]) {
         [self.delegate xd_pagesViewDidChangeToPageController:pageController title:pageTitle pageIndex:pageIndex];
     }
 }
 
-- (void)cell_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx {
-    if ([self.delegate respondsToSelector:@selector(xd_pagesViewHorizontalScrollOffsetxChanged:)]) {
-        [self.delegate xd_pagesViewHorizontalScrollOffsetxChanged:changedx];
+- (void)cell_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willShowPage:(NSInteger)willShowPage {
+    if ([self.delegate respondsToSelector:@selector(xd_pagesViewHorizontalScrollOffsetxChanged:currentPage:willShowPage:)]) {
+        [self.delegate xd_pagesViewHorizontalScrollOffsetxChanged:changedx currentPage:page willShowPage:willShowPage];
     }
 }
 
 - (void)cell_pagesViewSafeHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willShowPage:(NSInteger)willShowPage {
-    [self.titleBar pagesViewHorizontalScrollOffsetxChanged:changedx
-                                               currentPage:page
-                                                willToPage:willShowPage
-                                                     width:CGRectGetWidth(self.bounds)];
+    if (self.config.needTitleBar && !self.config.customTitleBar) {
+        [self.titleBar pagesViewHorizontalScrollOffsetxChanged:changedx
+                                                   currentPage:page
+                                                    willToPage:willShowPage
+                                                         width:CGRectGetWidth(self.bounds)];
+    }
 }
 
 - (void)cell_mainTableNeedLock:(BOOL)need offsety:(CGFloat)y {
@@ -249,6 +255,7 @@ static NSString *const cellID = @"xdpagecell";
 }
 
 - (XDPagesTitleBar *)titleBar {
+    if (!self.config.needTitleBar || self.config.customTitleBar)return nil;
     if (!_titleBar) {
         _titleBar = [[XDPagesTitleBar alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), _config.titleBarHeight) config:self.config titles:[self.delegate xd_pagesViewPageTitles]];
         _titleBar.delegate = self;

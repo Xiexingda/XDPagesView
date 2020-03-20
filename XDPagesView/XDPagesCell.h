@@ -45,10 +45,12 @@
 - (void)cell_pagesViewSafeHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willShowPage:(NSInteger)willShowPage;
 
 /**
-水平滚动监听
-@param changedx 水平offset.x
-*/
-- (void)cell_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx;
+ 水平滚动监听
+ @param changedx 水平offset.x
+ @param page 当前页
+ @param willShowPage 目标页
+ */
+- (void)cell_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willShowPage:(NSInteger)willShowPage;
 
 /**
  主table锁定消息传递

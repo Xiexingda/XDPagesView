@@ -51,8 +51,10 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
 /**
  水平滚动监听
  @param changedx 水平offset.x
+ @param currentPage 当前页
+ @param willShowPage 目标页
  */
-- (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx;
+- (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)currentPage willShowPage:(NSInteger)willShowPage;
 @end
 
 @interface XDPagesView : UIView

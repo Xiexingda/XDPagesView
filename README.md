@@ -6,7 +6,7 @@ XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新
 
 ## XDPagesView2.0支持的功能：
 1. 支持左右上下无卡顿的顺畅滚动
-2. 支持自定义header
+2. 支持自定义header 和 自定义标题栏
 3. 支持屏幕旋转
 4. 支持普通控制器
 5. 支持含有滚动控件的控制器
@@ -96,9 +96,9 @@ _pagesView.pagesHeader = self.header;
     NSLog(@"XDPagesView_Y:%f",changedy);
 }
 
-- (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx {
+- (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)currentPage willShowPage:(NSInteger)willShowPage {
     //水平变动
-    NSLog(@"XDPagesView_X:%f",changedx);
+    NSLog(@"横向滚动：%f->当前页：%ld->目标页：%ld",changedx,(long)currentPage,(long)willShowPage);
 }
 ```
 

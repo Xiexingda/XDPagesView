@@ -83,6 +83,9 @@
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
     NSLog(@"当前页面：%@",pageTitle);
 }
+- (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)currentPage willShowPage:(NSInteger)willShowPage {
+    NSLog(@"横向滚动：%f->当前页：%ld->目标页：%ld",changedx,(long)currentPage,(long)willShowPage);
+}
 
 #pragma mark -- getter
 - (UIImageView *)header {

@@ -43,9 +43,6 @@
     //是否可以边界自由滑动
     config.pagesHorizontalHounce = NO;
     
-    //标题栏和header一体化，只需要把该属性设置为YES
-    config.titleBarFitHeader = YES;
-    
     //是否需要标题栏
     config.needTitleBar = YES;
     
@@ -84,6 +81,9 @@
     
     //标题栏是否可以边界自由滑动
     config.titleBarHorizontalBounce = NO;
+    
+    //自定义标题栏(传入自定义的标题栏即可)
+//    config.customTitleBar = myTitleBar;
     
     //标题背景颜色
     config.titleItemBackColor = [UIColor clearColor];

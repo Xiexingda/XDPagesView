@@ -305,7 +305,7 @@
         [self pageAppearanceHandleByScrollXvalue:scrollView.contentOffset.x];
         [self.delegate cell_pagesViewSafeHorizontalScrollOffsetxChanged:scrollView.contentOffset.x currentPage:self.currentPage willShowPage:self.willShowPage];
     }
-    [self.delegate cell_pagesViewHorizontalScrollOffsetxChanged:scrollView.contentOffset.x];
+    [self.delegate cell_pagesViewHorizontalScrollOffsetxChanged:scrollView.contentOffset.x currentPage:self.currentPage willShowPage:self.willShowPage];
 }
 
 //以下代理用于判断pagesContainer是否在滚动状态
