@@ -134,9 +134,7 @@ static NSString *const cellID = @"xdpagecell";
     }
 
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-        CGFloat offy = scrollView.contentOffset.y;
-        offy = offy == [self headerVerticalCanChangedSpace] ? 0 : offy;
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:offy];
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:scrollView.contentOffset.y];
     }
 }
 
