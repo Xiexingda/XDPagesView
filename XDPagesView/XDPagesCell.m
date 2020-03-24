@@ -204,7 +204,7 @@
 - (void)pageIndexDidChangedToPage:(NSInteger)page {
     self.currentPage = page;
     //如果本页没有滚动控件就解锁所有滚动相关的锁定
-    if ([self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]].count == 0) {
+    if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {
         [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
         [self mainTableLock:NO offsety:0];
     }

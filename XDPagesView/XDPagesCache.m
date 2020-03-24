@@ -121,7 +121,7 @@
     if (node) {
         return node->scrollViews;
     }
-    return @[];
+    return nil;
 }
 
 //使缓存剩余个数
