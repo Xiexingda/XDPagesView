@@ -23,7 +23,9 @@ typedef NS_ENUM(NSInteger,LockValue) {
 }
 
 - (CGFloat)value:(CGFloat)value lock:(BOOL)lock {
+    
     LockValue c_lock = lock ? XD_Lock : XD_UnLock;
+    
     if (c_lock == XD_UnLock) {
         _value = value;
         _lock = 0;
@@ -31,6 +33,7 @@ typedef NS_ENUM(NSInteger,LockValue) {
         _lock = c_lock;
         _value = value;
     }
+    
     return _value;
 }
 @end

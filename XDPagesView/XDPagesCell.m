@@ -35,7 +35,9 @@
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier contentController:(UIViewController *)controller delegate:(id<XDPagesCellDelegate>)delegate pagesPullStyle:(NSInteger)pullStyle config:(XDPagesConfig *)config {
+    
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor clearColor];
@@ -53,11 +55,13 @@
         [self changeToPage:config.beginPage animate:NO];
         [self pageIndexDidChangedToPage:config.beginPage];
     }
+    
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
     if (!CGRectEqualToRect(self.contentView.bounds, self.pagesContainer.bounds)) {
         self.isRectChanging = YES;
         [self rectChanged];
@@ -67,23 +71,31 @@
 
 //互换通道，使内外都拿到彼此的对象去做响应控制
 - (UIScrollView *)exchangeChannelOfPagesContainerAndMainTable:(XDPagesTable *)mainTable {
+    
     self.mainTable = mainTable;
+    
     return self.pagesContainer;
 }
 
 //刷新并跳到对应页
 - (void)reloadToPage:(NSInteger)page finish:(void(^)(NSArray<NSString *>* titles))finish {
     [self clearKVO];
+    
     NSArray <NSString *>*old_titles = [self.pagesCache.titles copy];
+    
     [self configAllTitles];
+    
     //找到所有原标题组在新标题组中被去掉的标题，并删除对应的页
     [[XDPagesTools canceledTitlesInNewTitles:self.pagesCache.titles comparedOldTitles:old_titles] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self.pagesCache cancelPageForTitle:obj];
     }];
+    
     [self resetAllRect];
+    
     if (finish) {
         finish(self.pagesCache.titles);
     }
+    
     [self changeToPage:page animate:NO];
     [self scrollViewDidScroll:self.pagesContainer];
 }
@@ -94,6 +106,7 @@
         for (UIScrollView *child in [self.pagesCache scrollViewsForTitle:self.pagesCache.kvoTitles.lastObject]) {
             [child removeObserver:self forKeyPath:@"contentOffset"];
         }
+        
         [self.pagesCache.kvoTitles removeLastObject];
     }
 }
@@ -101,9 +114,11 @@
 //更换kvo监听
 - (void)setKVOForCurrentPage:(NSInteger)currentPage {
     [self clearKVO];
+    
     for (UIScrollView *child in [self.pagesCache scrollViewsForTitle:self.pagesCache.titles[currentPage]]) {
         [child addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
     }
+    
     [self.pagesCache.kvoTitles addObject:self.pagesCache.titles[currentPage]];
 }
 
@@ -111,6 +126,7 @@
 - (void)configAllTitles {
     NSArray *allTitles = [self.delegate cell_allTitles];
     self.pagesCache.titles = allTitles;
+    
     [self.pagesContainer setContentSize:CGSizeMake(allTitles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
     
 }
@@ -118,15 +134,19 @@
 //监听到rect变化，比如横屏
 - (void)rectChanged {
     if (!self.pagesCache.titles.count) return;
+    
     self.pagesContainer.bounds = self.contentView.bounds;
     [self.pagesContainer setContentSize:CGSizeMake(self.pagesCache.titles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
+    
     [self resetAllRect];
+    
     [self changeToPage:self.currentPage animate:NO];
 }
 
 //重置所有rect
 - (void)resetAllRect {
     if (!self.pagesCache.titles.count) return;
+    
     [self.pagesCache.titles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self setRectForPage:idx];
     }];
@@ -134,11 +154,14 @@
 
 //设置当前位置的view的frame
 - (void)setRectForPage:(NSInteger)page {
+    
     UIView *c_view = [self.pagesCache viewForTitle:self.pagesCache.titles[page]];
+    
     if (c_view) {
         CGRect c_frame = self.bounds;
         c_frame.origin.x = page*CGRectGetWidth(self.bounds);
         [c_view setFrame:c_frame];
+        
         if (![c_view isDescendantOfView:self.pagesContainer]) {
             [self.pagesContainer addSubview:c_view];
         }
@@ -148,8 +171,11 @@
 //添加页面处理
 - (void)handleForPage:(NSInteger)page {
     _willShowPage = page;
+    
     NSString *c_title = self.pagesCache.titles[page];
+    
     UIViewController *childController = [self.delegate cell_pagesViewChildControllerForIndex:page title:c_title];
+    
     if (childController == [self dequeueReusablePageForIndex:page]) {
         [self.pagesCache setPage:childController title:c_title];
     } else {
@@ -157,19 +183,25 @@
         [self.pagesCache setPage:childController title:c_title];
         [self setRectForPage:page];
     }
+    
     [self.pagesCache pageWillAppearHandle:!_isRectChanging];
 }
 
 - (void)changeToPage:(NSInteger)page animate:(BOOL)animate {
     NSAssert((page>=0&&page<self.pagesCache.titles.count), @"索引越界了");
+    
     animate = animate ? (ABS(self.currentPage - page) == 1 ? YES : NO) : animate;
+    
     [self handleForPage:page];
+    
     [self.pagesContainer setContentOffset:CGPointMake(page*self.bounds.size.width, 0) animated:animate];
 }
 
 - (UIViewController *)dequeueReusablePageForIndex:(NSInteger)index {
     NSAssert((index>=0&&index<self.pagesCache.titles.count), @"索引越界了");
+    
     NSString *title = self.pagesCache.titles[index];
+    
     return [self.pagesCache controllerForTitle:title];
 }
 
@@ -202,15 +234,20 @@
 
 //页面已经更换处理
 - (void)pageIndexDidChangedToPage:(NSInteger)page {
+    
     self.currentPage = page;
+    
     //如果本页没有滚动控件就解锁所有滚动相关的锁定
     if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {
         [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
         [self mainTableLock:NO offsety:0];
     }
+    
     [self.pagesCache pageDidApearHandle:!_isRectChanging];
+    
     NSString *c_title = self.pagesCache.titles[page];
     UIViewController *c_vc = [self.pagesCache controllerForTitle:c_title];
+    
     [self.delegate cell_pagesViewDidChangeToPageController:c_vc
                                                      title:c_title
                                                  pageIndex:page];
@@ -221,6 +258,7 @@
     if (@available(iOS 11.0, *)) {
         return -scrollView.adjustedContentInset.top;
     }
+    
     return -scrollView.contentInset.top;
 }
 
@@ -231,7 +269,9 @@
 
 //是否锁定子表偏移
 - (CGFloat)lockChildTableAtOffsety:(CGFloat)y needLock:(BOOL)need lock:(XDPagesValueLock *)lock {
+    
     CGFloat offsety = [lock value:y lock:need];
+    
     return offsety;
 }
 
@@ -244,11 +284,14 @@
 
 #pragma mark -- kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+   
     UIScrollView *kvo_scroll = (UIScrollView *)object;
+    
     if (_currentChild != kvo_scroll && kvo_scroll.isTracking) {
         [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
         _currentChild = kvo_scroll;
     }
+    
     if (_currentChild != kvo_scroll) return;
     
     CGFloat headerHeight = [self.delegate cell_headerVerticalCanChangedSpace];
@@ -259,9 +302,12 @@
         //向上滑动
         _childOffsetStatic = newPoint.y;
         _mainOffsetStatic = _mainTable.contentOffset.y;
+        
         if (self.mainTable.contentOffset.y < headerHeight) {
             if (newPoint.y >= 0) {
+                
                 [self mainTableLock:NO offsety:0];
+                
                 _childOffsetStatic = [self lockChildTableAtOffsety:(oldPoint.y > 0 ? oldPoint.y+ADJUSTVALUE : ADJUSTVALUE) needLock:YES lock:_childLock];
                 kvo_scroll.contentOffset = CGPointMake(0, _childOffsetStatic);
             } else {
@@ -273,15 +319,18 @@
         } else {
             [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
         }
-        
     } else if (oldPoint.y > newPoint.y && newPoint.y != _childOffsetStatic) {
         //向下滑动
         _childOffsetStatic = newPoint.y;
+        
         [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
+        
         if (newPoint.y >= ADJUSTVALUE) {
             [self mainTableLock:YES offsety:_mainOffsetStatic];
         } else {
+            
             [self mainTableLock:NO offsety:0];
+            
             if (self.pagePullStyle == 0) {
                 if (self.mainTable.contentOffset.y <= headerHeight) {
                     _childOffsetStatic = [self topOfScrollView:kvo_scroll];
@@ -302,9 +351,12 @@
 #pragma mark -- scroll_delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView.contentOffset.x >= 0 && scrollView.contentOffset.x <= scrollView.contentSize.width-scrollView.bounds.size.width) {
+        
         [self pageAppearanceHandleByScrollXvalue:scrollView.contentOffset.x];
+        
         [self.delegate cell_pagesViewSafeHorizontalScrollOffsetxChanged:scrollView.contentOffset.x currentPage:self.currentPage willShowPage:self.willShowPage];
     }
+    
     [self.delegate cell_pagesViewHorizontalScrollOffsetxChanged:scrollView.contentOffset.x currentPage:self.currentPage willShowPage:self.willShowPage];
 }
 
@@ -340,6 +392,7 @@
         _pagesContainer.scrollEnabled = _config.pagesSlideEnable;
         [XDPagesTools closeAdjustForScroll:_pagesContainer controller:nil];
     }
+    
     return _pagesContainer;
 }
 
@@ -347,6 +400,7 @@
     if (!_pagesCache) {
         _pagesCache = [XDPagesCache cache];
     }
+    
     return _pagesCache;
 }
 
@@ -362,7 +416,9 @@
 
 #pragma mark -- UI
 - (void)createUI {
+    
     [self.contentView addSubview:self.pagesContainer];
+    
     self.pagesContainer.translatesAutoresizingMaskIntoConstraints = NO;
     //上
     NSLayoutConstraint *relat_top = [NSLayoutConstraint

@@ -20,17 +20,21 @@
 @end
 @implementation XDPagesLayout
 - (instancetype)init {
+    
     self = [super init];
+    
     if (self) {
         _item_x = 0;
         _item_height = 0;
         _attributesArray = @[].mutableCopy;
     }
+    
     return self;
 }
 
 - (void)prepareLayout {
     [super prepareLayout];
+    
     _item_x = 0;
     _item_height = 0;
     [self.attributesArray removeAllObjects];
@@ -43,6 +47,7 @@
         UICollectionViewLayoutAttributes *item_attributes = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         [self.attributesArray addObject:item_attributes];
     }
+    
     self.allAttributes = [self.attributesArray copy];
 }
 

@@ -32,15 +32,20 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 
 @implementation XDPagesTitle
 - (instancetype)initWithFrame:(CGRect)frame {
+    
     self = [super initWithFrame:frame];
+    
     if (self) {
         [self creatItem];
     }
+    
     return self;
 }
 
 - (void)configTitleByTitle:(NSString *)title focusIdx:(NSInteger)fidx config:(XDPagesConfig *)config indexPath:(NSIndexPath *)indexPath {
+    
     self.title.text = title;
+    
     if (fidx == indexPath.row) {
         //当前选中
         self.backImage.backgroundColor = config.titleItemBackHightlightColor;
@@ -48,6 +53,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         self.title.backgroundColor = config.titleItemBackHightlightColor;
         self.title.font = [UIFont systemFontOfSize:config.titleHightlightFont];
         self.title.textColor = config.titleTextHightlightColor;
+    
     } else {
         //未选中
         self.backImage.backgroundColor = config.titleItemBackColor;
@@ -62,12 +68,14 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     //标题渐变
     CGFloat d_value = config.titleHightlightFont-config.titleFont;
     self.title.font = [UIFont systemFontOfSize:config.titleFont+d_value*percent];
+    
     //标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];
     XDRGB w_RGB = [self getRGBValueFromColor:config.titleTextHightlightColor];
     CGFloat g_red = c_RGB.red+(w_RGB.red-c_RGB.red)*percent;
     CGFloat g_green = c_RGB.green+(w_RGB.green-c_RGB.green)*percent;
     CGFloat g_blue = c_RGB.blue+(w_RGB.blue-c_RGB.blue)*percent;
+    
     self.title.textColor = [[UIColor alloc]initWithRed:g_red green:g_green blue:g_blue alpha:1];
 }
 
@@ -75,22 +83,27 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     //标题渐变
     CGFloat d_value = config.titleHightlightFont-config.titleFont;
     self.title.font = [UIFont systemFontOfSize:config.titleHightlightFont-d_value*percent];
+    
     //标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];
     XDRGB w_RGB = [self getRGBValueFromColor:config.titleTextHightlightColor];
     CGFloat g_red = w_RGB.red-(w_RGB.red-c_RGB.red)*percent;
     CGFloat g_green = w_RGB.green-(w_RGB.green-c_RGB.green)*percent;
     CGFloat g_blue = w_RGB.blue-(w_RGB.blue-c_RGB.blue)*percent;
+   
     self.title.textColor = [[UIColor alloc]initWithRed:g_red green:g_green blue:g_blue alpha:1];
 }
 
 //颜色RGB值
 - (XDRGB)getRGBValueFromColor:(UIColor *)color {
+    
     CGFloat red   = 0.0;
     CGFloat green = 0.0;
     CGFloat blue  = 0.0;
     CGFloat alpha = 1.0;
+    
     [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
     return XDRGBMake(red, green, blue, alpha);
 }
 
@@ -102,6 +115,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         _title.textAlignment = NSTextAlignmentCenter;
         _title.textAlignment = NSTextAlignmentCenter;
     }
+    
     return _title;
 }
 
@@ -111,13 +125,16 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         _backImage.contentMode = UIViewContentModeScaleAspectFill;
         _backImage.userInteractionEnabled = YES;
     }
+    
     return _backImage;
 }
 
 #pragma mark -- UI
 - (void)creatItem {
+    
     [self.contentView addSubview:self.backImage];
     [self.contentView addSubview:self.title];
+    
     self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
     self.title.translatesAutoresizingMaskIntoConstraints = NO;
     

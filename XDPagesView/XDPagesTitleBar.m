@@ -33,18 +33,23 @@
 
 @implementation XDPagesTitleBar
 - (instancetype)initWithFrame:(CGRect)frame config:(XDPagesConfig *)config titles:(NSArray<NSString *> *)titles {
+    
     self = [super initWithFrame:frame];
+    
     if (self) {
         self.config = config;
         self.titles = titles;
         [self creatBar];
     }
+    
     return self;
 }
 
 - (void)pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willToPage:(NSInteger)willToPage width:(CGFloat)width {
+    
     //保持百分比为正数
     CGFloat percent = fabs((changedx-page*width)/width);
+    
     if (_config.needTitleBarSlideLine) {
         //下划线滑动效果
         if (_config.titleBarSlideLineStyle == XDSlideLine_translation) {
@@ -62,7 +67,7 @@
                                             willPage:willToPage
                                              percent:percent
                                                ratio:_config.titleBarSlideLineWidthRatio];
-            
+
         } else {
             [self.effect slideLineNoneEffectForView:self.slideLine
                                          attributes:_layout.allAttributes
@@ -76,8 +81,10 @@
     if (_config.titleGradual && page != willToPage) {
         NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
         NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
+        
         XDPagesTitle *c_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:c_idx];
         XDPagesTitle *w_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:w_idx];
+        
         [c_title gradualDownByConfig:_config percent:percent];
         [w_title gradualUpByConfig:_config percent:percent];
     }
@@ -102,14 +109,19 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
     XDPagesTitle *title = [collectionView dequeueReusableCellWithReuseIdentifier:@"title" forIndexPath:indexPath];
+    
     [title configTitleByTitle:_titles[indexPath.row] focusIdx:_focusIndex config:_config indexPath:indexPath];
+    
     return title;
 }
 
 #pragma mark -- XDPagesLayouDelegate
 - (CGSize)xd_itemLayoutSizeAtIndex:(NSIndexPath *)indexPath {
+    
     CGFloat c_width = _config.titleFlex ? ([XDPagesTools adjustItemWidthByString:_titles[indexPath.row] font:_config.titleFont baseSize:CGSizeMake(MAXFLOAT, _config.titleFont+2)]+30) : _config.titleWidth;
+    
     return CGSizeMake(c_width, _config.titleBarHeight-(self.config.needTitleBarBottomLine ? 0.5 : 0));
 }
 
@@ -118,6 +130,7 @@
     if (!_effect) {
         _effect = [[XDSlideEffect alloc]init];
     }
+    
     return _effect;
 }
 
@@ -128,6 +141,7 @@
         _backImage.backgroundColor = self.config.titleBarBackColor;
         _backImage.clipsToBounds = YES;
     }
+    
     return _backImage;
 }
 
@@ -145,6 +159,7 @@
         _titleBar.bounces = _config.titleBarHorizontalBounce;
         [_titleBar registerClass:XDPagesTitle.class forCellWithReuseIdentifier:@"title"];
     }
+    
     return _titleBar;
 }
 
@@ -155,6 +170,7 @@
         _rightBtn.clipsToBounds = YES;
         _rightBtn.hidden = !self.config.needRightBtn;
     }
+    
     return _rightBtn;
 }
 
@@ -164,6 +180,7 @@
         _bottomLine.backgroundColor = _config.titleBarBottomLineColor;
         _bottomLine.hidden = !_config.needTitleBarBottomLine;
     }
+    
     return _bottomLine;
 }
 
@@ -178,6 +195,7 @@
         _slideLine.backgroundColor = _config.titleBarSlideLineColor;
         _slideLine.hidden = !_config.needTitleBarSlideLine;
     }
+    
     return _slideLine;
 }
 
@@ -201,13 +219,16 @@
 
 #pragma mark -- UI
 - (void)creatBar {
+    
     [self addSubview:self.backImage];
     [self addSubview:self.titleBar];
     [self addSubview:self.rightBtn];
     [self addSubview:self.bottomLine];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.titleBar addSubview:self.slideLine];
     });
+    
     self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
     self.titleBar.translatesAutoresizingMaskIntoConstraints = NO;
     self.rightBtn.translatesAutoresizingMaskIntoConstraints = NO;
@@ -362,8 +383,11 @@
     [NSLayoutConstraint activateConstraints:@[bottom_bottom, bottom_left, bottom_right, bottom_height]];
     
     if (_config.needRightBtn) {
+        
         [self layoutIfNeeded];
+        
         [_config.rightBtn setFrame:CGRectMake(0, 0, _config.rightBtnSize.width, _config.rightBtnSize.height-(self.config.needTitleBarBottomLine ? 0.5 : 0))];
+        
         if (![self.rightBtn isDescendantOfView:_config.rightBtn]) {
             [self.rightBtn addSubview:_config.rightBtn];
         }

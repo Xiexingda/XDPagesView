@@ -16,6 +16,7 @@
             return (UIViewController *)nextResponder;
         }
     }
+    
     return nil;
 }
 
@@ -55,10 +56,13 @@
 }
 
 + (NSArray<NSString *> *)canceledTitlesInNewTitles:(NSArray<NSString *> *)newTitles comparedOldTitles:(NSArray<NSString *> *)oldTitles {
+    
     NSMutableSet *oldSet = [NSMutableSet setWithArray:oldTitles];
     NSMutableSet *newSet = [NSMutableSet setWithArray:newTitles];
+    
     [newSet intersectSet:oldSet];
     [oldSet minusSet:newSet];
+    
     return oldSet.allObjects;
 }
 @end
