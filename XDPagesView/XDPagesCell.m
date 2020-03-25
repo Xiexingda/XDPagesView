@@ -50,7 +50,7 @@
         self.pagesCache.maxCacheCount = config.maxCacheCount;
         _willShowPage = config.beginPage;
         _currentPage = config.beginPage;
-
+ 
         [self createUI];
         [self changeToPage:config.beginPage animate:NO];
         [self pageIndexDidChangedToPage:config.beginPage];
