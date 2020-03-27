@@ -10,8 +10,6 @@
 #import "XDPagesTable.h"
 #import "XDPagesConfig.h"
 
-#define ADJUSTVALUE 0.5
-
 @protocol XDPagesCellDelegate <NSObject>
 
 /**
@@ -75,13 +73,15 @@
  @param delegate 代理
  @param pullStyle 下拉风格
  @param config 配置
+ @param adjustValue 调整值
  */
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier
             contentController:(UIViewController *)controller
                      delegate:(id<XDPagesCellDelegate>)delegate
                pagesPullStyle:(NSInteger)pullStyle
-                       config:(XDPagesConfig *)config;
+                       config:(XDPagesConfig *)config
+                  adjustValue:(CGFloat)adjustValue;
 
 /**
  内外视图交换管道

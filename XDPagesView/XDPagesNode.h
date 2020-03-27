@@ -11,13 +11,13 @@
 
 @interface XDPagesNode : NSObject {
     @package
-    NSString *key;                          //key
-    UIViewController *controller;           //控制器
-    UIView *view;                           //控制器中的子view
-    NSArray <UIScrollView *>*scrollViews;   //每页需要监控的所有滚动单元
-    NSInteger right;                        //加权
-    __weak XDPagesNode *pre;        //上一个
-    __weak XDPagesNode *next;       //下一个
+    NSString *key;                          // key
+    UIViewController *controller;           // 控制器
+    UIView *view;                           // 控制器中的子view
+    NSArray <UIScrollView *>*scrollViews;   // 每页需要监控的所有滚动单元
+    NSInteger right;                        // 加权
+    __weak XDPagesNode *pre;        // 上一个
+    __weak XDPagesNode *next;       // 下一个
 }
 + (instancetype)node;
 

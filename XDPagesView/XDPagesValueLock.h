@@ -11,6 +11,6 @@
 
 @interface XDPagesValueLock : NSObject
 + (instancetype)lock;
-//锁定数值
+// 锁定数值
 - (CGFloat)value:(CGFloat)value lock:(BOOL)lock;
 @end

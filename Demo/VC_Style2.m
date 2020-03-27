@@ -40,7 +40,7 @@
     [downRefresh addTarget:self action:@selector(beginRefresh) forControlEvents:UIControlEventValueChanged];
     [_pages setRefreshControl:downRefresh];
     
-    //不能有重复标题
+    // 不能有重复标题
     _titles = @[@"普通视图",@"多列表组合",@"单列表",@"网页"];
 }
 
@@ -48,25 +48,25 @@
     NSLog(@"顶部下拉刷新");
     __weak typeof(self) weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //停止刷新
+        // 停止刷新
         [weakSelf.pages.refreshControl endRefreshing];
     });
 }
 
 #pragma mark -- XDPagesViewDelegate
-//必须实现以下两个代理
+// 必须实现以下两个代理
 - (NSArray<NSString *> *)xd_pagesViewPageTitles {
     return _titles;
 }
 
 - (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title {
     
-    //缓存复用控制器
+    // 缓存复用控制器
     UIViewController *vc = [pagesView dequeueReusablePageForIndex:index];
     
     if (!vc) {
         if ([title isEqualToString:@"普通视图"]) {
-            //传值方式，可以通过重写init来实现传值
+            // 传值方式，可以通过重写init来实现传值
             Page_0 *page = [[Page_0 alloc]initByInfo:@"普通视图"];
             vc = page;
             

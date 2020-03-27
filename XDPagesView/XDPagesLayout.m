@@ -9,13 +9,13 @@
 #import "XDPagesLayout.h"
 
 @interface XDPagesLayout ()
-//用来记录X值
+// 用来记录X值
 @property (nonatomic, assign) CGFloat item_x;
 
-//用来记录高
+// 用来记录高
 @property (nonatomic, assign) CGFloat item_height;
 
-//保存每一个item的attributes
+// 保存每一个item的attributes
 @property (nonatomic, strong) NSMutableArray <UICollectionViewLayoutAttributes *>*attributesArray;
 @end
 @implementation XDPagesLayout
@@ -39,10 +39,10 @@
     _item_height = 0;
     [self.attributesArray removeAllObjects];
     
-    //获取Bar中cell总个数
+    // 获取Bar中cell总个数
     NSInteger items_insection_0 = [self.collectionView numberOfItemsInSection:0];
     
-    //为每一个cell 创建一个依赖
+    // 为每一个cell 创建一个依赖
     for (int i = 0; i < items_insection_0; i ++) {
         UICollectionViewLayoutAttributes *item_attributes = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         [self.attributesArray addObject:item_attributes];
@@ -52,13 +52,13 @@
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
-    //根据indexPath获取item的attributes
+    // 根据indexPath获取item的attributes
     UICollectionViewLayoutAttributes *item_attribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     
-    //从外面获取每个cell的高度
+    // 从外面获取每个cell的高度
     CGSize item_size = [self.delegate xd_itemLayoutSizeAtIndex:indexPath];
 
-    //设置attributes
+    // 设置attributes
     item_attribute.frame = CGRectMake(_item_x, 0, item_size.width, item_size.height);
     _item_x += item_size.width;
     _item_height = item_size.height;

@@ -47,12 +47,14 @@
 
 - (void)pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willToPage:(NSInteger)willToPage width:(CGFloat)width {
     
-    //保持百分比为正数
+    // 保持百分比为正数
     CGFloat percent = fabs((changedx-page*width)/width);
     
     if (_config.needTitleBarSlideLine) {
-        //下划线滑动效果
+        
+        // 下划线滑动效果
         if (_config.titleBarSlideLineStyle == XDSlideLine_translation) {
+            
             [self.effect slideLineTransEffectForView:self.slideLine
                                           attributes:_layout.allAttributes
                                          currentPage:page
@@ -61,6 +63,7 @@
                                                ratio:_config.titleBarSlideLineWidthRatio];
             
         } else if (_config.titleBarSlideLineStyle == XDSlideLine_Scale) {
+            
             [self.effect slideLineScaleEffectForView:self.slideLine
                                           attributes:_layout.allAttributes
                                          currentPage:page
@@ -69,6 +72,7 @@
                                                ratio:_config.titleBarSlideLineWidthRatio];
 
         } else {
+            
             [self.effect slideLineNoneEffectForView:self.slideLine
                                          attributes:_layout.allAttributes
                                         currentPage:page
@@ -77,8 +81,9 @@
         }
     }
     
-    //标题渐变
+    // 标题渐变
     if (_config.titleGradual && page != willToPage) {
+        
         NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
         NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
         
@@ -234,7 +239,7 @@
     self.rightBtn.translatesAutoresizingMaskIntoConstraints = NO;
     self.bottomLine.translatesAutoresizingMaskIntoConstraints = NO;
     
-    //背景
+    // 背景
     NSLayoutConstraint *back_top = [NSLayoutConstraint
                                     constraintWithItem:self.backImage
                                     attribute:NSLayoutAttributeTop
@@ -269,7 +274,7 @@
                                     constant:0];
     [NSLayoutConstraint activateConstraints:@[back_top, back_lef, back_btm, back_rit]];
     
-    //标题栏
+    // 标题栏
     NSLayoutConstraint *title_top = [NSLayoutConstraint
                                      constraintWithItem:self.titleBar
                                      attribute:NSLayoutAttributeTop
@@ -304,7 +309,7 @@
                                      constant:0];
     [NSLayoutConstraint activateConstraints:@[title_top, title_led, title_btm, title_tal]];
     
-    //右按钮
+    // 右按钮
     NSLayoutConstraint *btn_top = [NSLayoutConstraint
                                    constraintWithItem:self.rightBtn
                                    attribute:NSLayoutAttributeTop
@@ -347,7 +352,7 @@
                                      constant:(self.config.needRightBtn ? self.config.rightBtnSize.width : 0)];
     [NSLayoutConstraint activateConstraints:@[btn_top, btn_led, btn_btm, btn_tal, btn_width]];
     
-    //底线
+    // 底线
     NSLayoutConstraint *bottom_bottom = [NSLayoutConstraint
                                          constraintWithItem:self.bottomLine
                                          attribute:NSLayoutAttributeBottom

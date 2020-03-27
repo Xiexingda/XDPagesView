@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface XDPagesTable : UITableView
-@property (nonatomic, assign) BOOL gesturePublic;//是否要共享手势
+@property (nonatomic, assign) BOOL gesturePublic;// 是否要共享手势
 @end

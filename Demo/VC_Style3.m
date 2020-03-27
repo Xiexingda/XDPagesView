@@ -22,26 +22,26 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor grayColor];
     
-    //子列表下拉 XDPagesPullOnCenter
+    // 子列表下拉 XDPagesPullOnCenter
     _pages = [[XDPagesView alloc]initWithFrame:self.view.bounds config:nil style:XDPagesPullOnCenter];
     _pages.delegate = self;
     _pages.pagesHeader = self.header;
     [self.view addSubview:_pages];
     [self layoutPage];
     
-    //不能有重复标题
+    // 不能有重复标题
     _titles = @[@"列表刷新_1",@"列表刷新_2",@"列表刷新_3",@"列表刷新_4"];
 }
 
 #pragma mark -- XDPagesViewDelegate
-//必须实现以下两个代理
+// 必须实现以下两个代理
 - (NSArray<NSString *> *)xd_pagesViewPageTitles {
     return _titles;
 }
 
 - (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title {
     
-    //缓存复用控制器
+    // 缓存复用控制器
     UIViewController *vc = [pagesView dequeueReusablePageForIndex:index];
     
     if (!vc) {
@@ -51,7 +51,7 @@
     return vc;
 }
 
-//以下代理非必须实现
+// 以下代理非必须实现
 - (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy {
     NSLog(@"竖直：%f",changedy);
 }

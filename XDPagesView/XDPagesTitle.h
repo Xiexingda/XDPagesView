@@ -17,8 +17,8 @@
 /// @param indexPath 索引
 - (void)configTitleByTitle:(NSString *)title focusIdx:(NSInteger)fidx config:(XDPagesConfig *)config indexPath:(NSIndexPath *)indexPath;
 
-//渐变上升
+// 渐变上升
 - (void)gradualUpByConfig:(XDPagesConfig *)config percent:(CGFloat)percent;
-//渐变下降
+// 渐变下降
 - (void)gradualDownByConfig:(XDPagesConfig *)config percent:(CGFloat)percent;
 @end

@@ -24,19 +24,19 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor grayColor];
     
-    //之前一直没有设置config,这里需要设置一下，这是个很强大的类
+    // 之前一直没有设置config,这里需要设置一下，这是个很强大的类
     XDPagesConfig *config = [XDPagesConfig config];
-    //标题栏和header一体化，只需要把该属性设置为YES
+    // 标题栏和header一体化，只需要把该属性设置为YES
     config.titleBarFitHeader = YES;
     
-    //顶部下拉 XDPagesPullOnTop
+    // 顶部下拉 XDPagesPullOnTop
     _pages = [[XDPagesView alloc]initWithFrame:self.view.bounds config:config style:XDPagesPullOnTop];
     _pages.delegate = self;
     _pages.pagesHeader = self.header;
     [self.view addSubview:_pages];
     [self layoutPage];
     
-    //不能有重复标题
+    // 不能有重复标题
     _titles = @[@"普通视图",@"多列表组合",@"单列表",@"网页"];
 }
 
@@ -49,19 +49,19 @@
 }
 
 #pragma mark -- XDPagesViewDelegate
-//必须实现以下两个代理
+// 必须实现以下两个代理
 - (NSArray<NSString *> *)xd_pagesViewPageTitles {
     return _titles;
 }
 
 - (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title {
     
-    //缓存复用控制器
+    // 缓存复用控制器
     UIViewController *vc = [pagesView dequeueReusablePageForIndex:index];
     
     if (!vc) {
         if ([title isEqualToString:@"普通视图"]) {
-            //传值方式，可以通过重写init来实现传值
+            // 传值方式，可以通过重写init来实现传值
             Page_0 *page = [[Page_0 alloc]initByInfo:@"普通视图"];
             vc = page;
             
@@ -81,7 +81,7 @@
     return vc;
 }
 
-//以下代理非必须实现
+// 以下代理非必须实现
 - (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy {
     NSLog(@"竖直：%f",changedy);
 }

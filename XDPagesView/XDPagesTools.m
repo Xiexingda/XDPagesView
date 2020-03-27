@@ -20,7 +20,7 @@
     return nil;
 }
 
-//关闭自适应
+// 关闭自适应
 + (void)closeAdjustForScroll:(UIScrollView *)scrollView controller:(UIViewController *)controller {
     if (@available(iOS 11.0, *)) {
         if (scrollView) {
@@ -40,7 +40,7 @@
     }
 }
 
-//由于float值是非精确的，设置粒度为0.5
+// 由于float值是非精确的，设置粒度为0.5
 + (CGFloat)adjustFloatValue:(CGFloat)value {
     return (floor(value)+ceil(value))/2.0;
 }

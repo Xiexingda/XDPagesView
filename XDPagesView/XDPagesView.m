@@ -25,6 +25,7 @@ static NSString *const cellID = @"xdpagecell";
 @property (nonatomic, strong) XDPagesTitleBar  *titleBar;
 @property (nonatomic, strong) XDPagesConfig    *config;
 @property (nonatomic, assign) XDPagesPullStyle  pagesPullStyle;
+@property (nonatomic, assign) CGFloat const     adjustValue;    // 调整值
 @end
 
 @implementation XDPagesView
@@ -38,9 +39,16 @@ static NSString *const cellID = @"xdpagecell";
     
     if (self) {
         self.backgroundColor = [UIColor clearColor];
+        
+        // 关键点，计算出不同分辨率下的滚动粒度，用于减小滚动衰减，实现无障碍滚动
+        self.adjustValue = 1.0/[UIScreen mainScreen].scale;
+        
         self.mainLock = [XDPagesValueLock lock];
+        
         self.config = config ? config : [XDPagesConfig config];
+        
         _pagesPullStyle = style;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self createUI];
         });
@@ -70,22 +78,22 @@ static NSString *const cellID = @"xdpagecell";
     }];
 }
 
-//标题可变动高度
+// 标题可变动高度
 - (CGFloat)headerVerticalCanChangedSpace {
     
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
-    return CGRectGetHeight(self.customHeader.bounds)-margin-ADJUSTVALUE;
+    return CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
 }
 
-//当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
+// 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
 - (void)pagesContainerScrollEnable:(BOOL)enabel {
     if (self.pagesContainer && self.pagesContainer.scrollEnabled != enabel && self.config.pagesSlideEnable) {
         self.pagesContainer.scrollEnabled = enabel;
     }
 }
 
-//是否锁定主列表偏移
+// 是否锁定主列表偏移
 - (CGFloat)lockMainTableAtOffsety:(CGFloat)y needLock:(BOOL)need {
     
     CGFloat offsety = [_mainLock value:y lock:need];
@@ -123,7 +131,8 @@ static NSString *const cellID = @"xdpagecell";
                                     contentController:[XDPagesTools viewControllerForView:self]
                                              delegate:self
                                        pagesPullStyle:self.pagesPullStyle
-                                               config:self.config];
+                                               config:self.config
+                                          adjustValue:self.adjustValue];
         
         self.pagesContainer = [_mainCell exchangeChannelOfPagesContainerAndMainTable:self.mainTable];
     }
@@ -141,21 +150,24 @@ static NSString *const cellID = @"xdpagecell";
         
         CGFloat offsety = [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:YES];
         
-        if (offsety >= -ADJUSTVALUE) {
-            scrollView.contentOffset = CGPointMake(0, offsety);
-        } else {
-            [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
-        }
+        scrollView.contentOffset = CGPointMake(0, offsety);
+
     } else {
         [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
     }
 
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:scrollView.contentOffset.y];
+        
+        // 因为有一个滚动粒度的调整，所以需要忽略掉这个调整
+        CGFloat customOffsety = scrollView.contentOffset.y;
+        CGFloat dValue = customOffsety-self.adjustValue;
+        customOffsety = dValue >= 0 ? (dValue <= FLT_MIN ? 0 : customOffsety) : customOffsety;
+        
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:customOffsety];
     }
 }
 
-//以下代理用于判断mainTable是否在滚动状态
+// 以下代理用于判断mainTable是否在滚动状态
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self pagesContainerScrollEnable:NO];
 }
@@ -293,7 +305,7 @@ static NSString *const cellID = @"xdpagecell";
     [self addSubview:self.mainTable];
     
     self.mainTable.translatesAutoresizingMaskIntoConstraints = NO;
-    //上
+    // 上
     NSLayoutConstraint *relat_top = [NSLayoutConstraint
                                      constraintWithItem:self.mainTable
                                      attribute:NSLayoutAttributeTop
@@ -301,8 +313,8 @@ static NSString *const cellID = @"xdpagecell";
                                      toItem:self
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:-ADJUSTVALUE];
-    //左
+                                     constant:-self.adjustValue];
+    // 左
     NSLayoutConstraint *relat_led = [NSLayoutConstraint
                                      constraintWithItem:self.mainTable
                                      attribute:NSLayoutAttributeLeading
@@ -311,7 +323,7 @@ static NSString *const cellID = @"xdpagecell";
                                      attribute:NSLayoutAttributeLeading
                                      multiplier:1
                                      constant:0];
-    //下
+    // 下
     NSLayoutConstraint *relat_btm = [NSLayoutConstraint
                                      constraintWithItem:self.mainTable
                                      attribute:NSLayoutAttributeBottom
@@ -320,7 +332,7 @@ static NSString *const cellID = @"xdpagecell";
                                      attribute:NSLayoutAttributeBottom
                                      multiplier:1
                                      constant:0];
-    //右
+    // 右
     NSLayoutConstraint *relat_tal = [NSLayoutConstraint
                                      constraintWithItem:self.mainTable
                                      attribute:NSLayoutAttributeTrailing
@@ -329,12 +341,13 @@ static NSString *const cellID = @"xdpagecell";
                                      attribute:NSLayoutAttributeTrailing
                                      multiplier:1
                                      constant:0];
-    //约束
+    // 约束
     [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_btm, relat_tal]];
 }
 
-//对header进行重新包装用于内部
+// 对header进行重新包装用于内部
 - (UIView *)customHeader:(UIView *)header {
+    
     if (!header) {
         header = [[UIView alloc]initWithFrame:CGRectZero];
         header.userInteractionEnabled = YES;
@@ -379,7 +392,7 @@ static NSString *const cellID = @"xdpagecell";
                                      toItem:customHeader
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:ADJUSTVALUE];
+                                     constant:-self.adjustValue];
     NSLayoutConstraint *relat_led = [NSLayoutConstraint
                                      constraintWithItem:header
                                      attribute:NSLayoutAttributeLeading
@@ -398,11 +411,11 @@ static NSString *const cellID = @"xdpagecell";
                                      constant:0];
     [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_tal]];
     
-    CGFloat headerHeight = CGRectGetHeight(header.bounds)+ADJUSTVALUE;
+    CGFloat headerHeight = CGRectGetHeight(header.bounds)+self.adjustValue;
     customHeader.frame = CGRectMake(0,
                                     0,
                                     CGRectGetWidth(self.bounds),
-                                    [XDPagesTools adjustFloatValue:headerHeight]);
+                                    headerHeight);
     
     self.customHeader = customHeader;
     
@@ -410,7 +423,7 @@ static NSString *const cellID = @"xdpagecell";
 }
 
 #pragma mark -- sys_method
-//利用hittest在手势进入之前，判断手势不在container中时就关闭手势共享，目的：防止header中有滚动控件，造成共同滚动
+// 利用hittest在手势进入之前，判断手势不在container中时就关闭手势共享，目的：防止header中有滚动控件，造成共同滚动
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     
     UIView *view = [super hitTest:point withEvent:event];
@@ -418,14 +431,12 @@ static NSString *const cellID = @"xdpagecell";
     CGPoint relative_point = [self.pagesContainer convertPoint:point fromView:self];
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
+        
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
+        
         [self.mainCell setCurrentMainTalbelOffsety:_mainTable.contentOffset.y];
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
-    }
-    
-    if (_mainTable.contentOffset.y >= [self headerVerticalCanChangedSpace]) {
-        [self scrollViewDidScroll:_mainTable];
     }
     
     return view;
