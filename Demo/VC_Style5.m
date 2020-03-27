@@ -113,10 +113,10 @@
     config.titleTextHightlightColor = [UIColor orangeColor];
     
     // 标题字号大小(默认16)
-    config.titleFont = 16;
+    config.titleFont = [UIFont systemFontOfSize:16];
     
     // 选中后的字号大小(默认18)
-    config.titleHightlightFont = 18;
+    config.titleHightlightFont = [UIFont systemFontOfSize:18];
     
     
     // ************************************设置右边按钮**********************************

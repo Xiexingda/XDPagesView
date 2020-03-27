@@ -54,8 +54,8 @@
     _titleWidth = 100;
     _titleTextColor = [UIColor grayColor];
     _titleTextHightlightColor = [UIColor greenColor];
-    _titleFont = 16;
-    _titleHightlightFont = 18;
+    _titleFont = [UIFont systemFontOfSize:16];
+    _titleHightlightFont = [UIFont systemFontOfSize:18];
     
     _needRightBtn = NO;
     _rightBtnSize = CGSizeMake(40, 50);

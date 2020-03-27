@@ -125,7 +125,7 @@
 #pragma mark -- XDPagesLayouDelegate
 - (CGSize)xd_itemLayoutSizeAtIndex:(NSIndexPath *)indexPath {
     
-    CGFloat c_width = _config.titleFlex ? ([XDPagesTools adjustItemWidthByString:_titles[indexPath.row] font:_config.titleFont baseSize:CGSizeMake(MAXFLOAT, _config.titleFont+2)]+30) : _config.titleWidth;
+    CGFloat c_width = _config.titleFlex ? ([XDPagesTools adjustItemWidthByString:_titles[indexPath.row] font:_config.titleFont.pointSize baseSize:CGSizeMake(MAXFLOAT, _config.titleFont.pointSize+2)]+30) : _config.titleWidth;
     
     return CGSizeMake(c_width, _config.titleBarHeight-(self.config.needTitleBarBottomLine ? 0.5 : 0));
 }

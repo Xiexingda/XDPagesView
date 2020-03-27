@@ -51,7 +51,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         self.backImage.backgroundColor = config.titleItemBackHightlightColor;
         self.backImage.image = config.titleItemBackHightlightImage;
         self.title.backgroundColor = config.titleItemBackHightlightColor;
-        self.title.font = [UIFont systemFontOfSize:config.titleHightlightFont];
+        self.title.font = config.titleHightlightFont;
         self.title.textColor = config.titleTextHightlightColor;
     
     } else {
@@ -59,15 +59,15 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         self.backImage.backgroundColor = config.titleItemBackColor;
         self.backImage.image = config.titleItemBackImage;
         self.title.backgroundColor = config.titleItemBackColor;
-        self.title.font = [UIFont systemFontOfSize:config.titleFont];
+        self.title.font = config.titleFont;
         self.title.textColor = config.titleTextColor;
     }
 }
 
 - (void)gradualUpByConfig:(XDPagesConfig *)config percent:(CGFloat)percent {
     // 标题渐变
-    CGFloat d_value = config.titleHightlightFont-config.titleFont;
-    self.title.font = [UIFont systemFontOfSize:config.titleFont+d_value*percent];
+    CGFloat d_value = config.titleHightlightFont.pointSize-config.titleFont.pointSize;
+    self.title.font = [UIFont systemFontOfSize:config.titleFont.pointSize + d_value*percent weight:[[config.titleHightlightFont.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute][UIFontWeightTrait] floatValue]];
     
     // 标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];
@@ -81,8 +81,8 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 
 - (void)gradualDownByConfig:(XDPagesConfig *)config percent:(CGFloat)percent {
     // 标题渐变
-    CGFloat d_value = config.titleHightlightFont-config.titleFont;
-    self.title.font = [UIFont systemFontOfSize:config.titleHightlightFont-d_value*percent];
+    CGFloat d_value = config.titleHightlightFont.pointSize-config.titleFont.pointSize;
+    self.title.font = [UIFont systemFontOfSize:config.titleHightlightFont.pointSize - d_value*percent weight:[[config.titleFont.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute][UIFontWeightTrait] floatValue]];
     
     // 标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];

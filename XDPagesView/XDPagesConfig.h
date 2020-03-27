@@ -47,8 +47,8 @@ typedef NS_ENUM(NSInteger, SlideLineStyle) {
 @property (nonatomic, assign) CGFloat titleWidth;                   // 标题宽度（非自动计算标题宽时才会生效）
 @property (nonatomic, strong) UIColor *titleTextColor;              // 标题颜色
 @property (nonatomic, strong) UIColor *titleTextHightlightColor;    // 标题选中时的颜色
-@property (nonatomic, assign) CGFloat titleFont;                    // 标题字号大小(默认16)
-@property (nonatomic, assign) CGFloat titleHightlightFont;          // 选中后的字号大小(默认18)
+@property (nonatomic, strong) UIFont *titleFont;                    // 标题字号大小(默认16)
+@property (nonatomic, strong) UIFont *titleHightlightFont;          // 选中后的字号大小(默认18)
 
 @property (nonatomic, assign) BOOL needRightBtn;                    // 是否需要右按钮（默认NO）
 @property (nonatomic, assign) CGSize rightBtnSize;                  // 右按钮大小
