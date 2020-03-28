@@ -157,13 +157,7 @@ static NSString *const cellID = @"xdpagecell";
     }
 
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-        
-        // 因为有一个滚动粒度的调整，所以需要忽略掉这个调整
-        CGFloat customOffsety = scrollView.contentOffset.y;
-        CGFloat dValue = customOffsety-self.adjustValue;
-        customOffsety = dValue >= 0 ? (dValue <= FLT_MIN ? 0 : customOffsety) : customOffsety;
-        
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:customOffsety];
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:scrollView.contentOffset.y];
     }
 }
 

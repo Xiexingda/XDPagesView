@@ -347,7 +347,7 @@
             [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
             
             if (newPoint.y > 0 && _mainOffsetStatic >= 0) {
-                [self mainTableLock:YES offsety:_mainOffsetStatic + self.adjustValue];
+                [self mainTableLock:YES offsety:_mainOffsetStatic];
             } else {
                 
                 [self mainTableLock:NO offsety:0];
