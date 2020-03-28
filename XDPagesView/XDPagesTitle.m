@@ -113,7 +113,6 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
         _title = [[UILabel alloc]initWithFrame:self.bounds];
         _title.backgroundColor = [UIColor clearColor];
         _title.textAlignment = NSTextAlignmentCenter;
-        _title.textAlignment = NSTextAlignmentCenter;
     }
     
     return _title;
