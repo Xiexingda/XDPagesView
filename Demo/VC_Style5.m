@@ -116,7 +116,7 @@
     config.titleFont = [UIFont systemFontOfSize:16];
     
     // 选中后的字号大小(默认18)
-    config.titleHightlightFont = [UIFont systemFontOfSize:18];
+    config.titleHightlightFont = [UIFont systemFontOfSize:18 weight:bold];
     
     
     // ************************************设置右边按钮**********************************

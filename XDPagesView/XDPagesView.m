@@ -40,7 +40,6 @@ static NSString *const cellID = @"xdpagecell";
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         
-        // 关键点，计算出不同分辨率下的滚动粒度，用于减小滚动衰减，实现无障碍滚动
         self.adjustValue = 1.0/[UIScreen mainScreen].scale;
         
         self.mainLock = [XDPagesValueLock lock];

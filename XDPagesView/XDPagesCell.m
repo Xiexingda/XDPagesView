@@ -309,8 +309,7 @@
     /*
      根据不同下拉类型分别实现各自逻辑，这里有个取巧的地方，
      就是在向上或者向下拉动过程中去处理，屏蔽掉静止状态，
-     否则会因为强行修改contentoffset造成死循环，
-     为了达到无障碍滚动，需要把滚动粒度调整考虑进去
+     否则会因为强行修改contentoffset造成死循环
      */
     
     if (self.pagePullStyle == 0) {
@@ -346,8 +345,12 @@
             
             [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
             
-            if (newPoint.y > 0 && _mainOffsetStatic >= 0) {
-                [self mainTableLock:YES offsety:_mainOffsetStatic];
+            if (newPoint.y > 0) {
+                
+                if (_mainOffsetStatic >= 0) {
+                    [self mainTableLock:YES offsety:_mainOffsetStatic];
+                }
+                
             } else {
                 
                 [self mainTableLock:NO offsety:0];
@@ -399,8 +402,12 @@
             
             [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
             
-            if (newPoint.y > 0 && _mainOffsetStatic >= 0) {
-                [self mainTableLock:YES offsety:_mainOffsetStatic];
+            if (newPoint.y > 0) {
+                
+                if (_mainOffsetStatic >= 0) {
+                    [self mainTableLock:YES offsety:_mainOffsetStatic];
+                }
+                
             } else {
                 
                 [self mainTableLock:NO offsety:0];
@@ -486,7 +493,7 @@
     [self.contentView addSubview:self.pagesContainer];
     
     self.pagesContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    //上
+    
     NSLayoutConstraint *relat_top = [NSLayoutConstraint
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeTop
@@ -495,7 +502,6 @@
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
                                      constant:0];
-    //左
     NSLayoutConstraint *relat_led = [NSLayoutConstraint
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeLeading
@@ -504,7 +510,6 @@
                                      attribute:NSLayoutAttributeLeading
                                      multiplier:1
                                      constant:0];
-    //下
     NSLayoutConstraint *relat_btm = [NSLayoutConstraint
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeBottom
@@ -513,7 +518,6 @@
                                      attribute:NSLayoutAttributeBottom
                                      multiplier:1
                                      constant:0];
-    //右
     NSLayoutConstraint *relat_tal = [NSLayoutConstraint
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeTrailing
@@ -522,7 +526,6 @@
                                      attribute:NSLayoutAttributeTrailing
                                      multiplier:1
                                      constant:0];
-    //约束
-    [self.contentView addConstraints:@[relat_top, relat_led, relat_btm, relat_tal]];
+    [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_btm, relat_tal]];
 }
 @end

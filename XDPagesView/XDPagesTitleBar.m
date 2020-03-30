@@ -82,16 +82,22 @@
     }
     
     // 标题渐变
-    if (_config.titleGradual && page != willToPage) {
+    if (_config.titleGradual) {
         
-        NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
-        NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
+        if (page != willToPage) {
+            
+            NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
+            NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
+            
+            XDPagesTitle *c_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:c_idx];
+            XDPagesTitle *w_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:w_idx];
         
-        XDPagesTitle *c_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:c_idx];
-        XDPagesTitle *w_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:w_idx];
-        
-        [c_title gradualDownByConfig:_config percent:percent];
-        [w_title gradualUpByConfig:_config percent:percent];
+            [c_title gradualDownByConfig:_config percent:percent];
+            [w_title gradualUpByConfig:_config percent:percent];
+            
+        } else {
+            [self refreshTitleBarNeedReSetAttributes:NO];
+        }
     }
 }
 
@@ -152,7 +158,10 @@
 
 - (UICollectionView *)titleBar {
     if (!_titleBar) {
+        
         _layout = [[XDPagesLayout alloc]init];
+        _layout.needPrepareLayout = YES;
+        
         _titleBar = [[UICollectionView alloc]initWithFrame:self.bounds collectionViewLayout:_layout];
         _layout.delegate = self;
         _titleBar.delegate = self;
@@ -208,18 +217,25 @@
     __weak typeof(self) weakSelf = self;
     return ^(NSArray <NSString *> *titles) {
         weakSelf.titles = titles;
-        [weakSelf.titleBar reloadData];
+        [weakSelf refreshTitleBarNeedReSetAttributes:YES];
     };
 }
 
 - (void (^)(NSInteger))currentFocusIndex {
     __weak typeof(self) weakSelf = self;
     return ^(NSInteger focusIndex) {
+        [weakSelf.titleBar setNeedsLayout];
         [weakSelf.titleBar layoutSubviews];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
-        [weakSelf.titleBar reloadData];
+        [weakSelf refreshTitleBarNeedReSetAttributes:NO];
     };
+}
+
+#pragma mark - Private
+- (void)refreshTitleBarNeedReSetAttributes:(BOOL)need {
+    self.layout.needPrepareLayout = need;
+    [self.titleBar reloadData];
 }
 
 #pragma mark -- UI
