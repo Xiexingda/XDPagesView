@@ -40,6 +40,8 @@ static NSString *const cellID = @"xdpagecell";
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         
+        self.clipsToBounds = YES;
+        
         self.adjustValue = 1.0/[UIScreen mainScreen].scale;
         
         self.mainLock = [XDPagesValueLock lock];
