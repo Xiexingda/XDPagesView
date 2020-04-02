@@ -207,7 +207,6 @@
         _slideLine.clipsToBounds = YES;
         _slideLine.layer.cornerRadius = height/2.0;
         _slideLine.backgroundColor = _config.titleBarSlideLineColor;
-        _slideLine.hidden = !_config.needTitleBarSlideLine;
     }
     
     return _slideLine;
@@ -246,9 +245,11 @@
     [self addSubview:self.rightBtn];
     [self addSubview:self.bottomLine];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.titleBar addSubview:self.slideLine];
-    });
+    if (_config.needTitleBarSlideLine) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.titleBar addSubview:self.slideLine];
+        });
+    }
     
     self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
     self.titleBar.translatesAutoresizingMaskIntoConstraints = NO;
