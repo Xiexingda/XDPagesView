@@ -427,8 +427,6 @@ static NSString *const cellID = @"xdpagecell";
     
     UIView *view = [super hitTest:point withEvent:event];
     
-    [self scrollViewDidScroll:self.mainTable];
-    
     CGPoint relative_point = [self.pagesContainer convertPoint:point fromView:self];
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
@@ -439,6 +437,8 @@ static NSString *const cellID = @"xdpagecell";
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
     }
+    
+    [self scrollViewDidScroll:self.mainTable];
     
     return view;
 }
