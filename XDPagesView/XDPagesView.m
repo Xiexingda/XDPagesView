@@ -151,7 +151,11 @@ static NSString *const cellID = @"xdpagecell";
         
         CGFloat offsety = [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:YES];
         
-        scrollView.contentOffset = CGPointMake(0, offsety);
+        if (offsety >= 0) {
+            scrollView.contentOffset = CGPointMake(0, offsety);
+        } else {
+            [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
+        }
 
     } else {
         [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
@@ -423,13 +427,15 @@ static NSString *const cellID = @"xdpagecell";
     
     UIView *view = [super hitTest:point withEvent:event];
     
+    [self scrollViewDidScroll:self.mainTable];
+    
     CGPoint relative_point = [self.pagesContainer convertPoint:point fromView:self];
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
         
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
         
-        [self.mainCell setCurrentMainTalbelOffsety:_mainTable.contentOffset.y];
+        [self.mainCell setCurrentMainTalbelOffsety:self.mainTable.contentOffset.y];
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
     }
