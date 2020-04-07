@@ -82,7 +82,7 @@
         CGRect c_frame = CGRectMake(CGRectGetMidX(c_attr.frame)-c_hf_width,
                                     CGRectGetMinY(view.frame),
                                     c_hf_width*2,
-                                    CGRectGetHeight(view.bounds));;
+                                    CGRectGetHeight(view.bounds));
         
         [view setFrame:c_frame];
     }
