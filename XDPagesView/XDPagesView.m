@@ -414,7 +414,7 @@ static NSString *const cellID = @"xdpagecell";
     customHeader.frame = CGRectMake(0,
                                     0,
                                     CGRectGetWidth(self.bounds),
-                                    headerHeight);
+                                    [XDPagesTools adjustFloatValue:headerHeight]);
     
     self.customHeader = customHeader;
     
