@@ -410,11 +410,11 @@ static NSString *const cellID = @"xdpagecell";
                                      constant:0];
     [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_tal]];
     
-    CGFloat headerHeight = CGRectGetHeight(header.bounds)+self.adjustValue;
+    CGFloat headerHeight = [XDPagesTools adjustFloatValue:CGRectGetHeight(header.bounds)]+self.adjustValue;
     customHeader.frame = CGRectMake(0,
                                     0,
                                     CGRectGetWidth(self.bounds),
-                                    [XDPagesTools adjustFloatValue:headerHeight]);
+                                    headerHeight);
     
     self.customHeader = customHeader;
     
