@@ -195,16 +195,7 @@
                 match(child);
             }
             continue;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        } else if ([child isKindOfClass:UIWebView.class]) {
-            if (((UIWebView *)child).scrollView.tag != IgnoreTag) {
-                if (match) {
-                    match(((UIWebView *)child).scrollView);
-                }
-            };
-            continue;
-#pragma clang diagnostic pop
+
         } else if ([child isKindOfClass:WKWebView.class]) {
             if (((WKWebView *)child).scrollView.tag != IgnoreTag) {
                 if (match) {
