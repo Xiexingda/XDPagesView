@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, SlideLineStyle) {
 @property (nonatomic, assign) NSInteger maxCacheCount;              // 最大缓存页数
 @property (nonatomic, assign) BOOL pagesSlideEnable;                // 是否可滑动翻页（默认YES）
 @property (nonatomic, assign) BOOL animateForPageChange;            // 页面变动时是否需要动画（默认YES）
-@property (nonatomic, assign) BOOL pagesHorizontalHounce;           // 是否页面边界自由滑动（默认YES）
+@property (nonatomic, assign) BOOL pagesHorizontalBounce;           // 是否页面边界自由滑动（默认YES）
 
 @property (nonatomic, assign) BOOL needTitleBar;                    // 是否需要标题栏（默认YES）
 @property (nonatomic, assign) BOOL titleBarFitHeader;               // 是否标题栏和header作为一个整体（默认NO）
