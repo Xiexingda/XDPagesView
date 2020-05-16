@@ -27,7 +27,7 @@
     _maxCacheCount = 20;
     _pagesSlideEnable = YES;
     _animateForPageChange = YES;
-    _pagesHorizontalHounce = YES;
+    _pagesHorizontalBounce = YES;
     
     _needTitleBar = YES;
     _titleBarFitHeader = NO;

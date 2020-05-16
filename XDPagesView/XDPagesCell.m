@@ -466,7 +466,7 @@
         _pagesContainer.showsHorizontalScrollIndicator = NO;
         _pagesContainer.delegate = self;
         _pagesContainer.backgroundColor = [UIColor clearColor];
-        _pagesContainer.bounces = _config.pagesHorizontalHounce;
+        _pagesContainer.bounces = _config.pagesHorizontalBounce;
         _pagesContainer.scrollEnabled = _config.pagesSlideEnable;
         [XDPagesTools closeAdjustForScroll:_pagesContainer controller:nil];
     }

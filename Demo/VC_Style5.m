@@ -41,7 +41,7 @@
     config.animateForPageChange = YES;
     
     // 是否可以边界自由滑动
-    config.pagesHorizontalHounce = NO;
+    config.pagesHorizontalBounce = NO;
     
     // 是否需要标题栏
     config.needTitleBar = YES;
