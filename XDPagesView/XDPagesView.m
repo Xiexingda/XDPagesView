@@ -115,7 +115,8 @@ static NSString *const cellID = @"xdpagecell";
     
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
-    return CGRectGetHeight(self.mainTable.bounds) - self.mainTable.sectionHeaderHeight - margin;
+    CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
+    return height > 0 ? height : 0;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
