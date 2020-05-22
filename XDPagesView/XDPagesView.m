@@ -84,7 +84,8 @@ static NSString *const cellID = @"xdpagecell";
     
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
-    return CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
+    CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
+    return height > 0 ? height : 0;
 }
 
 // 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
@@ -115,8 +116,7 @@ static NSString *const cellID = @"xdpagecell";
     
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
-    CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
-    return height > 0 ? height : 0;
+    return CGRectGetHeight(self.mainTable.bounds) - self.mainTable.sectionHeaderHeight - margin;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {

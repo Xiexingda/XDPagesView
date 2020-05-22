@@ -96,7 +96,7 @@
             [w_title gradualUpByConfig:_config percent:percent];
             
         } else {
-            [self refreshTitleBarNeedReSetAttributes:NO];
+            [self refreshTitleBar];
         }
     }
 }
@@ -160,7 +160,6 @@
     if (!_titleBar) {
         
         _layout = [[XDPagesLayout alloc]init];
-        _layout.needPrepareLayout = YES;
         
         _titleBar = [[UICollectionView alloc]initWithFrame:self.bounds collectionViewLayout:_layout];
         _layout.delegate = self;
@@ -201,11 +200,10 @@
 - (UIView *)slideLine {
     if (!_slideLine) {
         CGFloat height = 3;
-        UICollectionViewLayoutAttributes *attributes = _layout.allAttributes[_config.beginPage];
-        CGFloat c_hf_width = CGRectGetWidth(attributes.frame)*_config.titleBarSlideLineWidthRatio/2.0;
-        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(CGRectGetMidX(attributes.frame)-c_hf_width, _config.titleBarHeight-height-(_config.needTitleBarBottomLine ? 0.5 : 0), c_hf_width*2, height)];
+        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(0, _config.titleBarHeight-height-(_config.needTitleBarBottomLine ? 0.5 : 0), 0, height)];
         _slideLine.clipsToBounds = YES;
         _slideLine.layer.cornerRadius = height/2.0;
+        _slideLine.hidden = YES;
         _slideLine.backgroundColor = _config.titleBarSlideLineColor;
     }
     
@@ -216,7 +214,7 @@
     __weak typeof(self) weakSelf = self;
     return ^(NSArray <NSString *> *titles) {
         weakSelf.titles = titles;
-        [weakSelf refreshTitleBarNeedReSetAttributes:YES];
+        [weakSelf refreshTitleBar];
     };
 }
 
@@ -227,13 +225,15 @@
         [weakSelf.titleBar layoutSubviews];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
-        [weakSelf refreshTitleBarNeedReSetAttributes:NO];
+        [weakSelf refreshTitleBar];
     };
 }
 
 #pragma mark - Private
-- (void)refreshTitleBarNeedReSetAttributes:(BOOL)need {
-    self.layout.needPrepareLayout = need;
+- (void)refreshTitleBar {
+    if (self.titles.count == 0) {
+        _slideLine.hidden = YES;
+    }
     [self.titleBar reloadData];
 }
 

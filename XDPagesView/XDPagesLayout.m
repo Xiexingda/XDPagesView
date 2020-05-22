@@ -35,13 +35,6 @@
 - (void)prepareLayout {
     [super prepareLayout];
     
-    /*
-     过滤掉多余计算
-     在非必要情况下只进行一次布局
-     */
-    if (!self.needPrepareLayout) return;
-    self.needPrepareLayout = NO;
-    
     //关掉预估取值，否则在某些机型上可能会崩溃
     if (@available(iOS 10.0, *)) {
         if ([self.collectionView respondsToSelector:@selector(setPrefetchingEnabled:)]) {

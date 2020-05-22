@@ -14,6 +14,5 @@
 @interface XDPagesLayout : UICollectionViewLayout
 @property (nonatomic,   weak) id <XDPagesLayouDelegate> delegate;
 @property (nonatomic, strong) NSArray <UICollectionViewLayoutAttributes *>*allAttributes;
-@property (nonatomic, assign) BOOL needPrepareLayout;
 @end
 
