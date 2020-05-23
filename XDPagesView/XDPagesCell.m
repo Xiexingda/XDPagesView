@@ -95,13 +95,12 @@
         finish(self.pagesCache.titles);
     }
     
+    [self changeToPage:page animate:NO];
+    
     if (self.pagesCache.titles.count) {
-        
-        [self changeToPage:page animate:NO];
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self scrollViewDidScroll:self.pagesContainer];
-            [self pageIndexDidChangedToPage:self.config.beginPage];
+            [self pageIndexDidChangedToPage:page];
         });
     }
 }
@@ -119,9 +118,9 @@
 
 // 更换kvo监听
 - (void)setKVOForCurrentPage:(NSInteger)currentPage {
-    [self clearKVO];
-    
     if (self.pagesCache.titles.count == 0) return;
+    
+    [self clearKVO];
     
     for (UIScrollView *child in [self.pagesCache scrollViewsForTitle:self.pagesCache.titles[currentPage]]) {
         [child addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
@@ -141,8 +140,6 @@
 
 // 监听到rect变化，比如横屏
 - (void)rectChanged {
-    if (!self.pagesCache.titles.count) return;
-    
     self.pagesContainer.bounds = self.contentView.bounds;
     [self.pagesContainer setContentSize:CGSizeMake(self.pagesCache.titles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
     
@@ -153,8 +150,6 @@
 
 // 重置所有rect
 - (void)resetAllRect {
-    if (!self.pagesCache.titles.count) return;
-    
     [self.pagesCache.titles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self setRectForPage:idx];
     }];
@@ -178,6 +173,8 @@
 
 // 添加页面处理
 - (void)handleForPage:(NSInteger)page {
+    if (!self.pagesCache.titles.count) return;
+    
     _willShowPage = page;
     
     NSString *c_title = self.pagesCache.titles[page];
@@ -201,7 +198,8 @@
 }
 
 - (void)changeToPage:(NSInteger)page animate:(BOOL)animate {
-    NSAssert((page>=0&&page<self.pagesCache.titles.count), @"索引越界了");
+    
+    NSAssert((page>=0&&page<self.pagesCache.titles.count || !self.pagesCache.titles.count), @"索引越界了");
     
     animate = animate ? (ABS(self.currentPage - page) == 1 ? YES : NO) : animate;
     
@@ -211,6 +209,8 @@
 }
 
 - (UIViewController *)dequeueReusablePageForIndex:(NSInteger)index {
+    if (!self.pagesCache.titles.count) return nil;
+    
     NSAssert((index>=0&&index<self.pagesCache.titles.count), @"索引越界了");
     
     NSString *title = self.pagesCache.titles[index];
@@ -247,10 +247,9 @@
 
 // 页面已经更换处理
 - (void)pageIndexDidChangedToPage:(NSInteger)page {
+    if (!self.pagesCache.titles.count) return;
     
     self.currentPage = page;
-    
-    if (!self.pagesCache.titles.count) return;
     
     // 如果本页没有滚动控件就解锁所有滚动相关的锁定
     if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {

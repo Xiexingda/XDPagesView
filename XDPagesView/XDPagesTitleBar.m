@@ -20,7 +20,6 @@
 @property (nonatomic, strong) NSArray <NSString *>*titles;
 @property (nonatomic, strong) UIImageView   *backImage;
 @property (nonatomic, assign) NSInteger focusIndex;
-@property (nonatomic, assign) BOOL slideByTapTitle;
 /**
  -------------------------------------------------
  | title_1 | title_2 | ....           | rightBtn |
@@ -112,9 +111,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_focusIndex != indexPath.row) {
-        self.slideByTapTitle = YES;
         [self.delegate title_tapAtIndex:indexPath.row];
-        self.slideByTapTitle = NO;
         _focusIndex = indexPath.row;
     }
 }
