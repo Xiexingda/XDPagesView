@@ -13,6 +13,15 @@
 // 下划线伸缩效果
 - (void)slideLineScaleEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage percent:(CGFloat)percent ratio:(CGFloat)ratio {
     
+    if (attributes.count == 0) {
+        view.hidden = YES;
+        return;
+    }
+    
+    if (view.isHidden) {
+        view.hidden = NO;
+    }
+    
     UICollectionViewLayoutAttributes *c_attr = attributes[cpage];
     UICollectionViewLayoutAttributes *w_attr = attributes[wpage];
     CGFloat c_width = CGRectGetWidth(c_attr.bounds);
@@ -41,6 +50,15 @@
 
 // 下划线平移效果
 - (void)slideLineTransEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage percent:(CGFloat)percent ratio:(CGFloat)ratio {
+    
+    if (attributes.count == 0) {
+        view.hidden = YES;
+        return;
+    }
+    
+    if (view.isHidden) {
+        view.hidden = NO;
+    }
     
     UICollectionViewLayoutAttributes *c_attr = attributes[cpage];
     UICollectionViewLayoutAttributes *w_attr = attributes[wpage];
@@ -73,6 +91,16 @@
 
 // 无滑动效果
 - (void)slideLineNoneEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage ratio:(CGFloat)ratio {
+    
+    if (attributes.count == 0) {
+        view.hidden = YES;
+        return;
+    }
+    
+    if (view.isHidden) {
+        view.hidden = NO;
+    }
+    
     if (cpage == wpage) {
         UICollectionViewLayoutAttributes *c_attr = attributes[cpage];
         CGFloat c_width = CGRectGetWidth(c_attr.bounds);

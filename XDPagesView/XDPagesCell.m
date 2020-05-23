@@ -44,7 +44,6 @@
         self.adjustValue = adjustValue;
         self.config = config;
         self.delegate = delegate;
-        [self configAllTitles];
         self.pagePullStyle = pullStyle;
         self.childLock = [XDPagesValueLock lock];
         self.pagesCache.mainController = controller;
@@ -53,8 +52,7 @@
         _currentPage = config.beginPage;
  
         [self createUI];
-        [self changeToPage:config.beginPage animate:NO];
-        [self pageIndexDidChangedToPage:config.beginPage];
+        [self reloadToPage:config.beginPage finish:nil];
     }
     
     return self;
@@ -97,8 +95,15 @@
         finish(self.pagesCache.titles);
     }
     
-    [self changeToPage:page animate:NO];
-    [self scrollViewDidScroll:self.pagesContainer];
+    if (self.pagesCache.titles.count) {
+        
+        [self changeToPage:page animate:NO];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self scrollViewDidScroll:self.pagesContainer];
+            [self pageIndexDidChangedToPage:self.config.beginPage];
+        });
+    }
 }
 
 // 清除监听
@@ -115,6 +120,8 @@
 // 更换kvo监听
 - (void)setKVOForCurrentPage:(NSInteger)currentPage {
     [self clearKVO];
+    
+    if (self.pagesCache.titles.count == 0) return;
     
     for (UIScrollView *child in [self.pagesCache scrollViewsForTitle:self.pagesCache.titles[currentPage]]) {
         [child addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
@@ -242,6 +249,8 @@
 - (void)pageIndexDidChangedToPage:(NSInteger)page {
     
     self.currentPage = page;
+    
+    if (!self.pagesCache.titles.count) return;
     
     // 如果本页没有滚动控件就解锁所有滚动相关的锁定
     if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {
