@@ -85,7 +85,7 @@ static NSString *const cellID = @"xdpagecell";
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
     CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
-    return height > CGFLOAT_MIN ? height : 0;
+    return height > 0.000001 ? height : 0;
 }
 
 // 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
