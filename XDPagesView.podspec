@@ -16,11 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "XDPagesView"
-<<<<<<< HEAD
-  s.version      = "2.0.2"
-=======
-  s.version      = "2.0.3"
->>>>>>> 83dcd5b807535a28bcb4d2fb6647895772f853c4
+  s.version      = "2.0.4"
   s.summary      = "多控制器列表"
 
   # This description is used to generate tags and improve search results.
