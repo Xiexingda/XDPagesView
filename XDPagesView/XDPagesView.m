@@ -85,7 +85,7 @@ static NSString *const cellID = @"xdpagecell";
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
     
     CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
-    return height > 0.000001 ? height : 0;
+    return height > 0 ? height : 0;
 }
 
 // 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
@@ -146,6 +146,11 @@ static NSString *const cellID = @"xdpagecell";
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView.contentOffset.y > [self headerVerticalCanChangedSpace]) {
         scrollView.contentOffset = CGPointMake(0, [self headerVerticalCanChangedSpace]);
+    }
+    if (self.pagesPullStyle == XDPagesPullOnCenter) {
+        if (scrollView.contentOffset.y <= 0) {
+            scrollView.contentOffset = CGPointMake(0, 0);
+        }
     }
     
     if (_needLockOffset && _mainTable.gesturePublic) {
@@ -276,7 +281,6 @@ static NSString *const cellID = @"xdpagecell";
         _mainTable.tableHeaderView = [self customHeader:_pagesHeader];
         _mainTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         _mainTable.tableHeaderView.userInteractionEnabled = _customHeader.userInteractionEnabled;
-        _mainTable.bounces = self.pagesPullStyle == XDPagesPullOnCenter ? NO : YES;
         _mainTable.sectionHeaderHeight = _config.titleBarHeight;
         [XDPagesTools closeAdjustForScroll:_mainTable controller:[XDPagesTools viewControllerForView:self]];
         
