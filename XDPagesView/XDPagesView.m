@@ -437,7 +437,8 @@ static NSString *const cellID = @"xdpagecell";
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
         
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
-        
+        // 如果是通过子view进行滚动，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
+        _needLockOffset = YES;
         [self.mainCell setCurrentMainTalbelOffsety:self.mainTable.contentOffset.y];
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
