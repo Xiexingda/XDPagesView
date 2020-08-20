@@ -14,7 +14,11 @@
 #import "XDPagesTitleBar.h"
 
 static NSString *const cellID = @"xdpagecell";
-
+typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
+    XDPages_None = 0,
+    XDPages_Up = 1,
+    XDPages_Down = 2
+};
 @interface XDPagesView () <UITableViewDelegate, UITableViewDataSource, XDPagesCellDelegate, XDPagesTitleBarDelegate>
 @property (nonatomic, strong) XDPagesTable     *mainTable;
 @property (nonatomic, strong) XDPagesCell      *mainCell;
@@ -26,6 +30,9 @@ static NSString *const cellID = @"xdpagecell";
 @property (nonatomic, strong) XDPagesConfig    *config;
 @property (nonatomic, assign) XDPagesPullStyle  pagesPullStyle;
 @property (nonatomic, assign) CGFloat const     adjustValue;    // 调整值
+
+@property (nonatomic, assign) XDPagesScrollStatus s_status;
+@property (nonatomic, assign) CGFloat   mainOffsetStatic;
 @end
 
 @implementation XDPagesView
@@ -153,6 +160,19 @@ static NSString *const cellID = @"xdpagecell";
         }
     }
     
+    // 如果滚动方向改变，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
+    if (_mainOffsetStatic < scrollView.contentOffset.y) {
+        if (self.s_status != XDPages_Up) {
+            self.s_status = XDPages_Up;
+            _needLockOffset = YES;
+        }
+    } else if (_mainOffsetStatic > scrollView.contentOffset.y) {
+        if (self.s_status != XDPages_Down) {
+            self.s_status = XDPages_Down;
+            _needLockOffset = YES;
+        }
+    } 
+    
     if (_needLockOffset && _mainTable.gesturePublic) {
         
         CGFloat offsety = [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:YES];
@@ -167,6 +187,7 @@ static NSString *const cellID = @"xdpagecell";
         [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
     }
 
+    _mainOffsetStatic = scrollView.contentOffset.y;
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
         [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:scrollView.contentOffset.y];
     }
@@ -435,10 +456,9 @@ static NSString *const cellID = @"xdpagecell";
     CGPoint relative_point = [self.pagesContainer convertPoint:point fromView:self];
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
-        
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
         // 如果是通过子view进行滚动，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
-        _needLockOffset = YES;
+        self.needLockOffset = YES;
         [self.mainCell setCurrentMainTalbelOffsety:self.mainTable.contentOffset.y];
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
