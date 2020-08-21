@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 @property (nonatomic, assign) XDPagesScrollStatus s_status;
 @property (nonatomic, assign) CGFloat   mainOffsetStatic;
+@property (nonatomic, assign) BOOL isCurrentPageCanScroll;
 @end
 
 @implementation XDPagesView
@@ -46,16 +47,13 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        
         self.clipsToBounds = YES;
-        
         self.adjustValue = 1.0/[UIScreen mainScreen].scale;
-        
         self.mainLock = [XDPagesValueLock lock];
-        
         self.config = config ? config : [XDPagesConfig config];
-        
         _pagesPullStyle = style;
+        _s_status = XDPages_None;
+        _mainOffsetStatic = 0;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self createUI];
@@ -161,21 +159,23 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }
     
     // 如果滚动方向改变，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
-    if (_mainOffsetStatic < scrollView.contentOffset.y) {
-        if (self.s_status != XDPages_Up) {
-            self.s_status = XDPages_Up;
-            _needLockOffset = YES;
+    if (_isCurrentPageCanScroll) {
+        if (_mainOffsetStatic < scrollView.contentOffset.y) {
+            if (self.s_status != XDPages_Up) {
+                self.s_status = XDPages_Up;
+                _needLockOffset = YES;
+            }
+        } else if (_mainOffsetStatic > scrollView.contentOffset.y) {
+            if (self.s_status != XDPages_Down) {
+                self.s_status = XDPages_Down;
+                _needLockOffset = YES;
+            }
         }
-    } else if (_mainOffsetStatic > scrollView.contentOffset.y) {
-        if (self.s_status != XDPages_Down) {
-            self.s_status = XDPages_Down;
-            _needLockOffset = YES;
-        }
-    } 
+    }
     
     if (_needLockOffset && _mainTable.gesturePublic) {
         
-        CGFloat offsety = [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:YES];
+        CGFloat offsety = [self lockMainTableAtOffsety:_mainOffsetStatic needLock:YES];
         
         if (offsety >= 0) {
             scrollView.contentOffset = CGPointMake(0, offsety);
@@ -189,7 +189,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
     _mainOffsetStatic = scrollView.contentOffset.y;
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:scrollView.contentOffset.y];
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:_mainOffsetStatic];
     }
 }
 
@@ -261,10 +261,15 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         _needLockOffset = need;
         
         if (need) {
+            _mainOffsetStatic = y;
             _mainTable.contentOffset = CGPointMake(0, y);
             [self scrollViewDidScroll:_mainTable];
         }
     }
+}
+
+- (void)cell_currentPageScollEnable:(BOOL)enable {
+    _isCurrentPageCanScroll = enable;
 }
 
 #pragma mark -- setter
@@ -457,8 +462,6 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
-        // 如果是通过子view进行滚动，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
-        self.needLockOffset = YES;
         [self.mainCell setCurrentMainTalbelOffsety:self.mainTable.contentOffset.y];
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;

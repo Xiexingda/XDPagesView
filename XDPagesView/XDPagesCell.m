@@ -255,6 +255,9 @@
     if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {
         [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
         [self mainTableLock:NO offsety:0];
+        [self.delegate cell_currentPageScollEnable:NO];
+    } else {
+        [self.delegate cell_currentPageScollEnable:YES];
     }
     
     [self.pagesCache pageDidApearHandle:!_isRectChanging];

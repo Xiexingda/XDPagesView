@@ -58,6 +58,12 @@
 - (void)cell_mainTableNeedLock:(BOOL)need offsety:(CGFloat)y;
 
 /**
+ 当前页是否可滚动
+ @param enable 是否可滚动
+ */
+- (void)cell_currentPageScollEnable:(BOOL)enable;
+
+/**
  列表以上可以变动的竖直高度
  */
 - (CGFloat)cell_headerVerticalCanChangedSpace;
