@@ -106,10 +106,10 @@
 }
 
 - (void)removeAllNode {
+    [self->mapDic removeAllObjects];
     self->count = 0;
     self->footer = nil;
     self->header = nil;
-    self->mapDic = nil;
 }
 @end
 
