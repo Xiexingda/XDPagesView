@@ -63,7 +63,7 @@
 }
 
 - (void)setNeedTitleBar:(BOOL)needTitleBar {
-    _needRightBtn = needTitleBar;
+    _needTitleBar = needTitleBar;
     if (!needTitleBar) {
         _titleBarHeight = 0;
     }
