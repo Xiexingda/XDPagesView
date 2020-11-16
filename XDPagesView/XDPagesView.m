@@ -63,6 +63,12 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [_mainTable beginUpdates];
+    [_mainTable endUpdates];
+}
+
 - (UIViewController *)dequeueReusablePageForIndex:(NSInteger)index {
     return [self.mainCell dequeueReusablePageForIndex:index];
 }
