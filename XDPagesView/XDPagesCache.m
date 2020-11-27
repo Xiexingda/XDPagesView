@@ -13,8 +13,17 @@
 
 #define IgnoreTag 5201314
 
+NS_INLINE XDBADGE
+XDBADGEMake(NSInteger number, UIColor *color) {
+    XDBADGE badge;
+    badge.badgeNumber = number;
+    badge.badgeColor = color;
+    return badge;
+}
+
 @interface XDPagesCache ()
 @property (nonatomic, strong) XDPagesMap *map;
+@property (nonatomic, strong) XDPagesMap *badgeMap;
 @end
 @implementation XDPagesCache
 - (void)setMaxCacheCount:(NSInteger)maxCacheCount {
@@ -36,6 +45,7 @@
     if (self) {
         _kvoTitles = @[].mutableCopy;
         _map = [XDPagesMap map];
+        _badgeMap = [XDPagesMap map];
     }
     
     return self;
@@ -207,6 +217,29 @@
         
         [self subViewsInView:child matchView:match];
     }
+}
+
+- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color {
+    XDPagesNode *node = [_badgeMap->mapDic objectForKey:@(idx).stringValue];
+    if (!node) {
+        node = [XDPagesNode node];
+        node->key = @(idx).stringValue;
+        node->value = number>0?@(number):@(0);
+        node->badgeColor = color;
+        [_badgeMap insertNode:node];
+    } else {
+        node->value = number>0?@(number):@(0);
+        node->badgeColor = color;
+        [_badgeMap bringNodeToHeader:node];
+    }
+}
+
+- (XDBADGE)badgeNumberForIndex:(NSInteger)idx {
+    XDPagesNode *node = [_badgeMap->mapDic objectForKey:@(idx).stringValue];
+    if (node) {
+        return XDBADGEMake([node->value integerValue], node->badgeColor);
+    }
+    return XDBADGEMake(0, UIColor.clearColor);
 }
 
 @end

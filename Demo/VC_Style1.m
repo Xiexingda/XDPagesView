@@ -18,6 +18,11 @@
 
 @implementation VC_Style1
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor grayColor];
@@ -40,7 +45,7 @@
 }
 
 - (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title {
-    
+
     // 缓存复用控制器
     UIViewController *vc = [pagesView dequeueReusablePageForIndex:index];
     
@@ -57,6 +62,7 @@
 }
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
     NSLog(@"当前页面：%@",pageTitle);
+    [self.pages showBadgeNumber:1 index:0 color:UIColor.redColor];
 }
 
 #pragma mark -- getter

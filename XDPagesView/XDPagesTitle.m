@@ -9,8 +9,9 @@
 #import "XDPagesTitle.h"
 
 @interface XDPagesTitle ()
-@property (nonatomic, strong) UILabel *title;
+@property (nonatomic, strong) XDPagesTitleLabel *title;
 @property (nonatomic, strong) UIImageView *backImage;
+@property (nonatomic, strong) UILabel *tipLabel;
 @end
 
 typedef struct {
@@ -42,9 +43,12 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     return self;
 }
 
-- (void)configTitleByTitle:(NSString *)title focusIdx:(NSInteger)fidx config:(XDPagesConfig *)config indexPath:(NSIndexPath *)indexPath {
-    
+- (void)configTitleByTitle:(NSString *)title focusIdx:(NSInteger)fidx config:(XDPagesConfig *)config badge:(XDBADGE)badge indexPath:(NSIndexPath *)indexPath {
+    self.title.verticalAlignment = config.titleVerticalAlignment;
     self.title.text = title;
+    
+    self.tipLabel.hidden = badge.badgeNumber > 0 ? NO : YES;
+    self.tipLabel.backgroundColor = badge.badgeColor;
     
     if (fidx == indexPath.row) {
         // 当前选中
@@ -108,9 +112,9 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 }
 
 #pragma mark -- getter
-- (UILabel *)title {
+- (XDPagesTitleLabel *)title {
     if (!_title) {
-        _title = [[UILabel alloc]initWithFrame:self.bounds];
+        _title = [[XDPagesTitleLabel alloc]initWithFrame:self.bounds];
         _title.backgroundColor = [UIColor clearColor];
         _title.textAlignment = NSTextAlignmentCenter;
     }
@@ -128,14 +132,27 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     return _backImage;
 }
 
+- (UILabel *)tipLabel {
+    if (!_tipLabel) {
+        _tipLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 6, 6)];
+        _tipLabel.clipsToBounds = YES;
+        _tipLabel.layer.cornerRadius = 3;
+        _tipLabel.backgroundColor = UIColor.redColor;
+        _tipLabel.hidden = YES;
+    }
+    
+    return _tipLabel;
+}
+
 #pragma mark -- UI
 - (void)creatItem {
     
     [self.contentView addSubview:self.backImage];
     [self.contentView addSubview:self.title];
-    
+    [self.contentView addSubview:self.tipLabel];
     self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
     self.title.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tipLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     // backImage
     NSLayoutConstraint *back_top = [NSLayoutConstraint
@@ -184,7 +201,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     NSLayoutConstraint *title_lef = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeLeading
-                                     relatedBy:NSLayoutRelationEqual
+                                     relatedBy:NSLayoutRelationGreaterThanOrEqual
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeLeading
                                      multiplier:1
@@ -200,11 +217,103 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     NSLayoutConstraint *title_rit = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeTrailing
-                                     relatedBy:NSLayoutRelationEqual
+                                     relatedBy:NSLayoutRelationLessThanOrEqual
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeTrailing
                                      multiplier:1
                                      constant:0];
-    [NSLayoutConstraint activateConstraints:@[title_top, title_lef, title_btm, title_rit]];
+    NSLayoutConstraint *title_mid = [NSLayoutConstraint
+                                     constraintWithItem:self.title
+                                     attribute:NSLayoutAttributeCenterX
+                                     relatedBy:NSLayoutRelationEqual
+                                     toItem:self.contentView
+                                     attribute:NSLayoutAttributeCenterX
+                                     multiplier:1
+                                     constant:0];
+    [NSLayoutConstraint activateConstraints:@[title_top, title_lef, title_btm, title_rit, title_mid]];
+    
+    // tip
+    NSLayoutConstraint *tip_top = [NSLayoutConstraint
+                                   constraintWithItem:self.tipLabel
+                                   attribute:NSLayoutAttributeCenterY
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.contentView
+                                   attribute:NSLayoutAttributeCenterY
+                                   multiplier:1
+                                   constant:-6];
+    NSLayoutConstraint *tip_lef = [NSLayoutConstraint
+                                   constraintWithItem:self.tipLabel
+                                   attribute:NSLayoutAttributeLeft
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.title
+                                   attribute:NSLayoutAttributeRight
+                                   multiplier:1
+                                   constant:0];
+    NSLayoutConstraint *tip_wid = [NSLayoutConstraint
+                                   constraintWithItem:self.tipLabel
+                                   attribute:NSLayoutAttributeWidth
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:nil
+                                   attribute:NSLayoutAttributeNotAnAttribute
+                                   multiplier:1
+                                   constant:6];
+    NSLayoutConstraint *tip_hei = [NSLayoutConstraint
+                                   constraintWithItem:self.tipLabel
+                                   attribute:NSLayoutAttributeHeight
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:nil
+                                   attribute:NSLayoutAttributeNotAnAttribute
+                                   multiplier:1
+                                   constant:6];
+    [NSLayoutConstraint activateConstraints:@[tip_top, tip_lef, tip_wid, tip_hei]];
 }
 @end
+
+@implementation XDPagesTitleLabel
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self setNeedsDisplay];
+    }
+    
+    return self;
+}
+
+- (void)setVerticalAlignment:(TitleVerticalAlignment)verticalAlignment {
+    _verticalAlignment = verticalAlignment;
+    [self setNeedsDisplay];
+}
+
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    CGFloat reviseHeight = (self.frame.size.height - bounds.size.height) * (textRect.size.height / bounds.size.height);
+
+    switch (_verticalAlignment) {
+        case XDVerticalAlignmentTop:
+            textRect.origin.y = bounds.origin.y;
+            break;
+
+        case XDVerticalAlignmentMiddle:
+            textRect.origin.y = bounds.origin.y + (bounds.size.height-textRect.size.height) / 2.0;
+            break;
+
+        case XDVerticalAlignmentBottom:
+            textRect.origin.y = bounds.origin.y + bounds.size.height-textRect.size.height - reviseHeight / 2.0;
+            break;
+
+        default:
+            textRect.origin.y = bounds.origin.y + (bounds.size.height-textRect.size.height) / 2.0;
+            break;
+    }
+    
+    return textRect;
+}
+
+- (void)drawTextInRect:(CGRect)rect {
+    CGRect actualRect = [self textRectForBounds:rect limitedToNumberOfLines:self.numberOfLines];
+    [super drawTextInRect:actualRect];
+}
+
+@end
+

@@ -51,7 +51,7 @@
     
     _titleFlex = YES;
     _titleGradual = YES;
-    _titleWidth = 100;
+    _titleVerticalAlignment = XDVerticalAlignmentMiddle;
     _titleTextColor = [UIColor grayColor];
     _titleTextHightlightColor = [UIColor greenColor];
     _titleFont = [UIFont systemFontOfSize:16];

@@ -86,6 +86,11 @@
     NSLog(@"横向滚动：%f->当前页：%ld->目标页：%ld",changedx,(long)currentPage,(long)willShowPage);
 }
 
+- (CGFloat)xd_pagesViewTitleWidthForIndex:(NSInteger)index title:(NSString *)title {
+    //只有当titleFlex=NO时才会调用
+    return 100;
+}
+
 #pragma mark -- getter
 - (UIImageView *)header {
     if (!_header) {

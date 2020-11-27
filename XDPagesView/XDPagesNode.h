@@ -12,6 +12,8 @@
 @interface XDPagesNode : NSObject {
     @package
     NSString *key;                          // key
+    id  value;                              // value
+    UIColor *badgeColor;                    // 未读消息颜色
     UIViewController *controller;           // 控制器
     UIView *view;                           // 控制器中的子view
     NSArray <UIScrollView *>*scrollViews;   // 每页需要监控的所有滚动单元

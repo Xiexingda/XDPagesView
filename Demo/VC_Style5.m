@@ -103,8 +103,8 @@
     // 标题是否采用渐变方式(设置yes时 标题的大小和颜色在切换时会有正常到高光的渐变效果)
     config.titleGradual = YES;
     
-    // 标题宽度（非自动计算标题宽时才会生效）
-    config.titleWidth = 100;
+    // 标题竖直方向对齐方式
+    config.titleVerticalAlignment = XDVerticalAlignmentMiddle;
     
     // 正常标题颜色
     config.titleTextColor = [UIColor grayColor];

@@ -14,6 +14,7 @@
 
 @interface XDPagesTitleBar ()<UICollectionViewDataSource,UICollectionViewDelegate,XDPagesLayouDelegate>
 @property (nonatomic, strong) UICollectionView *titleBar;
+@property (nonatomic, strong) XDPagesCache  *cache;
 @property (nonatomic, strong) XDPagesLayout *layout;
 @property (nonatomic, strong) XDPagesConfig *config;
 @property (nonatomic, strong) XDSlideEffect *effect;
@@ -100,6 +101,14 @@
     }
 }
 
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color {
+    NSInteger count = [self.titleBar numberOfItemsInSection:0];
+    if (count > 0 && idx < count) {
+        [self.cache setBadgeForIndex:idx number:number color:color];
+        [self.titleBar reloadData];
+    }
+}
+
 #pragma mark -- delegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
@@ -120,20 +129,39 @@
     
     XDPagesTitle *title = [collectionView dequeueReusableCellWithReuseIdentifier:@"title" forIndexPath:indexPath];
     
-    [title configTitleByTitle:_titles[indexPath.row] focusIdx:_focusIndex config:_config indexPath:indexPath];
+    [title configTitleByTitle:_titles[indexPath.row] focusIdx:_focusIndex config:_config badge:[self.cache badgeNumberForIndex:indexPath.row] indexPath:indexPath];
     
     return title;
 }
 
 #pragma mark -- XDPagesLayouDelegate
 - (CGSize)xd_itemLayoutSizeAtIndex:(NSIndexPath *)indexPath {
-    
-    CGFloat c_width = _config.titleFlex ? ([XDPagesTools adjustItemWidthByString:_titles[indexPath.row] font:_config.titleFont.pointSize baseSize:CGSizeMake(MAXFLOAT, _config.titleFont.pointSize+2)]+30) : _config.titleWidth;
+    CGFloat c_width = 0;
+    if (_config.titleFlex) {
+        c_width = [XDPagesTools adjustItemWidthByString:_titles[indexPath.row]
+                                                   font:_config.titleFont.pointSize
+                                               baseSize:CGSizeMake(MAXFLOAT, _config.titleFont.pointSize+2)]+30;
+    } else {
+        c_width = [self.delegate title_widthForIndex:indexPath.row title:_titles[indexPath.row]];
+        if (c_width < 0) {
+            c_width = [XDPagesTools adjustItemWidthByString:_titles[indexPath.row]
+                                                       font:_config.titleFont.pointSize
+                                                   baseSize:CGSizeMake(MAXFLOAT, _config.titleFont.pointSize+2)]+30;
+        }
+    }
     
     return CGSizeMake(c_width, _config.titleBarHeight-(self.config.needTitleBarBottomLine ? 0.5 : 0));
 }
 
 #pragma mark -- getter
+- (XDPagesCache *)cache {
+    if (!_cache) {
+        _cache = [XDPagesCache cache];
+    }
+    
+    return _cache;
+}
+
 - (XDSlideEffect *)effect {
     if (!_effect) {
         _effect = [[XDSlideEffect alloc]init];

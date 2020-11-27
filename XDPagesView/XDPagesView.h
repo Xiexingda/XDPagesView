@@ -55,6 +55,13 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
  @param willShowPage 目标页
  */
 - (void)xd_pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)currentPage willShowPage:(NSInteger)willShowPage;
+
+/**
+ 自定义标题宽度
+ @param index 索引
+ @param title 标题
+ */
+- (CGFloat)xd_pagesViewTitleWidthForIndex:(NSInteger)index title:(NSString *)title;
 @end
 
 @interface XDPagesView : UIView
@@ -91,5 +98,13 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
   @param page 刷新后定位到的页面索引
   */
  - (void)reloadataToPage:(NSInteger)page;
+
+/**
+ 展示某个item的未读消息
+ @param number 未读数，当为0时隐藏
+ @param idx 对应索引
+ @param color badge颜色
+ */
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color;
 @end
 

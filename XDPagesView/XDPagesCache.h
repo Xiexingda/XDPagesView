@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+typedef struct {
+    NSInteger badgeNumber;
+    UIColor *badgeColor;
+} XDBADGE;
+
 @interface XDPagesCache : NSObject
 @property (nonatomic,   weak) UIViewController *mainController;     // 主控制器
 @property (nonatomic, strong) NSArray <NSString *>*titles;          // 所有标题
@@ -29,4 +34,9 @@
 - (UIViewController *)controllerForTitle:(NSString *)title;
 - (NSArray <UIScrollView *>*)scrollViewsForTitle:(NSString *)title;
 
+// 设置未读(number用于之后数字扩展)
+- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color;
+
+//未读数
+- (XDBADGE)badgeNumberForIndex:(NSInteger)idx;
 @end

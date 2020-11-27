@@ -15,6 +15,12 @@ typedef NS_ENUM(NSInteger, SlideLineStyle) {
     XDSlideLine_translation    // 下划线平移(默认效果)
 };
 
+typedef NS_ENUM(NSInteger, TitleVerticalAlignment) {
+    XDVerticalAlignmentTop = 0, //标题顶部垂直
+    XDVerticalAlignmentMiddle,  //标题中部垂直对齐
+    XDVerticalAlignmentBottom,  //标题底部垂直对齐
+};
+
 @interface XDPagesConfig : NSObject
 @property (nonatomic, assign) NSInteger beginPage;                  // 起始页
 @property (nonatomic, assign) NSInteger maxCacheCount;              // 最大缓存页数
@@ -44,7 +50,7 @@ typedef NS_ENUM(NSInteger, SlideLineStyle) {
 
 @property (nonatomic, assign) BOOL titleFlex;                       // 是否自动计算标题宽（默认YES）
 @property (nonatomic, assign) BOOL titleGradual;                    // 是否采用渐变方式(默认YES,只渐变标题属性)
-@property (nonatomic, assign) CGFloat titleWidth;                   // 标题宽度（非自动计算标题宽时才会生效）
+@property (nonatomic, assign) TitleVerticalAlignment titleVerticalAlignment; // 标题竖直对齐方式
 @property (nonatomic, strong) UIColor *titleTextColor;              // 标题颜色
 @property (nonatomic, strong) UIColor *titleTextHightlightColor;    // 标题选中时的颜色
 @property (nonatomic, strong) UIFont *titleFont;                    // 标题字号大小(默认16)

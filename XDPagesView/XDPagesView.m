@@ -90,6 +90,12 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }];
 }
 
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color {
+    if (self.config.needTitleBar && !self.config.customTitleBar) {
+        [self.titleBar showBadgeNumber:number index:idx color:color];
+    }
+}
+
 // 标题可变动高度
 - (CGFloat)headerVerticalCanChangedSpace {
     
@@ -221,6 +227,10 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 #pragma mark -- titleBar_delegate
 - (void)title_tapAtIndex:(NSInteger)index {
     [self.mainCell changeToPage:index animate:self.config.animateForPageChange];
+}
+
+- (CGFloat)title_widthForIndex:(NSInteger)index title:(NSString *)title {
+    return [self.delegate respondsToSelector:@selector(xd_pagesViewTitleWidthForIndex:title:)] ? [self.delegate xd_pagesViewTitleWidthForIndex:index title:title] : -1;
 }
 
 #pragma mark -- cell_delegate
