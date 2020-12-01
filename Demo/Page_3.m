@@ -14,6 +14,25 @@
 @end
 
 @implementation Page_3
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"Page_3_viewWillAppear");
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    NSLog(@"Page_3_viewWillDisappear");
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"Page_3_viewDidAppear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    NSLog(@"Page_3_viewDidDisappear");
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

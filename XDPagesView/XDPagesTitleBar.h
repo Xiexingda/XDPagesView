@@ -11,8 +11,8 @@
 
 @protocol XDPagesTitleBarDelegate <NSObject>
 
-- (void)title_tapAtIndex:(NSInteger)index;
-- (CGFloat)title_widthForIndex:(NSInteger)index title:(NSString *)title;
+- (void)xd_titleTapAtIndex:(NSInteger)index;
+- (CGFloat)xd_titleWidthForIndex:(NSInteger)index title:(NSString *)title;
 
 @end
 @interface XDPagesTitleBar : UIView

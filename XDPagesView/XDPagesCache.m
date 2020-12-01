@@ -66,11 +66,6 @@ XDBADGEMake(NSInteger number, UIColor *color) {
         node->view = [self viewClipsBoundsForView:page.view];
         node->scrollViews = [self allNeedObserveScrollsInView:page.view];
         [_map insertNode:node];
-        // 添加到当前控制器
-        NSAssert(_mainController, @"cache没有添加主控器");
-        
-        [_mainController addChildViewController:page];
-        [page didMoveToParentViewController:_mainController];
         
         [node->scrollViews enumerateObjectsUsingBlock:^(UIScrollView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [XDPagesTools closeAdjustForScroll:obj controller:page];
@@ -96,11 +91,21 @@ XDBADGEMake(NSInteger number, UIColor *color) {
     if (!need) return;
     
     if (_map->header) {
+        // 添加到当前控制器
+        NSAssert(_mainController, @"cache没有添加主控器");
+        if (![_mainController.childViewControllers containsObject:_map->header->controller]) {
+            [_mainController addChildViewController:_map->header->controller];
+            [_map->header->controller didMoveToParentViewController:_mainController];
+        }
         if (_map->header->right>=1)[_map->header->controller viewDidAppear:YES];
     }
     
     if (_map->header->next) {
         [_map->header->next->controller viewDidDisappear:YES];
+        if ([_mainController.childViewControllers containsObject:_map->header->next->controller]) {
+            [_map->header->next->controller willMoveToParentViewController:nil];
+            [_map->header->next->controller removeFromParentViewController];
+        }
     }
 }
 

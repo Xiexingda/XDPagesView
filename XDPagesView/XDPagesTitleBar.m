@@ -120,7 +120,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_focusIndex != indexPath.row) {
-        [self.delegate title_tapAtIndex:indexPath.row];
+        [self.delegate xd_titleTapAtIndex:indexPath.row];
         _focusIndex = indexPath.row;
     }
 }
@@ -142,7 +142,7 @@
                                                    font:_config.titleFont.pointSize
                                                baseSize:CGSizeMake(MAXFLOAT, _config.titleFont.pointSize+2)]+30;
     } else {
-        c_width = [self.delegate title_widthForIndex:indexPath.row title:_titles[indexPath.row]];
+        c_width = [self.delegate xd_titleWidthForIndex:indexPath.row title:_titles[indexPath.row]];
         if (c_width < 0) {
             c_width = [XDPagesTools adjustItemWidthByString:_titles[indexPath.row]
                                                        font:_config.titleFont.pointSize

@@ -74,6 +74,11 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    Page_2 *root = [[Page_2 alloc]init];
+    [self.navigationController pushViewController:root animated:YES];
+}
+
 /*
 #pragma mark - Navigation
 

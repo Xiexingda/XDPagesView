@@ -225,11 +225,11 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 #pragma mark -- titleBar_delegate
-- (void)title_tapAtIndex:(NSInteger)index {
+- (void)xd_titleTapAtIndex:(NSInteger)index {
     [self.mainCell changeToPage:index animate:self.config.animateForPageChange];
 }
 
-- (CGFloat)title_widthForIndex:(NSInteger)index title:(NSString *)title {
+- (CGFloat)xd_titleWidthForIndex:(NSInteger)index title:(NSString *)title {
     return [self.delegate respondsToSelector:@selector(xd_pagesViewTitleWidthForIndex:title:)] ? [self.delegate xd_pagesViewTitleWidthForIndex:index title:title] : -1;
 }
 
