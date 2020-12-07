@@ -47,7 +47,7 @@
     config.needTitleBar = YES;
     
     // 是否标题栏和header作为一个整体 (当设置为yes时 标题栏的背景颜色和背景图片将失效)
-    config.titleBarFitHeader = YES;
+//    config.titleBarFitHeader = YES;
     
     // 标题栏高度
     config.titleBarHeight = 50;
@@ -74,7 +74,7 @@
     config.titleBarSlideLineColor = [UIColor grayColor];
     
     // 标题栏背景色
-    config.titleBarBackColor = [UIColor orangeColor];
+    config.titleBarBackColor = [UIColor greenColor];
     
     // 标题栏背景图片
     config.titleBarBackImage = nil;

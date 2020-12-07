@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 @property (nonatomic, strong) XDPagesTitleBar  *titleBar;
 @property (nonatomic, strong) XDPagesConfig    *config;
 @property (nonatomic, assign) XDPagesPullStyle  pagesPullStyle;
-@property (nonatomic, assign) CGFloat const     adjustValue;    // 调整值
+@property (nonatomic, assign) CGFloat           adjustValue;    // 调整值
+@property (nonatomic, assign) CGFloat           canChangeHeight;
 
 @property (nonatomic, assign) XDPagesScrollStatus s_status;
 @property (nonatomic, assign) CGFloat   mainOffsetStatic;
@@ -98,11 +99,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 // 标题可变动高度
 - (CGFloat)headerVerticalCanChangedSpace {
-    
-    CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
-    
-    CGFloat height = CGRectGetHeight(self.customHeader.bounds)-margin-self.adjustValue;
-    return height > 0 ? height : 0;
+    return _canChangeHeight;
 }
 
 // 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
@@ -130,9 +127,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
-    
     return CGRectGetHeight(self.mainTable.bounds) - self.mainTable.sectionHeaderHeight - margin;
 }
 
@@ -463,6 +458,10 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
                                     CGRectGetWidth(self.bounds),
                                     headerHeight);
     
+    CGFloat cmargin = _config.titleBarMarginTop > headerHeight ? headerHeight : _config.titleBarMarginTop;
+    CGFloat cheight = headerHeight-cmargin-self.adjustValue;
+    cheight = [@(cheight).stringValue floatValue];
+    _canChangeHeight = cheight > 0 ? cheight : 0;
     self.customHeader = customHeader;
     
     return customHeader;
