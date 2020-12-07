@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 @property (nonatomic, strong) XDPagesConfig    *config;
 @property (nonatomic, assign) XDPagesPullStyle  pagesPullStyle;
 @property (nonatomic, assign) CGFloat           adjustValue;    // 调整值
-@property (nonatomic, assign) CGFloat           canChangeHeight;
+@property (nonatomic, assign) CGFloat           canChangeHeight;// 标题可变动高度
 
 @property (nonatomic, assign) XDPagesScrollStatus s_status;
 @property (nonatomic, assign) CGFloat   mainOffsetStatic;
@@ -97,11 +97,6 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }
 }
 
-// 标题可变动高度
-- (CGFloat)headerVerticalCanChangedSpace {
-    return _canChangeHeight;
-}
-
 // 当竖直滚动时禁止横向滚动，由于此时仍需要手势共享，所以只能关闭横向滚动的scrollEnabled
 - (void)pagesContainerScrollEnable:(BOOL)enabel {
     if (self.pagesContainer && self.pagesContainer.scrollEnabled != enabel && self.config.pagesSlideEnable) {
@@ -156,8 +151,8 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 #pragma mark -- scroll_delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (scrollView.contentOffset.y > [self headerVerticalCanChangedSpace]) {
-        scrollView.contentOffset = CGPointMake(0, [self headerVerticalCanChangedSpace]);
+    if (scrollView.contentOffset.y > _canChangeHeight) {
+        scrollView.contentOffset = CGPointMake(0, _canChangeHeight);
     }
     if (self.pagesPullStyle == XDPagesPullOnCenter) {
         if (scrollView.contentOffset.y <= 0) {
@@ -238,7 +233,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 - (CGFloat)cell_headerVerticalCanChangedSpace {
-    return [self headerVerticalCanChangedSpace];
+    return _canChangeHeight;
 }
 
 - (void)cell_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
