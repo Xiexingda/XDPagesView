@@ -366,11 +366,9 @@
                 
                 [self mainTableLock:NO offsety:0];
                 
-                CGFloat adjust = (kvo_scroll.contentSize.height >= self.bounds.size.height+self.adjustValue) ? self.adjustValue : 0;
-                
-                _childOffsetStatic = [self topOfScrollView:kvo_scroll] + adjust;
-                
-                kvo_scroll.contentOffset = CGPointMake(0, [self topOfScrollView:kvo_scroll] + adjust);
+                CGFloat c_off = [self topOfScrollView:kvo_scroll];
+                _childOffsetStatic = c_off;
+                kvo_scroll.contentOffset = CGPointMake(0, c_off);
             }
         }
         
@@ -427,10 +425,9 @@
                 
                 if (self.mainTable.contentOffset.y > 0) {
                     
-                    CGFloat adjust = (kvo_scroll.contentSize.height >= self.bounds.size.height+self.adjustValue) ? self.adjustValue : 0;
-                    
-                    _childOffsetStatic = [self topOfScrollView:kvo_scroll] + adjust;
-                    kvo_scroll.contentOffset = CGPointMake(0, [self topOfScrollView:kvo_scroll] + adjust);
+                    CGFloat c_off = [self topOfScrollView:kvo_scroll];
+                    _childOffsetStatic = c_off;
+                    kvo_scroll.contentOffset = CGPointMake(0, c_off);
                 }
             }
         }
