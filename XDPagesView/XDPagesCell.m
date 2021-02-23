@@ -366,7 +366,8 @@
                 
                 [self mainTableLock:NO offsety:0];
                 
-                CGFloat c_off = [self topOfScrollView:kvo_scroll];
+                CGFloat c_off = [@([self topOfScrollView:kvo_scroll]).stringValue floatValue];
+                _childOffsetStatic = c_off;
                 kvo_scroll.contentOffset = CGPointMake(0, c_off);
             }
         }
@@ -423,7 +424,8 @@
                 [self mainTableLock:NO offsety:0];
                 
                 if (self.mainTable.contentOffset.y > 0) {
-                    CGFloat c_off = [self topOfScrollView:kvo_scroll];
+                    CGFloat c_off = [@([self topOfScrollView:kvo_scroll]).stringValue floatValue];
+                    _childOffsetStatic = c_off;
                     kvo_scroll.contentOffset = CGPointMake(0, c_off);
                 }
             }
