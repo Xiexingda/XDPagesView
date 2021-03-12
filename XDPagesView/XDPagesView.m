@@ -190,8 +190,8 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }
 
     _mainOffsetStatic = scrollView.contentOffset.y;
-    if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:)]) {
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:_mainOffsetStatic];
+    if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:isCeiling:)]) {
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:_mainOffsetStatic isCeiling:floor(_mainOffsetStatic) >= floor(_canChangeHeight)];
     }
 }
 

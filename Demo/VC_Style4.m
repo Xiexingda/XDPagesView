@@ -82,7 +82,7 @@
 }
 
 // 以下代理非必须实现
-- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy {
+- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy isCeiling:(BOOL)ceiling {
     NSLog(@"竖直：%f",changedy);
 }
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
