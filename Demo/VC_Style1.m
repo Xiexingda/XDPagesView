@@ -62,7 +62,7 @@
 }
 - (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
     NSLog(@"当前页面：%@",pageTitle);
-    [self.pages showBadgeNumber:1 index:0 color:UIColor.redColor];
+    [self.pages showBadgeNumber:1 index:0 color:UIColor.redColor isNumber:YES];
 }
 
 #pragma mark -- getter

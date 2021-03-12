@@ -14,6 +14,7 @@
     NSString *key;                          // key
     id  value;                              // value
     UIColor *badgeColor;                    // 未读消息颜色
+    BOOL isNumber;                          // 未读消息是否显示数字
     UIViewController *controller;           // 控制器
     UIView *view;                           // 控制器中的子view
     NSArray <UIScrollView *>*scrollViews;   // 每页需要监控的所有滚动单元

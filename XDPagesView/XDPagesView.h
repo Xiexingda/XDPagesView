@@ -105,7 +105,8 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
  @param number 未读数，当为0时隐藏
  @param idx 对应索引
  @param color badge颜色
+ @param isNumber 是否显示数字
  */
-- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color;
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber;
 @end
 

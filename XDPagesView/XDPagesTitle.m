@@ -12,6 +12,8 @@
 @property (nonatomic, strong) XDPagesTitleLabel *title;
 @property (nonatomic, strong) UIImageView *backImage;
 @property (nonatomic, strong) UILabel *tipLabel;
+@property (nonatomic, strong) UIView *numberTip;
+@property (nonatomic, strong) UILabel *tipNumerLabel;
 @end
 
 typedef struct {
@@ -48,7 +50,20 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     self.title.text = title;
     
     self.tipLabel.hidden = badge.badgeNumber > 0 ? NO : YES;
-    self.tipLabel.backgroundColor = badge.badgeColor;
+    self.numberTip.hidden = badge.badgeNumber > 0 ? NO : YES;
+    
+    if (badge.isNumber) {
+        //以数字形式展示未读
+        self.numberTip.backgroundColor = badge.badgeColor;
+        self.tipNumerLabel.text = badge.badgeNumber > 99 ? @"99+" : @(badge.badgeNumber).stringValue;
+        self.tipLabel.hidden = YES;
+        [self layoutIfNeeded];
+    } else {
+        //以红点形式展示未读
+        self.tipLabel.backgroundColor = badge.badgeColor;
+        self.numberTip.hidden = YES;
+        [self layoutIfNeeded];
+    }
     
     if (fidx == indexPath.row) {
         // 当前选中
@@ -134,14 +149,36 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 
 - (UILabel *)tipLabel {
     if (!_tipLabel) {
-        _tipLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 6, 6)];
+        _tipLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 8, 8)];
         _tipLabel.clipsToBounds = YES;
-        _tipLabel.layer.cornerRadius = 3;
+        _tipLabel.layer.cornerRadius = 4;
         _tipLabel.backgroundColor = UIColor.redColor;
         _tipLabel.hidden = YES;
     }
     
     return _tipLabel;
+}
+
+- (UILabel *)tipNumerLabel {
+    if (!_tipNumerLabel) {
+        _tipNumerLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 16, 16)];
+        _tipNumerLabel.backgroundColor = UIColor.clearColor;
+        _tipNumerLabel.textAlignment = NSTextAlignmentCenter;
+        _tipNumerLabel.textColor = UIColor.whiteColor;
+        _tipNumerLabel.font = [UIFont systemFontOfSize:11.f];
+    }
+    
+    return _tipNumerLabel;
+}
+
+- (UIView *)numberTip {
+    if (!_numberTip) {
+        _numberTip = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 16, 16)];
+        _numberTip.clipsToBounds = YES;
+        _numberTip.layer.cornerRadius = 8;
+    }
+    
+    return _numberTip;
 }
 
 #pragma mark -- UI
@@ -150,9 +187,13 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     [self.contentView addSubview:self.backImage];
     [self.contentView addSubview:self.title];
     [self.contentView addSubview:self.tipLabel];
+    [self.contentView addSubview:self.numberTip];
+    [self.numberTip addSubview:self.tipNumerLabel];
     self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
     self.title.translatesAutoresizingMaskIntoConstraints = NO;
     self.tipLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tipNumerLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.numberTip.translatesAutoresizingMaskIntoConstraints = NO;
     
     // backImage
     NSLayoutConstraint *back_top = [NSLayoutConstraint
@@ -232,7 +273,12 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                      constant:0];
     [NSLayoutConstraint activateConstraints:@[title_top, title_lef, title_btm, title_rit, title_mid]];
     
-    // tip
+    [self redDotTipLayout];
+    [self numberTipLayout];
+}
+
+- (void)redDotTipLayout {
+    // tip for red dot type
     NSLayoutConstraint *tip_top = [NSLayoutConstraint
                                    constraintWithItem:self.tipLabel
                                    attribute:NSLayoutAttributeCenterY
@@ -256,7 +302,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                    toItem:nil
                                    attribute:NSLayoutAttributeNotAnAttribute
                                    multiplier:1
-                                   constant:6];
+                                   constant:8];
     NSLayoutConstraint *tip_hei = [NSLayoutConstraint
                                    constraintWithItem:self.tipLabel
                                    attribute:NSLayoutAttributeHeight
@@ -264,9 +310,83 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                    toItem:nil
                                    attribute:NSLayoutAttributeNotAnAttribute
                                    multiplier:1
-                                   constant:6];
+                                   constant:8];
     [NSLayoutConstraint activateConstraints:@[tip_top, tip_lef, tip_wid, tip_hei]];
 }
+
+- (void)numberTipLayout {
+    // tip for number type
+    
+    NSLayoutConstraint *lab_c_y = [NSLayoutConstraint
+                                   constraintWithItem:self.tipNumerLabel
+                                   attribute:NSLayoutAttributeCenterY
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.numberTip
+                                   attribute:NSLayoutAttributeCenterY
+                                   multiplier:1
+                                   constant:0];
+    NSLayoutConstraint *lab_rig = [NSLayoutConstraint
+                                   constraintWithItem:self.tipNumerLabel
+                                   attribute:NSLayoutAttributeTrailing
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.numberTip
+                                   attribute:NSLayoutAttributeTrailing
+                                   multiplier:1
+                                   constant:-5];
+    NSLayoutConstraint *lab_lef = [NSLayoutConstraint
+                                   constraintWithItem:self.tipNumerLabel
+                                   attribute:NSLayoutAttributeLeading
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.numberTip
+                                   attribute:NSLayoutAttributeLeading
+                                   multiplier:1
+                                   constant:5];
+    NSLayoutConstraint *lab_wid = [NSLayoutConstraint
+                                   constraintWithItem:self.tipNumerLabel
+                                   attribute:NSLayoutAttributeWidth
+                                   relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                   toItem:nil
+                                   attribute:NSLayoutAttributeNotAnAttribute
+                                   multiplier:1
+                                   constant:0];
+    [NSLayoutConstraint activateConstraints:@[lab_c_y, lab_lef, lab_rig, lab_wid]];
+    
+    
+    NSLayoutConstraint *tip_top = [NSLayoutConstraint
+                                   constraintWithItem:self.numberTip
+                                   attribute:NSLayoutAttributeCenterY
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.contentView
+                                   attribute:NSLayoutAttributeCenterY
+                                   multiplier:1
+                                   constant:-6];
+    NSLayoutConstraint *tip_rig = [NSLayoutConstraint
+                                   constraintWithItem:self.numberTip
+                                   attribute:NSLayoutAttributeRight
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:self.title
+                                   attribute:NSLayoutAttributeRight
+                                   multiplier:1
+                                   constant:10];
+    NSLayoutConstraint *tip_wid = [NSLayoutConstraint
+                                   constraintWithItem:self.numberTip
+                                   attribute:NSLayoutAttributeWidth
+                                   relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                   toItem:nil
+                                   attribute:NSLayoutAttributeNotAnAttribute
+                                   multiplier:1
+                                   constant:16];
+    NSLayoutConstraint *tip_hei = [NSLayoutConstraint
+                                   constraintWithItem:self.numberTip
+                                   attribute:NSLayoutAttributeHeight
+                                   relatedBy:NSLayoutRelationEqual
+                                   toItem:nil
+                                   attribute:NSLayoutAttributeNotAnAttribute
+                                   multiplier:1
+                                   constant:16];
+    [NSLayoutConstraint activateConstraints:@[tip_top, tip_rig, tip_wid, tip_hei]];
+}
+
 @end
 
 @implementation XDPagesTitleLabel
@@ -316,4 +436,3 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 }
 
 @end
-

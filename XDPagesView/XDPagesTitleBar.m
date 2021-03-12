@@ -101,10 +101,10 @@
     }
 }
 
-- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color {
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber {
     NSInteger count = [self.titleBar numberOfItemsInSection:0];
     if (count > 0 && idx < count) {
-        [self.cache setBadgeForIndex:idx number:number color:color];
+        [self.cache setBadgeForIndex:idx number:number color:color isNumber:isNumber];
         [self.titleBar reloadData];
     }
 }

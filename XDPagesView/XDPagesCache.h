@@ -12,6 +12,7 @@
 typedef struct {
     NSInteger badgeNumber;
     UIColor *badgeColor;
+    BOOL isNumber;
 } XDBADGE;
 
 @interface XDPagesCache : NSObject
@@ -34,8 +35,8 @@ typedef struct {
 - (UIViewController *)controllerForTitle:(NSString *)title;
 - (NSArray <UIScrollView *>*)scrollViewsForTitle:(NSString *)title;
 
-// 设置未读(number用于之后数字扩展)
-- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color;
+// 设置未读
+- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color isNumber:(BOOL)isNumber;
 
 //未读数
 - (XDBADGE)badgeNumberForIndex:(NSInteger)idx;

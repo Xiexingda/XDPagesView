@@ -14,10 +14,11 @@
 #define IgnoreTag 5201314
 
 NS_INLINE XDBADGE
-XDBADGEMake(NSInteger number, UIColor *color) {
+XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
     XDBADGE badge;
     badge.badgeNumber = number;
     badge.badgeColor = color;
+    badge.isNumber = isNumber;
     return badge;
 }
 
@@ -224,17 +225,19 @@ XDBADGEMake(NSInteger number, UIColor *color) {
     }
 }
 
-- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color {
+- (void)setBadgeForIndex:(NSInteger)idx number:(NSInteger)number color:(UIColor *)color isNumber:(BOOL)isNumber {
     XDPagesNode *node = [_badgeMap->mapDic objectForKey:@(idx).stringValue];
     if (!node) {
         node = [XDPagesNode node];
         node->key = @(idx).stringValue;
         node->value = number>0?@(number):@(0);
         node->badgeColor = color;
+        node->isNumber = isNumber;
         [_badgeMap insertNode:node];
     } else {
         node->value = number>0?@(number):@(0);
         node->badgeColor = color;
+        node->isNumber = isNumber;
         [_badgeMap bringNodeToHeader:node];
     }
 }
@@ -242,9 +245,9 @@ XDBADGEMake(NSInteger number, UIColor *color) {
 - (XDBADGE)badgeNumberForIndex:(NSInteger)idx {
     XDPagesNode *node = [_badgeMap->mapDic objectForKey:@(idx).stringValue];
     if (node) {
-        return XDBADGEMake([node->value integerValue], node->badgeColor);
+        return XDBADGEMake([node->value integerValue], node->badgeColor, node->isNumber);
     }
-    return XDBADGEMake(0, UIColor.clearColor);
+    return XDBADGEMake(0, UIColor.clearColor, NO);
 }
 
 @end

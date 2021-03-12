@@ -91,9 +91,9 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }];
 }
 
-- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color {
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber {
     if (self.config.needTitleBar && !self.config.customTitleBar) {
-        [self.titleBar showBadgeNumber:number index:idx color:color];
+        [self.titleBar showBadgeNumber:number index:idx color:color isNumber:isNumber];
     }
 }
 
