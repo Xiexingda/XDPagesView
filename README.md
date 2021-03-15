@@ -4,6 +4,42 @@
 # 最新动态(XDPagesView 2.0 来了)
 XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新”，不好意思，兄弟们我食言了，虽然1.0实现方式更加简洁优雅，但随着业务的增加1.0显得越来越力不从心，在对多列表和各种控制器的支持上尤为不足，所以不得已只能升级到2.0了，但大家不需要担心，2.0依旧保持了1.0简单优雅的调用方式，甚至比1.0更加简单优雅，你总说你不认识2.0，我相信你在认识它之后，一定不会让你失望的！
 
+# 最近更新2021-3-12
+
+### 1.修改代理方法，添加了吸顶字段
+/**
+ 竖直滚动监听
+ @param changedy 竖直offset.y
+ @param ceiling 是否已吸顶
+ */
+- (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy isCeiling:(BOOL)ceiling;
+
+### 2.添加动态设置标题宽度的代理 （config.titleFlex=NO时生效，去掉了config.titleWidth）
+/**
+ 自定义标题宽度
+ @param index 索引
+ @param title 标题
+ */
+- (CGFloat)xd_pagesViewTitleWidthForIndex:(NSInteger)index title:(NSString *)title;
+
+### 3.添加了对未读红点的支持
+/**
+ 展示某个item的未读消息
+ @param number 未读数，当为0时隐藏
+ @param idx 对应索引
+ @param color badge颜色
+ @param isNumber 是否显示数字
+ */
+- (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber;
+
+### 4.添加了config属性titleVerticalAlignment 用于标题渐变时的垂直对齐方式
+/**
+XDVerticalAlignmentTop = 0, //标题顶部垂直
+XDVerticalAlignmentMiddle,  //标题中部垂直对齐
+XDVerticalAlignmentBottom,  //标题底部垂直对齐
+*/
+config.titleVerticalAlignment = XDVerticalAlignmentMiddle;
+
 ## XDPagesView2.0支持的功能：
 1. 支持左右上下无卡顿的顺畅滚动
 2. 支持自定义header 和 自定义标题栏
