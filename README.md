@@ -7,22 +7,27 @@ XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新
 # 最近更新2021-3-12
 
 ### 1.修改代理方法，添加了吸顶字段
+'''
 /**
  竖直滚动监听
  @param changedy 竖直offset.y
  @param ceiling 是否已吸顶
  */
 - (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy isCeiling:(BOOL)ceiling;
+'''
 
 ### 2.添加动态设置标题宽度的代理 （config.titleFlex=NO时生效，去掉了config.titleWidth）
+'''
 /**
  自定义标题宽度
  @param index 索引
  @param title 标题
  */
 - (CGFloat)xd_pagesViewTitleWidthForIndex:(NSInteger)index title:(NSString *)title;
+'''
 
 ### 3.添加了对未读红点的支持
+'''
 /**
  展示某个item的未读消息
  @param number 未读数，当为0时隐藏
@@ -31,14 +36,17 @@ XDPagesView1.0时我曾说过“不会支持头部放大，和顶端下拉刷新
  @param isNumber 是否显示数字
  */
 - (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber;
+'''
 
 ### 4.添加了config属性titleVerticalAlignment 用于标题渐变时的垂直对齐方式
+'''
 /**
 XDVerticalAlignmentTop = 0, //标题顶部垂直
 XDVerticalAlignmentMiddle,  //标题中部垂直对齐
 XDVerticalAlignmentBottom,  //标题底部垂直对齐
 */
 config.titleVerticalAlignment = XDVerticalAlignmentMiddle;
+'''
 
 ## XDPagesView2.0支持的功能：
 1. 支持左右上下无卡顿的顺畅滚动
