@@ -151,6 +151,10 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 #pragma mark -- scroll_delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (!scrollView) {
+        return;
+    }
+    
     if (scrollView.contentOffset.y > _canChangeHeight) {
         scrollView.contentOffset = CGPointMake(0, _canChangeHeight);
     }
@@ -284,8 +288,9 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     _pagesHeader = pagesHeader;
     
     if (_mainTable) {
+        [_mainTable beginUpdates];
         _mainTable.tableHeaderView = [self customHeader:pagesHeader];
-        [_mainTable reloadData];
+        [_mainTable endUpdates];
     }
 }
 
