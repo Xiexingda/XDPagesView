@@ -433,7 +433,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
                                      toItem:customHeader
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:-self.adjustValue];
+                                     constant:self.adjustValue];
     NSLayoutConstraint *relat_led = [NSLayoutConstraint
                                      constraintWithItem:header
                                      attribute:NSLayoutAttributeLeading
