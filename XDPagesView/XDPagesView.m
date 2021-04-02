@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     [self.mainCell reloadToPage:page finish:^(NSArray<NSString *> *titles) {
         if (weakSelf.config.needTitleBar && !weakSelf.config.customTitleBar) {
             weakSelf.titleBar.refreshTitles(titles);
+            weakSelf.titleBar.currentFocusIndex(page);
         }
     }];
 }
