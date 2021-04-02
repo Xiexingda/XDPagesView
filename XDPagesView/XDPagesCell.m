@@ -122,11 +122,13 @@
     
     [self clearKVO];
     
-    for (UIScrollView *child in [self.pagesCache scrollViewsForTitle:self.pagesCache.titles[currentPage]]) {
-        [child addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
+    NSArray<UIScrollView *>* childs = [self.pagesCache scrollViewsForTitle:self.pagesCache.titles[currentPage]];
+    if (childs && childs.count) {
+        for (UIScrollView *child in childs) {
+            [child addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
+        }
+        [self.pagesCache.kvoTitles addObject:self.pagesCache.titles[currentPage]];
     }
-    
-    [self.pagesCache.kvoTitles addObject:self.pagesCache.titles[currentPage]];
 }
 
 // 配置所有标题
