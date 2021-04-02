@@ -246,8 +246,7 @@
 - (void (^)(NSInteger))currentFocusIndex {
     __weak typeof(self) weakSelf = self;
     return ^(NSInteger focusIndex) {
-        [weakSelf.titleBar setNeedsLayout];
-        [weakSelf.titleBar layoutSubviews];
+        [weakSelf.titleBar layoutIfNeeded];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
         [weakSelf refreshTitleBar];
@@ -260,6 +259,7 @@
         _slideLine.hidden = YES;
     }
     [self.titleBar reloadData];
+    [self.titleBar layoutIfNeeded];
 }
 
 #pragma mark -- UI
