@@ -133,7 +133,7 @@
 
 // 配置所有标题
 - (void)configAllTitles {
-    NSArray *allTitles = [self.delegate cell_allTitles];
+    NSArray *allTitles = [self.delegate cell_pagesViewAllTitles];
     self.pagesCache.titles = allTitles;
     
     [self.pagesContainer setContentSize:CGSizeMake(allTitles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];

@@ -228,12 +228,12 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 #pragma mark -- cell_delegate
-- (NSArray<NSString *> *)cell_allTitles {
+- (NSArray<NSString *> *)cell_pagesViewAllTitles {
     return [self.delegate xd_pagesViewPageTitles];
 }
 
 - (UIViewController *)cell_pagesViewChildControllerForIndex:(NSInteger)index title:(NSString *)title {
-    return [self.delegate xd_pagesViewChildControllerToPagesView:self forIndex:index title:title];
+    return [self.delegate xd_pagesView:self controllerForIndex:index title:title];
 }
 
 - (CGFloat)cell_headerVerticalCanChangedSpace {
@@ -245,8 +245,8 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         self.titleBar.currentFocusIndex(pageIndex);
     }
     
-    if ([self.delegate respondsToSelector:@selector(xd_pagesViewDidChangeToPageController:title:pageIndex:)]) {
-        [self.delegate xd_pagesViewDidChangeToPageController:pageController title:pageTitle pageIndex:pageIndex];
+    if ([self.delegate respondsToSelector:@selector(xd_pagesViewDidChangeToPageController:index:title:)]) {
+        [self.delegate xd_pagesViewDidChangeToPageController:pageController index:pageIndex title:pageTitle];
     }
 }
 

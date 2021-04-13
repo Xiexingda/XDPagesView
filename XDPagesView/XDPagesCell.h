@@ -16,7 +16,7 @@
 数据代理，用于接受标题数组
 @return 标题数组
 */
-- (NSArray <NSString *>*)cell_allTitles;
+- (NSArray <NSString *>*)cell_pagesViewAllTitles;
 
 /**
 数据代理，用于接受当前控制器

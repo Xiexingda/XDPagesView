@@ -158,7 +158,7 @@
     return _titles;
 }
 
-- (UIViewController *)xd_pagesViewChildControllerToPagesView:(XDPagesView *)pagesView forIndex:(NSInteger)index title:(NSString *)title {
+- (UIViewController *)xd_pagesView:(XDPagesView *)pagesView controllerForIndex:(NSInteger)index title:(NSString *)title {
     
     // 缓存复用控制器
     UIViewController *vc = [pagesView dequeueReusablePageForIndex:index];
@@ -197,8 +197,8 @@
     NSLog(@"水平：%f",changedx);
 }
 
-- (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
-    NSLog(@"当前页面：%@",pageTitle);
+- (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController index:(NSInteger)index title:(NSString *)title {
+    NSLog(@"当前页面：%@",title);
 }
 
 #pragma mark -- getter
