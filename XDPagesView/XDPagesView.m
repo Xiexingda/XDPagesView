@@ -245,8 +245,8 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         self.titleBar.currentFocusIndex(pageIndex);
     }
     
-    if ([self.delegate respondsToSelector:@selector(xd_pagesViewDidChangeToPageController:index:title:)]) {
-        [self.delegate xd_pagesViewDidChangeToPageController:pageController index:pageIndex title:pageTitle];
+    if ([self.delegate respondsToSelector:@selector(xd_pagesViewDidChangeToController:index:title:)]) {
+        [self.delegate xd_pagesViewDidChangeToController:pageController index:pageIndex title:pageTitle];
     }
 }
 

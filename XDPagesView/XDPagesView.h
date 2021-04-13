@@ -36,11 +36,11 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
 
 /**
  已经跳到的当前界面
- @param pageController 当前控制器
+ @param controller 当前控制器
  @param index 索引
  @param title 标题
  */
-- (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController index:(NSInteger)index title:(NSString *)title;
+- (void)xd_pagesViewDidChangeToController:(UIViewController *const)controller index:(NSInteger)index title:(NSString *)title;
 
 /**
  竖直滚动监听

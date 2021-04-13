@@ -197,7 +197,7 @@
     NSLog(@"水平：%f",changedx);
 }
 
-- (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController index:(NSInteger)index title:(NSString *)title {
+- (void)xd_pagesViewDidChangeToController:(UIViewController *const)controller index:(NSInteger)index title:(NSString *)title {
     NSLog(@"当前页面：%@",title);
 }
 

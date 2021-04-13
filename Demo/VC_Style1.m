@@ -60,7 +60,7 @@
 - (void)xd_pagesViewVerticalScrollOffsetyChanged:(CGFloat)changedy isCeiling:(BOOL)ceiling {
     NSLog(@"竖直：%f",changedy);
 }
-- (void)xd_pagesViewDidChangeToPageController:(UIViewController *const)pageController index:(NSInteger)index title:(NSString *)title {
+- (void)xd_pagesViewDidChangeToController:(UIViewController *const)controller index:(NSInteger)index title:(NSString *)title {
     NSLog(@"当前页面：%@",title);
     [self.pages showBadgeNumber:1 index:0 color:UIColor.redColor isNumber:YES];
 }
