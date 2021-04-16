@@ -82,22 +82,21 @@
     }
     
     // 标题渐变
-    if (_config.titleGradual) {
+    if (_config.titleGradual && page != willToPage) {
         
-        if (page != willToPage) {
-            
-            NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
-            NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
-            
-            XDPagesTitle *c_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:c_idx];
-            XDPagesTitle *w_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:w_idx];
+        NSIndexPath *c_idx = [NSIndexPath indexPathForItem:page inSection:0];
+        NSIndexPath *w_idx = [NSIndexPath indexPathForItem:willToPage inSection:0];
         
-            [c_title gradualDownByConfig:_config percent:percent];
-            [w_title gradualUpByConfig:_config percent:percent];
-            
-        } else {
-            [self refreshTitleBar];
-        }
+        XDPagesTitle *c_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:c_idx];
+        XDPagesTitle *w_title = (XDPagesTitle*)[self.titleBar cellForItemAtIndexPath:w_idx];
+    
+        [c_title gradualDownByConfig:_config percent:percent];
+        [w_title gradualUpByConfig:_config percent:percent];
+        
+    }
+    
+    if (page == willToPage) {
+        [self refreshTitleBar];
     }
 }
 
@@ -121,7 +120,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_focusIndex != indexPath.row) {
         [self.delegate xd_titleTapAtIndex:indexPath.row];
-        _focusIndex = indexPath.row;
     }
 }
 
@@ -249,7 +247,6 @@
         [weakSelf.titleBar layoutIfNeeded];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
-        [weakSelf refreshTitleBar];
     };
 }
 

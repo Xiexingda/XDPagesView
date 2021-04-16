@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
   s.name         = "XDPagesView"
-  s.version      = "2.2.3"
+  s.version      = "2.2.5"
   s.summary      = "多控制器列表"
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?

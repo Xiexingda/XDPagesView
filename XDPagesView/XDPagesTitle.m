@@ -91,9 +91,9 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     // 标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];
     XDRGB w_RGB = [self getRGBValueFromColor:config.titleTextHightlightColor];
-    CGFloat g_red = c_RGB.red+(w_RGB.red-c_RGB.red)*percent;
-    CGFloat g_green = c_RGB.green+(w_RGB.green-c_RGB.green)*percent;
-    CGFloat g_blue = c_RGB.blue+(w_RGB.blue-c_RGB.blue)*percent;
+    CGFloat g_red = c_RGB.red + (w_RGB.red - c_RGB.red) * percent;
+    CGFloat g_green = c_RGB.green + (w_RGB.green - c_RGB.green) * percent;
+    CGFloat g_blue = c_RGB.blue + (w_RGB.blue - c_RGB.blue) * percent;
     
     self.title.textColor = [[UIColor alloc]initWithRed:g_red green:g_green blue:g_blue alpha:1];
 }
@@ -106,9 +106,9 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     // 标题颜色渐变
     XDRGB c_RGB = [self getRGBValueFromColor:config.titleTextColor];
     XDRGB w_RGB = [self getRGBValueFromColor:config.titleTextHightlightColor];
-    CGFloat g_red = w_RGB.red-(w_RGB.red-c_RGB.red)*percent;
-    CGFloat g_green = w_RGB.green-(w_RGB.green-c_RGB.green)*percent;
-    CGFloat g_blue = w_RGB.blue-(w_RGB.blue-c_RGB.blue)*percent;
+    CGFloat g_red = w_RGB.red - (w_RGB.red - c_RGB.red) * percent;
+    CGFloat g_green = w_RGB.green - (w_RGB.green - c_RGB.green) * percent;
+    CGFloat g_blue = w_RGB.blue - (w_RGB.blue - c_RGB.blue) * percent;
    
     self.title.textColor = [[UIColor alloc]initWithRed:g_red green:g_green blue:g_blue alpha:1];
 }
