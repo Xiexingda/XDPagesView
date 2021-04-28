@@ -247,6 +247,7 @@
         [weakSelf.titleBar layoutIfNeeded];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
+        [weakSelf.titleBar reloadData];
     };
 }
 
