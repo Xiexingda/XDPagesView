@@ -226,24 +226,25 @@
     NSInteger page_left = floor(xValue/c_w);     // 左页
     NSInteger page_right   = ceil(xValue/c_w);   // 右页
 
-    // 当前页超出左右边界时说明切换到了新的一页
-    if (_currentPage < page_left) {
-        [self pageIndexDidChangedToPage:page_left];
-        
-    } else if (_currentPage > page_right) {
-        [self pageIndexDidChangedToPage:page_right];
-    }
-
-    // 当前面在前面时，说明是往左滑动， 所以将要出现的是右边的子页（下一页）
     if (_currentPage == page_left) {
+        // 当前面在前面时，说明是往左滑动， 所以将要出现的是右边的子页（下一页）
         if (_willShowPage != page_right) {
             [self handleForPage:page_right];
         }
-    // 当前页在右面时，说明是往右滑动，所以将要出现的是左边的子页（上一页）
+
     } else if (_currentPage == page_right) {
+        // 当前页在右面时，说明是往右滑动，所以将要出现的是左边的子页（上一页）
         if (_willShowPage != page_left) {
             [self handleForPage:page_left];
         }
+        
+    } else if (_currentPage < page_left) {
+        // 当前页超出左边界时说明切换到了新的一页
+        [self pageIndexDidChangedToPage:page_right];
+        
+    } else if (_currentPage > page_right) {
+        // 当前页超出右边界时说明切换到了新的一页
+        [self pageIndexDidChangedToPage:page_left];
     }
 }
 
