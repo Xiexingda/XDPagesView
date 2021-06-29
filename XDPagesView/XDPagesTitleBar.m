@@ -247,17 +247,23 @@
         [weakSelf.titleBar layoutIfNeeded];
         [weakSelf.titleBar scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:focusIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
         weakSelf.focusIndex = focusIndex;
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
         [weakSelf.titleBar reloadData];
+        [CATransaction commit];
     };
 }
 
 #pragma mark - Private
 - (void)refreshTitleBar {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
     if (self.titles.count == 0) {
         _slideLine.hidden = YES;
     }
     [self.titleBar reloadData];
     [self.titleBar layoutIfNeeded];
+    [CATransaction commit];
 }
 
 #pragma mark -- UI
