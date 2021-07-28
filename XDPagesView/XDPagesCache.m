@@ -93,19 +93,26 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
     
     if (_map->header) {
         // 添加到当前控制器
-        NSAssert(_mainController, @"cache没有添加主控器");
-        if (![_mainController.childViewControllers containsObject:_map->header->controller]) {
-            [_mainController addChildViewController:_map->header->controller];
-            [_map->header->controller didMoveToParentViewController:_mainController];
+        if (_mainController) {
+            if (![_mainController.childViewControllers containsObject:_map->header->controller]) {
+                [_mainController addChildViewController:_map->header->controller];
+                [_map->header->controller didMoveToParentViewController:_mainController];
+            }
+        } else {
+            NSLog(@"cache没有添加主控器");
         }
-        if (_map->header->right>=1)[_map->header->controller viewDidAppear:YES];
+        if (_map->header->right >= 1)[_map->header->controller viewDidAppear:YES];
     }
     
     if (_map->header->next) {
         [_map->header->next->controller viewDidDisappear:YES];
-        if ([_mainController.childViewControllers containsObject:_map->header->next->controller]) {
-            [_map->header->next->controller willMoveToParentViewController:nil];
-            [_map->header->next->controller removeFromParentViewController];
+        if (_mainController) {
+            if ([_mainController.childViewControllers containsObject:_map->header->next->controller]) {
+                [_map->header->next->controller willMoveToParentViewController:nil];
+                [_map->header->next->controller removeFromParentViewController];
+            }
+        } else {
+            NSLog(@"cache没有添加主控器");
         }
     }
 }
