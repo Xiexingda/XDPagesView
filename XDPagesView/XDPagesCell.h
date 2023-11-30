@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "XDPagesTable.h"
 #import "XDPagesConfig.h"
+#import "XDPagesTypes.h"
 
 @protocol XDPagesCellDelegate <NSObject>
 
@@ -58,19 +59,14 @@
 - (void)cell_mainTableNeedLock:(BOOL)need offsety:(CGFloat)y;
 
 /**
- 当前页是否可滚动
- @param enable 是否可滚动
- */
-- (void)cell_currentPageScollEnable:(BOOL)enable;
-
-/**
  列表以上可以变动的竖直高度
  */
 - (CGFloat)cell_headerVerticalCanChangedSpace;
 @end
 
 @interface XDPagesCell : UITableViewCell
-
+@property (nonatomic,   weak) UIScrollView *currentKVOChild;  // 当前被观察的子列表
+@property (nonatomic, assign) CGFloat mainOffsetStatic; // 主table锁定偏移量
 /**
  初始化主cell
  @param style cell风格
@@ -79,15 +75,13 @@
  @param delegate 代理
  @param pullStyle 下拉风格
  @param config 配置
- @param adjustValue 调整值
  */
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier
             contentController:(UIViewController *)controller
                      delegate:(id<XDPagesCellDelegate>)delegate
-               pagesPullStyle:(NSInteger)pullStyle
-                       config:(XDPagesConfig *)config
-                  adjustValue:(CGFloat)adjustValue;
+               pagesPullStyle:(XDPagesPullStyle)pullStyle
+                       config:(XDPagesConfig *)config;
 
 /**
  内外视图交换管道
@@ -115,10 +109,4 @@
  @param finish 刷新完成回调
  */
 - (void)reloadToPage:(NSInteger)page finish:(void(^)(NSArray<NSString *>* titles))finish;
-
-/**
- 即时更新主列表的偏移量
- @param currentMainTalbelOffsety 主列表偏移量
- */
-- (void)setCurrentMainTalbelOffsety:(CGFloat)currentMainTalbelOffsety;
 @end

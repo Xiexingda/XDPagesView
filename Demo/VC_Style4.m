@@ -93,7 +93,7 @@
 - (UIImageView *)header {
     if (!_header) {
         _header = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"xd_header.jpg"]];
-        [_header setFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 200)];
+        [_header setFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 260)];
         _header.contentMode = UIViewContentModeScaleAspectFill;
         _header.clipsToBounds = YES;
         

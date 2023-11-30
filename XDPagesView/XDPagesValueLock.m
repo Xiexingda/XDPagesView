@@ -9,8 +9,8 @@
 #import "XDPagesValueLock.h"
 
 typedef NS_ENUM(NSInteger,LockValue) {
-    XD_Lock = 1,
-    XD_UnLock = 2
+    XD_UnLock,
+    XD_Lock
 };
 
 @interface XDPagesValueLock ()
@@ -22,18 +22,16 @@ typedef NS_ENUM(NSInteger,LockValue) {
     return [[XDPagesValueLock alloc]init];
 }
 
-- (CGFloat)value:(CGFloat)value lock:(BOOL)lock {
-    
-    LockValue c_lock = lock ? XD_Lock : XD_UnLock;
-    
-    if (c_lock == XD_UnLock) {
-        _value = value;
-        _lock = 0;
-    } else if (_lock != c_lock) {
-        _lock = c_lock;
+- (CGFloat)lockValue:(CGFloat)value {
+    if (_lock != XD_Lock) {
+        _lock = XD_Lock;
         _value = value;
     }
     
     return _value;
+}
+
+- (void)unlock {
+    _lock = XD_UnLock;
 }
 @end

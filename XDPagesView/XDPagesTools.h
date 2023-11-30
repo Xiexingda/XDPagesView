@@ -16,9 +16,6 @@
 // 关闭滚动控件自适应
 + (void)closeAdjustForScroll:(UIScrollView *)scrollView controller:(UIViewController *)controller;
 
-// 由于float值是非精确的，设置粒度为0.5
-+ (CGFloat)adjustFloatValue:(CGFloat)value;
-
 // 根据文字大小计算宽度
 + (CGFloat)adjustItemWidthByString:(NSString *)str font:(CGFloat)font baseSize:(CGSize)baseSize;
 

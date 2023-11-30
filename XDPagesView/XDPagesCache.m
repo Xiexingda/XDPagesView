@@ -10,8 +10,7 @@
 #import "XDPagesMap.h"
 #import <WebKit/WebKit.h>
 #import "XDPagesTools.h"
-
-#define IgnoreTag 5201314
+#import "XDPagesMacros.h"
 
 NS_INLINE XDBADGE
 XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
@@ -80,11 +79,13 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
     if (!need) return;
     
     if (_map->header) {
-        if (_map->header->right>=1) [_map->header->controller viewWillAppear:YES];
+        if (_map->header->right>=1) {
+            [_map->header->controller beginAppearanceTransition:YES animated:YES];
+        };
     }
     
     if (_map->header->next) {
-        [_map->header->next->controller viewWillDisappear:YES];
+        [_map->header->next->controller beginAppearanceTransition:NO animated:YES];
     }
 }
 
@@ -101,11 +102,13 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
         } else {
             NSLog(@"cache没有添加主控器");
         }
-        if (_map->header->right >= 1)[_map->header->controller viewDidAppear:YES];
+        if (_map->header->right >= 1) {
+            [_map->header->controller endAppearanceTransition];
+        }
     }
     
     if (_map->header->next) {
-        [_map->header->next->controller viewDidDisappear:YES];
+        [_map->header->next->controller endAppearanceTransition];
         if (_mainController) {
             if ([_mainController.childViewControllers containsObject:_map->header->next->controller]) {
                 [_map->header->next->controller willMoveToParentViewController:nil];
@@ -196,7 +199,7 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
     
     __block NSMutableArray <UIScrollView *>*scrolls = @[].mutableCopy;
     
-    if (view.tag != IgnoreTag) {
+    if (view.tag != XD_IGNORETAG) {
         [self subViewsInView:view matchView:^(UIScrollView *scroll) {
             if (scroll) {
                 [scrolls addObject:scroll];
@@ -211,7 +214,7 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
 - (void)subViewsInView:(UIView *)view matchView:(void(^)(UIScrollView *scroll))match {
     for (UIScrollView *child in view.subviews) {
         
-        if (child.tag == IgnoreTag) continue;
+        if (child.tag == XD_IGNORETAG) continue;
         
         if ([child isKindOfClass:UIScrollView.class]) {
             if (match) {
@@ -220,7 +223,7 @@ XDBADGEMake(NSInteger number, UIColor *color, BOOL isNumber) {
             continue;
 
         } else if ([child isKindOfClass:WKWebView.class]) {
-            if (((WKWebView *)child).scrollView.tag != IgnoreTag) {
+            if (((WKWebView *)child).scrollView.tag != XD_IGNORETAG) {
                 if (match) {
                     match(((WKWebView *)child).scrollView);
                 }

@@ -8,12 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "XDPagesConfig.h"
+#import "XDPagesTypes.h"
+#import "XDPagesMacros.h"
 @class XDPagesView;
-
-typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
-    XDPagesPullOnTop = 0,       //顶端下拉
-    XDPagesPullOnCenter = 1     //中间下拉
-};
 
 @protocol XDPagesViewDelegate <NSObject>
 @required
@@ -93,6 +90,12 @@ typedef NS_ENUM(NSInteger, XDPagesPullStyle) {
  */
 - (void)jumpToPage:(NSInteger)page;
 - (void)jumpToPage:(NSInteger)page animate:(BOOL)animate;
+
+/**
+ 滚动到吸顶位置
+ @param animate 动画
+ */
+- (void)scrollToCeiling:(BOOL)animate;
 
  /**
   刷新控制器列表，并定位到页

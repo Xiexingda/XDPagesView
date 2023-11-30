@@ -22,15 +22,14 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 @interface XDPagesView () <UITableViewDelegate, UITableViewDataSource, XDPagesCellDelegate, XDPagesTitleBarDelegate>
 @property (nonatomic, strong) XDPagesTable     *mainTable;
 @property (nonatomic, strong) XDPagesCell      *mainCell;
-@property (nonatomic, strong) UIView           *customHeader;
+@property (nonatomic, strong) UIView           *formHeader;
 @property (nonatomic, strong) XDPagesValueLock *mainLock;
 @property (nonatomic,   weak) UIScrollView     *pagesContainer;
 @property (nonatomic, assign) BOOL              needLockOffset;
 @property (nonatomic, strong) XDPagesTitleBar  *titleBar;
 @property (nonatomic, strong) XDPagesConfig    *config;
 @property (nonatomic, assign) XDPagesPullStyle  pagesPullStyle;
-@property (nonatomic, assign) CGFloat           adjustValue;    // 调整值
-@property (nonatomic, assign) CGFloat           canChangeHeight;// 标题可变动高度
+@property (nonatomic, assign) CGFloat           canChangeSpace;// 标题可变动高度
 
 @property (nonatomic, assign) XDPagesScrollStatus s_status;
 @property (nonatomic, assign) CGFloat   mainOffsetStatic;
@@ -42,6 +41,17 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     NSLog(@"\n_____XDPagesView_____已释放\n");
 }
 
+- (void)didMoveToSuperview {
+    if (self.superview) {
+        //添加到视图上
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self createUI];
+        });
+    } else {
+        //从视图上被移除
+    }
+}
+
 - (instancetype)initWithFrame:(CGRect)frame config:(XDPagesConfig *)config style:(XDPagesPullStyle)style {
     
     self = [super initWithFrame:frame];
@@ -49,16 +59,11 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = YES;
-        self.adjustValue = 1.0/[UIScreen mainScreen].scale;
         self.mainLock = [XDPagesValueLock lock];
         self.config = config ? config : [XDPagesConfig config];
         _pagesPullStyle = style;
         _s_status = XDPages_None;
         _mainOffsetStatic = 0;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self createUI];
-        });
     }
     
     return self;
@@ -80,6 +85,16 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 - (void)jumpToPage:(NSInteger)page animate:(BOOL)animate {
     [self.mainCell changeToPage:page animate:animate];
+}
+
+- (void)scrollToCeiling:(BOOL)animate {
+    self.mainTable.gesturePublic = NO;
+    self.mainTable.userInteractionEnabled = NO;
+    [self.mainTable setContentOffset:CGPointMake(0, _canChangeSpace) animated:animate];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.mainTable.userInteractionEnabled = YES;
+        self.mainTable.gesturePublic = YES;
+    });
 }
 
 - (void)reloadataToPage:(NSInteger)page {
@@ -104,14 +119,6 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }
 }
 
-// 是否锁定主列表偏移
-- (CGFloat)lockMainTableAtOffsety:(CGFloat)y needLock:(BOOL)need {
-    
-    CGFloat offsety = [_mainLock value:y lock:need];
-    
-    return offsety;
-}
-
 #pragma mark -- table_delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -122,12 +129,14 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.customHeader.bounds) ? CGRectGetHeight(self.customHeader.bounds) : _config.titleBarMarginTop;
+    CGFloat margin = _config.titleBarMarginTop > CGRectGetHeight(self.formHeader.bounds) ? CGRectGetHeight(self.formHeader.bounds) : _config.titleBarMarginTop;
     return CGRectGetHeight(self.mainTable.bounds) - self.mainTable.sectionHeaderHeight - margin;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    return _config.needTitleBar ? (self.config.customTitleBar ? self.config.customTitleBar : self.titleBar) : nil;
+    UIView *header = _config.needTitleBar ? (self.config.customTitleBar ? self.config.customTitleBar : self.titleBar) : nil;
+    header.layer.zPosition = self.formHeader.layer.zPosition + 1;
+    return header;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -140,8 +149,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
                                     contentController:[XDPagesTools viewControllerForView:self]
                                              delegate:self
                                        pagesPullStyle:self.pagesPullStyle
-                                               config:self.config
-                                          adjustValue:self.adjustValue];
+                                               config:self.config];
         
         self.pagesContainer = [_mainCell exchangeChannelOfPagesContainerAndMainTable:self.mainTable];
     }
@@ -155,16 +163,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         return;
     }
     
-    if (scrollView.contentOffset.y > _canChangeHeight) {
-        scrollView.contentOffset = CGPointMake(0, _canChangeHeight);
-    }
-    if (self.pagesPullStyle == XDPagesPullOnCenter) {
-        if (scrollView.contentOffset.y <= 0) {
-            scrollView.contentOffset = CGPointMake(0, 0);
-        }
-    }
-    
-    // 如果滚动方向改变，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，取出垂直滚动代理脏数据
+    // 如果滚动方向改变，先把主列表锁定，然后通过子view滚动去判断是否解锁，已达到主列表自由滚动响应延后的目的，过滤垂直滚动代理脏数据
     if (_isCurrentPageCanScroll) {
         if (_mainOffsetStatic < scrollView.contentOffset.y) {
             if (self.s_status != XDPages_Up) {
@@ -179,23 +178,28 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         }
     }
     
-    if (_needLockOffset && _mainTable.gesturePublic) {
-        
-        CGFloat offsety = [self lockMainTableAtOffsety:_mainOffsetStatic needLock:YES];
-        
-        if (offsety >= 0) {
-            scrollView.contentOffset = CGPointMake(0, offsety);
-        } else {
-            [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
+    if (scrollView.contentOffset.y > _canChangeSpace) {
+        scrollView.contentOffset = CGPointMake(0, _canChangeSpace);
+    }
+    if (self.pagesPullStyle == XDPagesPullOnCenter) {
+        if (scrollView.contentOffset.y < 0) {
+            scrollView.contentOffset = CGPointMake(0, 0);
         }
-
+    }
+    
+    if (_needLockOffset && _mainTable.gesturePublic) {
+        if (_mainOffsetStatic >= 0) {
+            scrollView.contentOffset = CGPointMake(0, [_mainLock lockValue:_mainOffsetStatic]);
+        } else {
+            [_mainLock unlock];
+        }
     } else {
-        [self lockMainTableAtOffsety:scrollView.contentOffset.y needLock:NO];
+        [_mainLock unlock];
     }
 
     _mainOffsetStatic = scrollView.contentOffset.y;
     if ([self.delegate respondsToSelector:@selector(xd_pagesViewVerticalScrollOffsetyChanged:isCeiling:)]) {
-        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:_mainOffsetStatic isCeiling:floor(_mainOffsetStatic) >= floor(_canChangeHeight)];
+        [self.delegate xd_pagesViewVerticalScrollOffsetyChanged:_mainOffsetStatic isCeiling:floor(_mainOffsetStatic * 100) >= floor(_canChangeSpace * 100)];
     }
 }
 
@@ -237,7 +241,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 - (CGFloat)cell_headerVerticalCanChangedSpace {
-    return _canChangeHeight;
+    return _canChangeSpace;
 }
 
 - (void)cell_pagesViewDidChangeToPageController:(UIViewController *const)pageController title:(NSString *)pageTitle pageIndex:(NSInteger)pageIndex {
@@ -267,19 +271,13 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 
 - (void)cell_mainTableNeedLock:(BOOL)need offsety:(CGFloat)y {
     if (_needLockOffset != need) {
-        
         _needLockOffset = need;
-        
         if (need) {
             _mainOffsetStatic = y;
             _mainTable.contentOffset = CGPointMake(0, y);
             [self scrollViewDidScroll:_mainTable];
         }
     }
-}
-
-- (void)cell_currentPageScollEnable:(BOOL)enable {
-    _isCurrentPageCanScroll = enable;
 }
 
 #pragma mark -- setter
@@ -289,7 +287,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     
     if (_mainTable) {
         [_mainTable beginUpdates];
-        _mainTable.tableHeaderView = [self customHeader:pagesHeader];
+        _mainTable.tableHeaderView = [self formHeader:pagesHeader];
         [_mainTable endUpdates];
     }
 }
@@ -315,10 +313,13 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         _mainTable.delegate = self;
         _mainTable.dataSource = self;
         _mainTable.scrollsToTop = NO;
-        _mainTable.tableHeaderView = [self customHeader:_pagesHeader];
         _mainTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _mainTable.tableHeaderView.userInteractionEnabled = _customHeader.userInteractionEnabled;
         _mainTable.sectionHeaderHeight = _config.titleBarHeight;
+        _mainTable.tableHeaderView = [self formHeader:_pagesHeader];
+        if (@available(iOS 15.0, *)) {
+            _mainTable.sectionHeaderTopPadding = 0;
+        }
+        
         [XDPagesTools closeAdjustForScroll:_mainTable controller:[XDPagesTools viewControllerForView:self]];
         
         if (_refreshControl) {
@@ -354,7 +355,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
                                      toItem:self
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:-self.adjustValue];
+                                     constant:0];
     // 左
     NSLayoutConstraint *relat_led = [NSLayoutConstraint
                                      constraintWithItem:self.mainTable
@@ -387,104 +388,120 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
 }
 
 // 对header进行重新包装用于内部
-- (UIView *)customHeader:(UIView *)header {
-    
-    if (!header) {
-        header = [[UIView alloc]initWithFrame:CGRectZero];
-        header.userInteractionEnabled = YES;
-        header.backgroundColor = [UIColor clearColor];
-    }
-    
-    UIView *customHeader = [[UIView alloc]initWithFrame:header.bounds];
-    customHeader.backgroundColor = [UIColor clearColor];
-    [customHeader addSubview:header];
-    
-    customHeader.userInteractionEnabled = header.userInteractionEnabled;
-    
-    header.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    if (_config.titleBarFitHeader) {
-        header.clipsToBounds = YES;
-        NSLayoutConstraint *relat_btm = [NSLayoutConstraint
+- (UIView *)formHeader:(UIView *)header {
+    UIView *f_header = nil;
+    if (header) {
+        CGFloat headerHeight = CGRectGetHeight(header.bounds) - (_config.titleBarFitHeader ? _config.titleBarHeight : 0);
+        CGRect c_frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), headerHeight);
+        f_header = [[UIView alloc]initWithFrame:c_frame];
+        f_header.backgroundColor = [UIColor clearColor];
+        [f_header addSubview:header];
+        
+        f_header.userInteractionEnabled = header.userInteractionEnabled;
+        
+        header.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        if (_config.titleBarFitHeader) {
+            header.clipsToBounds = YES;
+            NSLayoutConstraint *relat_btm = [NSLayoutConstraint
+                                             constraintWithItem:header
+                                             attribute:NSLayoutAttributeBottom
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:f_header
+                                             attribute:NSLayoutAttributeBottom
+                                             multiplier:1
+                                             constant:_config.titleBarHeight];
+            [NSLayoutConstraint activateConstraints:@[relat_btm]];
+        } else {
+            NSLayoutConstraint *relat_btm = [NSLayoutConstraint
+                                             constraintWithItem:header
+                                             attribute:NSLayoutAttributeBottom
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:f_header
+                                             attribute:NSLayoutAttributeBottom
+                                             multiplier:1
+                                             constant:0];
+            [NSLayoutConstraint activateConstraints:@[relat_btm]];
+        }
+        
+        NSLayoutConstraint *relat_top = [NSLayoutConstraint
                                          constraintWithItem:header
-                                         attribute:NSLayoutAttributeBottom
+                                         attribute:NSLayoutAttributeTop
                                          relatedBy:NSLayoutRelationEqual
-                                         toItem:customHeader
-                                         attribute:NSLayoutAttributeBottom
-                                         multiplier:1
-                                         constant:_config.titleBarHeight];
-        [NSLayoutConstraint activateConstraints:@[relat_btm]];
-    } else {
-        NSLayoutConstraint *relat_btm = [NSLayoutConstraint
-                                         constraintWithItem:header
-                                         attribute:NSLayoutAttributeBottom
-                                         relatedBy:NSLayoutRelationEqual
-                                         toItem:customHeader
-                                         attribute:NSLayoutAttributeBottom
+                                         toItem:f_header
+                                         attribute:NSLayoutAttributeTop
                                          multiplier:1
                                          constant:0];
-        [NSLayoutConstraint activateConstraints:@[relat_btm]];
+        NSLayoutConstraint *relat_led = [NSLayoutConstraint
+                                         constraintWithItem:header
+                                         attribute:NSLayoutAttributeLeading
+                                         relatedBy:NSLayoutRelationEqual
+                                         toItem:f_header
+                                         attribute:NSLayoutAttributeLeading
+                                         multiplier:1
+                                         constant:0];
+        NSLayoutConstraint *relat_tal = [NSLayoutConstraint
+                                         constraintWithItem:header
+                                         attribute:NSLayoutAttributeTrailing
+                                         relatedBy:NSLayoutRelationEqual
+                                         toItem:f_header
+                                         attribute:NSLayoutAttributeTrailing
+                                         multiplier:1
+                                         constant:0];
+        [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_tal]];
+        
+        CGFloat cmargin = _config.titleBarMarginTop > headerHeight ? headerHeight : _config.titleBarMarginTop;
+        CGFloat cheight = headerHeight-cmargin;
+        _canChangeSpace = cheight > 0 ? cheight : 0;
+    } else {
+        _canChangeSpace = 0;
     }
     
-    NSLayoutConstraint *relat_top = [NSLayoutConstraint
-                                     constraintWithItem:header
-                                     attribute:NSLayoutAttributeTop
-                                     relatedBy:NSLayoutRelationEqual
-                                     toItem:customHeader
-                                     attribute:NSLayoutAttributeTop
-                                     multiplier:1
-                                     constant:self.adjustValue];
-    NSLayoutConstraint *relat_led = [NSLayoutConstraint
-                                     constraintWithItem:header
-                                     attribute:NSLayoutAttributeLeading
-                                     relatedBy:NSLayoutRelationEqual
-                                     toItem:customHeader
-                                     attribute:NSLayoutAttributeLeading
-                                     multiplier:1
-                                     constant:0];
-    NSLayoutConstraint *relat_tal = [NSLayoutConstraint
-                                     constraintWithItem:header
-                                     attribute:NSLayoutAttributeTrailing
-                                     relatedBy:NSLayoutRelationEqual
-                                     toItem:customHeader
-                                     attribute:NSLayoutAttributeTrailing
-                                     multiplier:1
-                                     constant:0];
-    [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_tal]];
+    self.formHeader = f_header;
     
-    CGFloat headerHeight = [XDPagesTools adjustFloatValue:CGRectGetHeight(header.bounds)]+self.adjustValue;
-    customHeader.frame = CGRectMake(0,
-                                    0,
-                                    CGRectGetWidth(self.bounds),
-                                    headerHeight);
-    
-    CGFloat cmargin = _config.titleBarMarginTop > headerHeight ? headerHeight : _config.titleBarMarginTop;
-    CGFloat cheight = headerHeight-cmargin-self.adjustValue;
-    cheight = [@(cheight).stringValue floatValue];
-    _canChangeHeight = cheight > 0 ? cheight : 0;
-    self.customHeader = customHeader;
-    
-    return customHeader;
+    return f_header;
 }
 
 #pragma mark -- sys_method
+static NSTimeInterval lastEventTimeStamp = 0;
 // 利用hittest在手势进入之前，判断手势不在container中时就关闭手势共享，目的：防止header中有滚动控件，造成共同滚动
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-    
-    UIView *view = [super hitTest:point withEvent:event];
-    
     CGPoint relative_point = [self.pagesContainer convertPoint:point fromView:self];
     
     if ([self.pagesContainer.layer containsPoint:relative_point]) {
         if (!self.mainTable.gesturePublic) self.mainTable.gesturePublic = YES;
-        [self.mainCell setCurrentMainTalbelOffsety:self.mainTable.contentOffset.y];
+        
+        //寻找这个点击事件的位置上有没有可以监听的滚动控件
+        UIView *view = [super hitTest:point withEvent:event];
+        if (lastEventTimeStamp != event.timestamp) {
+            lastEventTimeStamp = event.timestamp;
+            UIScrollView *kvoScroll;
+            BOOL canfindScroll = NO;
+            for (UIView *next = view; next; next = next.superview) {
+                if (next == self.pagesContainer) {
+                    break;
+                }
+                else if ([next isKindOfClass:[UIScrollView class]]) {
+                    kvoScroll = (UIScrollView *)next;
+                }
+            }
+            if (kvoScroll && kvoScroll.scrollEnabled && kvoScroll.tag != XD_IGNORETAG) {
+                canfindScroll = YES;
+            }
+            self.isCurrentPageCanScroll = canfindScroll;
+            if (!canfindScroll) {
+                //当前触点空间不能滚动，则当做普通视图处理，解除maintable锁定，并解除之前的滚动观察
+                self.needLockOffset = NO;
+                self.mainCell.currentKVOChild = nil;
+            }
+            self.mainCell.mainOffsetStatic = self.mainTable.contentOffset.y;
+        }
+        return view;
     } else {
         if (self.mainTable.gesturePublic) self.mainTable.gesturePublic = NO;
     }
     
-    [self scrollViewDidScroll:self.mainTable];
-    
-    return view;
+    return [super hitTest:point withEvent:event];
 }
 
 @end

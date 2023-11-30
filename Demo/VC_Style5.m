@@ -150,6 +150,7 @@
 
 - (void)rightBtnTap {
     NSLog(@"点击右按钮");
+    [self.pages scrollToCeiling:YES];
 }
 
 #pragma mark -- XDPagesViewDelegate

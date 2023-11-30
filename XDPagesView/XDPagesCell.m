@@ -18,30 +18,27 @@
 @property (nonatomic, strong) XDPagesConfig *config;                // 配置管理
 @property (nonatomic, strong) XDPagesCache *pagesCache;             // 缓存管理
 @property (nonatomic, strong) XDPagesValueLock *childLock;          // 子列表偏移锁
-@property (nonatomic,   weak) UIScrollView *currentChild;           // 当前子列表
 
 @property (nonatomic, assign) NSInteger willShowPage;   // 将要出现的页
 @property (nonatomic, assign) NSInteger currentPage;    // 当前页
-@property (nonatomic, assign) CGFloat mainOffsetStatic; // 主table锁定偏移量
-@property (nonatomic, assign) CGFloat childOffsetStatic;// 子table锁定偏移量
-@property (nonatomic, assign) NSInteger pagePullStyle;  // 风格
+@property (nonatomic, assign) XDPagesPullStyle pagePullStyle;  // 风格
 @property (nonatomic, assign) BOOL isRectChanging;      // 是否正在调整rect
-@property (nonatomic, assign) CGFloat const adjustValue;// 调整值
+@property (nonatomic, assign) BOOL skipLoop; //跳过当前loop
 @end
 @implementation XDPagesCell
 - (void)dealloc {
     [self clearKVO];
     [self.pagesCache clearPages];
+    [self unregisterFromNotifications];
 }
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier contentController:(UIViewController *)controller delegate:(id<XDPagesCellDelegate>)delegate pagesPullStyle:(NSInteger)pullStyle config:(XDPagesConfig *)config adjustValue:(CGFloat)adjustValue {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier contentController:(UIViewController *)controller delegate:(id<XDPagesCellDelegate>)delegate pagesPullStyle:(XDPagesPullStyle)pullStyle config:(XDPagesConfig *)config {
     
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor clearColor];
-        self.adjustValue = adjustValue;
         self.config = config;
         self.delegate = delegate;
         self.pagePullStyle = pullStyle;
@@ -50,22 +47,40 @@
         self.pagesCache.maxCacheCount = config.maxCacheCount;
         _willShowPage = config.beginPage;
         _currentPage = config.beginPage;
- 
+        self.contentView.frame = self.frame;
         [self createUI];
+        [self statusBarOrientationDidChange];
         [self reloadToPage:config.beginPage finish:nil];
+        [self setKVOForCurrentPage:config.beginPage];
+        [self registerForNotifications];
     }
     
     return self;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    if (!CGRectEqualToRect(self.contentView.bounds, self.pagesContainer.bounds)) {
-        self.isRectChanging = YES;
+- (void)registerForNotifications {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(statusBarOrientationDidChange)
+               name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+#pragma clang diagnostic pop
+}
+
+- (void)unregisterFromNotifications {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+#pragma clang diagnostic pop
+}
+
+- (void)statusBarOrientationDidChange {
+    self.isRectChanging = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self rectChanged];
         self.isRectChanging = NO;
-    }
+    });
 }
 
 // 互换通道，使内外都拿到彼此的对象去做响应控制
@@ -137,12 +152,14 @@
     self.pagesCache.titles = allTitles;
     
     [self.pagesContainer setContentSize:CGSizeMake(allTitles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
-    
 }
 
 // 监听到rect变化，比如横屏
 - (void)rectChanged {
-    self.pagesContainer.bounds = self.contentView.bounds;
+    if (!CGRectEqualToRect(self.contentView.bounds, self.bounds)) {
+        self.contentView.frame = self.frame;
+    }
+    
     [self.pagesContainer setContentSize:CGSizeMake(self.pagesCache.titles.count * CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
     
     [self resetAllRect];
@@ -152,6 +169,7 @@
 
 // 重置所有rect
 - (void)resetAllRect {
+    [self layoutIfNeeded];
     [self.pagesCache.titles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self setRectForPage:idx];
     }];
@@ -224,25 +242,25 @@
 - (void)pageAppearanceHandleByScrollXvalue:(CGFloat)xValue {
     CGFloat c_w = CGRectGetWidth(self.bounds);   // 当前页宽
     NSInteger page_left = floor(xValue/c_w);     // 左页
-    NSInteger page_right   = ceil(xValue/c_w);   // 右页
+    NSInteger page_right = ceil(xValue/c_w);   // 右页
 
     if (_currentPage == page_left) {
         // 当前面在前面时，说明是往左滑动， 所以将要出现的是右边的子页（下一页）
         if (_willShowPage != page_right) {
             [self handleForPage:page_right];
         }
-
-    } else if (_currentPage == page_right) {
+    }
+    else if (_currentPage == page_right) {
         // 当前页在右面时，说明是往右滑动，所以将要出现的是左边的子页（上一页）
         if (_willShowPage != page_left) {
             [self handleForPage:page_left];
         }
-        
-    } else if (_currentPage < page_left) {
+    } 
+    else if (_currentPage < page_left) {
         // 当前页超出左边界时说明切换到了新的一页
         [self pageIndexDidChangedToPage:page_right];
-        
-    } else if (_currentPage > page_right) {
+    }
+    else if (_currentPage > page_right) {
         // 当前页超出右边界时说明切换到了新的一页
         [self pageIndexDidChangedToPage:page_left];
     }
@@ -250,19 +268,8 @@
 
 // 页面已经更换处理
 - (void)pageIndexDidChangedToPage:(NSInteger)page {
-    if (!self.pagesCache.titles.count) return;
-    
+    if (!self.pagesCache.titles.count || _isRectChanging) return;
     self.currentPage = page;
-    
-    // 如果本页没有滚动控件就解锁所有滚动相关的锁定
-    if (![self.pagesCache scrollViewsForTitle:self.pagesCache.titles[page]]) {
-        [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
-        [self mainTableLock:NO offsety:0];
-        [self.delegate cell_currentPageScollEnable:NO];
-    } else {
-        [self.delegate cell_currentPageScollEnable:YES];
-    }
-    
     [self.pagesCache pageDidApearHandle:!_isRectChanging];
     
     NSString *c_title = self.pagesCache.titles[page];
@@ -273,26 +280,9 @@
                                                  pageIndex:page];
 }
 
-// 返回顶端边距，由于11加入了safeArea的概念，所以11后用adjustedContentInset计算
-- (CGFloat)topOfScrollView:(UIScrollView *)scrollView {
-    if (@available(iOS 11.0, *)) {
-        return -scrollView.adjustedContentInset.top;
-    }
-    
-    return -scrollView.contentInset.top;
-}
-
 // 是否锁定主列表偏移通知
 - (void)mainTableLock:(BOOL)need offsety:(CGFloat)y {
     [self.delegate cell_mainTableNeedLock:need offsety:y];
-}
-
-// 是否锁定子表偏移
-- (CGFloat)lockChildTableAtOffsety:(CGFloat)y needLock:(BOOL)need lock:(XDPagesValueLock *)lock {
-    
-    CGFloat offsety = [lock value:y lock:need];
-    
-    return offsety;
 }
 
 // 当横向滚动时不需要手势共享，达到禁止一切竖直滚动
@@ -308,129 +298,74 @@
     UIScrollView *kvo_scroll = (UIScrollView *)object;
     
     // 手动拉动哪个滚动控件就把那个滚动控件作为当前滚动控件
-    if (_currentChild != kvo_scroll && kvo_scroll.isTracking) {
-        [self lockChildTableAtOffsety:0 needLock:NO lock:_childLock];
-        _currentChild = kvo_scroll;
+    if (_currentKVOChild != kvo_scroll && kvo_scroll.isTracking) {
+        [_childLock unlock];
+        _skipLoop = NO;
+        _currentKVOChild = kvo_scroll;
     }
 
     // 如果滚动的并非当前滚动控件就过滤掉
-    if (_currentChild != kvo_scroll) return;
+    if (_currentKVOChild != kvo_scroll) return;
     
-    CGFloat headerHeight = [self.delegate cell_headerVerticalCanChangedSpace];
+    //跳过本次监听
+    if (_skipLoop) return;
+    
+    CGFloat changeSpace = [self.delegate cell_headerVerticalCanChangedSpace];
     CGPoint oldPoint = [[change objectForKey:NSKeyValueChangeOldKey] CGPointValue];
     CGPoint newPoint = [[change objectForKey:NSKeyValueChangeNewKey] CGPointValue];
     
-    /*
-     根据不同下拉类型分别实现各自逻辑，这里有个取巧的地方，
-     就是在向上或者向下拉动过程中去处理，屏蔽掉静止状态，
-     否则会因为强行修改contentoffset造成死循环
-     */
-    
-    if (self.pagePullStyle == 0) {
+    if (oldPoint.y < newPoint.y) {
+        /* 向上拉动
+           所有模式的上拉逻辑是相同的
+         */
+        _mainOffsetStatic = _mainTable.contentOffset.y;
         
-        /*
-        顶部下拉逻辑
-        该逻辑下子列表偏移不可小于0
-        */
-        
-        if (oldPoint.y < newPoint.y && newPoint.y != _childOffsetStatic) {
-            
-            /* 向上拉动 */
-            
-            _childOffsetStatic = newPoint.y;
-            _mainOffsetStatic = _mainTable.contentOffset.y;
-            
-            if (self.mainTable.contentOffset.y < headerHeight) {
-                
+        if (_mainOffsetStatic < changeSpace) {
+            if (newPoint.y >= 0) {
                 [self mainTableLock:NO offsety:0];
                 
-                _childOffsetStatic = [self lockChildTableAtOffsety:(oldPoint.y > self.adjustValue ? oldPoint.y : self.adjustValue) needLock:YES lock:_childLock];
-                kvo_scroll.contentOffset = CGPointMake(0, _childOffsetStatic);
-                
+                _skipLoop = YES;
+                kvo_scroll.contentOffset = CGPointMake(0, [_childLock lockValue:oldPoint.y >= 0 ? oldPoint.y : 0]);
+                _skipLoop = NO;
             } else {
-                [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
+                [_childLock unlock];
             }
-            
-        } else if (oldPoint.y > newPoint.y && newPoint.y != _childOffsetStatic) {
-            
-            /* 向下拉动 */
-            
-            _childOffsetStatic = newPoint.y;
-            
-            [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
-            
-            if (newPoint.y > 0) {
-                
-                if (_mainOffsetStatic >= 0) {
-                    [self mainTableLock:YES offsety:_mainOffsetStatic];
-                }
-                
-            } else {
-                
-                [self mainTableLock:NO offsety:0];
-                
-                CGFloat c_off = [@([self topOfScrollView:kvo_scroll]).stringValue floatValue];
-                _childOffsetStatic = c_off;
-                kvo_scroll.contentOffset = CGPointMake(0, c_off);
-            }
+        } else {
+            [self mainTableLock:NO offsety:0];
+            [_childLock unlock];
         }
-        
-    } else if (self.pagePullStyle == 1) {
-        
-        /*
-        列表下拉逻辑
-        该逻辑下子列表偏移会小于0
-        */
-        
-        if (oldPoint.y < newPoint.y && newPoint.y != _childOffsetStatic) {
-            
-            /* 向上拉动 */
-
-            _childOffsetStatic = newPoint.y;
-            _mainOffsetStatic = _mainTable.contentOffset.y;
-            
-            if (self.mainTable.contentOffset.y < headerHeight) {
-                if (newPoint.y > 0) {
-                    
-                    [self mainTableLock:NO offsety:0];
-                    
-                    _childOffsetStatic = [self lockChildTableAtOffsety:(oldPoint.y > self.adjustValue ? oldPoint.y : self.adjustValue) needLock:YES lock:_childLock];
-                    kvo_scroll.contentOffset = CGPointMake(0, _childOffsetStatic);
-                } else {
-                    
-                    /*
-                     列表下拉，所以当子列表偏移小于0，子列表不在锁定，但此时header触顶并锁定
-                     */
-                    [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
-                    [self mainTableLock:YES offsety:[self topOfScrollView:_mainTable]];
-                }
+    } 
+    else if (oldPoint.y > newPoint.y) {
+        /* 向下拉动 */
+        [_childLock unlock];
+        if (newPoint.y > 0) {
+            if (_mainOffsetStatic >= 0) {
+                [self mainTableLock:YES offsety:_mainOffsetStatic];
             } else {
-                [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
-            }
-            
-        } else if (oldPoint.y > newPoint.y && newPoint.y != _childOffsetStatic) {
-            
-            /* 向下拉动 */
-
-            _childOffsetStatic = newPoint.y;
-            
-            [self lockChildTableAtOffsety:newPoint.y needLock:NO lock:_childLock];
-            
-            if (newPoint.y > 0) {
-                
-                if (_mainOffsetStatic >= 0) {
-                    [self mainTableLock:YES offsety:_mainOffsetStatic];
-                }
-                
-            } else {
-                
                 [self mainTableLock:NO offsety:0];
+            }
+        } else {
+            [self mainTableLock:NO offsety:0];
+            if (self.pagePullStyle == XDPagesPullOnCenter) {
+                /*
+                 子列表下拉逻辑
+                 该逻辑下子列表偏移可小于0
+                */
                 
                 if (self.mainTable.contentOffset.y > 0) {
-                    CGFloat c_off = [@([self topOfScrollView:kvo_scroll]).stringValue floatValue];
-                    _childOffsetStatic = c_off;
-                    kvo_scroll.contentOffset = CGPointMake(0, c_off);
+                    _skipLoop = YES;
+                    kvo_scroll.contentOffset = CGPointMake(0, 0);
+                    _skipLoop = NO;
                 }
+            } else {
+                /*
+                顶部下拉逻辑
+                该逻辑下子列表偏移不可小于0
+                */
+                
+                _skipLoop = YES;
+                kvo_scroll.contentOffset = CGPointMake(0, 0);
+                _skipLoop = NO;
             }
         }
     }
@@ -470,7 +405,7 @@
 #pragma mark -- getter
 - (UIScrollView *)pagesContainer {
     if (!_pagesContainer) {
-        _pagesContainer = [[UIScrollView alloc]initWithFrame:self.contentView.bounds];
+        _pagesContainer = [[UIScrollView alloc]initWithFrame:self.bounds];
         _pagesContainer.pagingEnabled = YES;
         _pagesContainer.showsVerticalScrollIndicator = NO;
         _pagesContainer.showsHorizontalScrollIndicator = NO;
@@ -498,14 +433,10 @@
     [self setKVOForCurrentPage:currentPage];
 }
 
-- (void)setCurrentMainTalbelOffsety:(CGFloat)currentMainTalbelOffsety {
-    _mainOffsetStatic = currentMainTalbelOffsety;
-}
-
 #pragma mark -- UI
 - (void)createUI {
     
-    [self.contentView addSubview:self.pagesContainer];
+    [self addSubview:self.pagesContainer];
     
     self.pagesContainer.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -513,7 +444,7 @@
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeTop
                                      relatedBy:NSLayoutRelationEqual
-                                     toItem:self.contentView
+                                     toItem:self
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
                                      constant:0];
@@ -521,7 +452,7 @@
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeLeading
                                      relatedBy:NSLayoutRelationEqual
-                                     toItem:self.contentView
+                                     toItem:self
                                      attribute:NSLayoutAttributeLeading
                                      multiplier:1
                                      constant:0];
@@ -529,7 +460,7 @@
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeBottom
                                      relatedBy:NSLayoutRelationEqual
-                                     toItem:self.contentView
+                                     toItem:self
                                      attribute:NSLayoutAttributeBottom
                                      multiplier:1
                                      constant:0];
@@ -537,7 +468,7 @@
                                      constraintWithItem:self.pagesContainer
                                      attribute:NSLayoutAttributeTrailing
                                      relatedBy:NSLayoutRelationEqual
-                                     toItem:self.contentView
+                                     toItem:self
                                      attribute:NSLayoutAttributeTrailing
                                      multiplier:1
                                      constant:0];

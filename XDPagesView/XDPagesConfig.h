@@ -8,18 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSInteger, SlideLineStyle) {
-    XDSlideLine_None,          // 下划线无展示效果
-    XDSlideLine_Scale,         // 下划线伸缩
-    XDSlideLine_translation    // 下划线平移(默认效果)
-};
-
-typedef NS_ENUM(NSInteger, TitleVerticalAlignment) {
-    XDVerticalAlignmentTop = 0, //标题顶部垂直
-    XDVerticalAlignmentMiddle,  //标题中部垂直对齐
-    XDVerticalAlignmentBottom,  //标题底部垂直对齐
-};
+#import "XDPagesTypes.h"
 
 @interface XDPagesConfig : NSObject
 @property (nonatomic, assign) NSInteger beginPage;                  // 起始页

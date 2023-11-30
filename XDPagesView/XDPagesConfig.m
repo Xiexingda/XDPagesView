@@ -71,11 +71,11 @@
 
 - (void)setTitleBarHeight:(CGFloat)titleBarHeight {
     if (!_needTitleBar) return;
-    _titleBarHeight = fabs([XDPagesTools adjustFloatValue:titleBarHeight]);
+    _titleBarHeight = fabs(titleBarHeight);
 }
 
 - (void)setTitleBarMarginTop:(CGFloat)titleBarMarginTop {
-    _titleBarMarginTop = fabs([XDPagesTools adjustFloatValue:titleBarMarginTop]);
+    _titleBarMarginTop = fabs(titleBarMarginTop);
 }
 
 - (void)setTitleBarFitHeader:(BOOL)titleBarFitHeader {

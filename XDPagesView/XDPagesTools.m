@@ -10,10 +10,9 @@
 
 @implementation XDPagesTools
 + (UIViewController *)viewControllerForView:(UIView *)view {
-    for (UIView *next = [view superview]; next; next = next.superview) {
-        UIResponder *nextResponder = [next nextResponder];
-        if ([nextResponder isKindOfClass:[UIViewController class]]) {
-            return (UIViewController *)nextResponder;
+    for (UIResponder *next = view; next; next = next.nextResponder) {
+        if ([next isKindOfClass:[UIViewController class]]) {
+            return (UIViewController *)next;
         }
     }
     
@@ -38,11 +37,6 @@
 #pragma clang diagnostic pop
         }
     }
-}
-
-// 由于float值是非精确的，设置粒度为0.5
-+ (CGFloat)adjustFloatValue:(CGFloat)value {
-    return (floor(value)+ceil(value))/2.0;
 }
 
 + (CGFloat)adjustItemWidthByString:(NSString *)str font:(CGFloat)font baseSize:(CGSize)baseSize {
