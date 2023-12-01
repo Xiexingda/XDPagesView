@@ -443,7 +443,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 764CTAP9X7;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Root/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -461,7 +461,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 764CTAP9X7;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Root/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
