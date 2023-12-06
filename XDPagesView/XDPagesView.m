@@ -402,7 +402,6 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         header.translatesAutoresizingMaskIntoConstraints = NO;
         
         if (_config.titleBarFitHeader) {
-            header.clipsToBounds = YES;
             NSLayoutConstraint *relat_btm = [NSLayoutConstraint
                                              constraintWithItem:header
                                              attribute:NSLayoutAttributeBottom
