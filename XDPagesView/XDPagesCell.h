@@ -84,6 +84,11 @@
                        config:(XDPagesConfig *)config;
 
 /**
+ 刷新配置项
+ */
+- (void)reloadConfigs;
+
+/**
  内外视图交换管道
  @param mainTable 主列表
  */

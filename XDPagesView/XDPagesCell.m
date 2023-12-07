@@ -83,6 +83,13 @@
     });
 }
 
+- (void)reloadConfigs {
+    _pagesCache.maxCacheCount = _config.maxCacheCount;
+    _pagesContainer.bounces = _config.pagesHorizontalBounce;
+    _pagesContainer.scrollEnabled = _config.pagesSlideEnable;
+    [self scrollViewDidScroll:_pagesContainer];
+}
+
 // 互换通道，使内外都拿到彼此的对象去做响应控制
 - (UIScrollView *)exchangeChannelOfPagesContainerAndMainTable:(XDPagesTable *)mainTable {
     

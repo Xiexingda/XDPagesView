@@ -104,6 +104,11 @@
  - (void)reloadataToPage:(NSInteger)page;
 
 /**
+ 刷新配置项
+ */
+- (void)reloadConfigs;
+
+/**
  展示某个item的未读消息
  @param number 未读数，当为0时隐藏
  @param idx 对应索引

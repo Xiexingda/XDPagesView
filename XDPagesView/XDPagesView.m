@@ -106,6 +106,15 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }];
 }
 
+- (void)reloadConfigs {
+    [_mainTable beginUpdates];
+    [self calculateChangeSpace];
+    [_mainTable endUpdates];
+    [self scrollViewDidScroll:_mainTable];
+    [_mainCell reloadConfigs];
+    [_titleBar reloadConfigs];
+}
+
 - (void)showBadgeNumber:(NSInteger)number index:(NSInteger)idx color:(UIColor *)color isNumber:(BOOL)isNumber {
     if (self.config.needTitleBar && !self.config.customTitleBar) {
         [self.titleBar showBadgeNumber:number index:idx color:color isNumber:isNumber];
@@ -188,7 +197,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     }
     
     if (_needLockOffset && _mainTable.gesturePublic) {
-        if (_mainOffsetStatic >= 0) {
+        if (_mainOffsetStatic >= 0 && _mainOffsetStatic <= _canChangeSpace) {
             scrollView.contentOffset = CGPointMake(0, [_mainLock lockValue:_mainOffsetStatic]);
         } else {
             [_mainLock unlock];
@@ -288,6 +297,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
     if (_mainTable) {
         [_mainTable beginUpdates];
         _mainTable.tableHeaderView = [self formHeader:pagesHeader];
+        [self calculateChangeSpace];
         [_mainTable endUpdates];
     }
 }
@@ -316,6 +326,7 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
         _mainTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         _mainTable.sectionHeaderHeight = _config.titleBarHeight;
         _mainTable.tableHeaderView = [self formHeader:_pagesHeader];
+        [self calculateChangeSpace];
         if (@available(iOS 15.0, *)) {
             _mainTable.sectionHeaderTopPadding = 0;
         }
@@ -448,17 +459,20 @@ typedef NS_ENUM(NSInteger, XDPagesScrollStatus) {
                                          multiplier:1
                                          constant:0];
         [NSLayoutConstraint activateConstraints:@[relat_top, relat_led, relat_tal]];
-        
-        CGFloat cmargin = _config.titleBarMarginTop > headerHeight ? headerHeight : _config.titleBarMarginTop;
-        CGFloat cheight = headerHeight-cmargin;
-        _canChangeSpace = cheight > 0 ? cheight : 0;
-    } else {
-        _canChangeSpace = 0;
+        [f_header layoutIfNeeded];
     }
     
     self.formHeader = f_header;
     
     return f_header;
+}
+
+//计算活动区间
+- (void)calculateChangeSpace {
+    CGFloat headerHeight = _mainTable.tableHeaderView ? CGRectGetHeight(_mainTable.tableHeaderView.frame) : 0;
+    CGFloat cmargin = _config.titleBarMarginTop > headerHeight ? headerHeight : _config.titleBarMarginTop;
+    CGFloat cheight = headerHeight-cmargin;
+    _canChangeSpace = cheight > 0 ? cheight : 0;
 }
 
 #pragma mark -- sys_method

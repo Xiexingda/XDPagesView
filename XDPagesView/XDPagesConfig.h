@@ -10,16 +10,20 @@
 #import <UIKit/UIKit.h>
 #import "XDPagesTypes.h"
 
+/*
+ (⚠️不可被刷新) 表示在reloadConfigs时，该属性的变更无效
+ */
+
 @interface XDPagesConfig : NSObject
-@property (nonatomic, assign) NSInteger beginPage;                  // 起始页
+@property (nonatomic, assign) NSInteger beginPage;                  // 起始页(⚠️不可被刷新)
 @property (nonatomic, assign) NSInteger maxCacheCount;              // 最大缓存页数
 @property (nonatomic, assign) BOOL pagesSlideEnable;                // 是否可滑动翻页（默认YES）
 @property (nonatomic, assign) BOOL animateForPageChange;            // 页面变动时是否需要动画（默认YES）
 @property (nonatomic, assign) BOOL pagesHorizontalBounce;           // 是否页面边界自由滑动（默认YES）
 
-@property (nonatomic, assign) BOOL needTitleBar;                    // 是否需要标题栏（默认YES）
-@property (nonatomic, assign) BOOL titleBarFitHeader;               // 是否标题栏和header作为一个整体（默认NO）
-@property (nonatomic, assign) CGFloat titleBarHeight;               // 标题栏高度（默认50）
+@property (nonatomic, assign) BOOL needTitleBar;                    // 是否需要标题栏（默认YES）(⚠️不可被刷新)
+@property (nonatomic, assign) BOOL titleBarFitHeader;               // 是否标题栏和header作为一个整体（默认NO）(⚠️不可被刷新)
+@property (nonatomic, assign) CGFloat titleBarHeight;               // 标题栏高度（默认50）(⚠️不可被刷新)
 @property (nonatomic, assign) CGFloat titleBarMarginTop;            // 悬停位置距上端距离（默认0）
 @property (nonatomic, assign) BOOL needTitleBarBottomLine;          // 是否需要标题栏底线（默认YES）
 @property (nonatomic, strong) UIColor *titleBarBottomLineColor;     // 底线颜色（默认浅灰色）
@@ -30,7 +34,7 @@
 @property (nonatomic, strong) UIColor *titleBarBackColor;           // 标题栏背景色
 @property (nonatomic, strong) UIImage *titleBarBackImage;           // 标题栏背景图
 @property (nonatomic, assign) BOOL titleBarHorizontalBounce;        // 标题栏是否可以边界自由滑动（默认YES）
-@property (nonatomic, strong) UIView *customTitleBar;               // 自定义标题栏
+@property (nonatomic, strong) UIView *customTitleBar;               // 自定义标题栏(⚠️不可被刷新)
 
 @property (nonatomic, strong) UIColor *titleItemBackColor;          // 标题背景颜色
 @property (nonatomic, strong) UIColor *titleItemBackHightlightColor;// 标题选中时背景颜色
@@ -45,7 +49,7 @@
 @property (nonatomic, strong) UIFont *titleFont;                    // 标题字号大小(默认16)
 @property (nonatomic, strong) UIFont *titleHightlightFont;          // 选中后的字号大小(默认18)
 
-@property (nonatomic, assign) BOOL needRightBtn;                    // 是否需要右按钮（默认NO）
+@property (nonatomic, assign) BOOL needRightBtn;                    // 是否需要右按钮（默认NO）(⚠️不可被刷新)
 @property (nonatomic, assign) CGSize rightBtnSize;                  // 右按钮大小
 @property (nonatomic, strong) UIView *rightBtn;                     // 右按钮自定义视图
 

@@ -18,6 +18,10 @@
 @interface XDPagesTitleBar : UIView
 @property (nonatomic, weak) id <XDPagesTitleBarDelegate> delegate;
 - (instancetype)initWithFrame:(CGRect)frame config:(XDPagesConfig *)config titles:(NSArray<NSString*>*)titles;
+/**
+ 刷新配置项
+ */
+- (void)reloadConfigs;
 
 // 刷新标题
 - (void(^)(NSArray <NSString *>* titles))refreshTitles;

@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSArray *titles;
 @property (nonatomic, strong) UIImageView *header;
 @property (nonatomic, strong) UIButton *rightBtn;
+@property (nonatomic, strong) XDPagesConfig *config;
 @end
 
 @implementation VC_Style5
@@ -129,6 +130,7 @@
     // 自定义右按钮
     config.rightBtn = self.rightBtn;
     
+    self.config = config;
     // 顶部下拉 XDPagesPullOnTop
     _pages = [[XDPagesView alloc]initWithFrame:self.view.bounds config:config style:XDPagesPullOnTop];
     _pages.delegate = self;
@@ -150,7 +152,12 @@
 
 - (void)rightBtnTap {
     NSLog(@"点击右按钮");
-    [self.pages scrollToCeiling:YES];
+    self.config.titleBarSlideLineWidthRatio = 1;
+    self.config.titleBarBackColor = [UIColor yellowColor];
+    self.config.titleBarHeight = 70;
+    self.config.titleVerticalAlignment = XDVerticalAlignmentBottom;
+    self.config.titleBarMarginTop = 120;
+    [self.pages reloadConfigs];
 }
 
 #pragma mark -- XDPagesViewDelegate

@@ -45,6 +45,15 @@
     return self;
 }
 
+- (void)reloadConfigs {
+    _backImage.image = _config.titleBarBackImage;
+    _backImage.backgroundColor = _config.titleBarBackColor;
+    _titleBar.bounces = _config.titleBarHorizontalBounce;
+    _bottomLine.backgroundColor = _config.titleBarBottomLineColor;
+    _slideLine.backgroundColor = _config.titleBarSlideLineColor;
+    [_titleBar reloadData];
+}
+
 - (void)pagesViewHorizontalScrollOffsetxChanged:(CGFloat)changedx currentPage:(NSInteger)page willToPage:(NSInteger)willToPage width:(CGFloat)width {
     
     // 保持百分比为正数
@@ -148,7 +157,7 @@
         }
     }
     
-    return CGSizeMake(c_width, _config.titleBarHeight-(self.config.needTitleBarBottomLine ? 0.5 : 0));
+    return CGSizeMake(c_width, CGRectGetHeight(self.frame)-(self.config.needTitleBarBottomLine ? 0.5 : 0));
 }
 
 #pragma mark -- getter
@@ -223,7 +232,7 @@
 - (UIView *)slideLine {
     if (!_slideLine) {
         CGFloat height = 3;
-        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(0, _config.titleBarHeight-height-(_config.needTitleBarBottomLine ? 0.5 : 0), 0, height)];
+        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame)-height-(_config.needTitleBarBottomLine ? 0.5 : 0), 0, height)];
         _slideLine.clipsToBounds = YES;
         _slideLine.layer.cornerRadius = height/2.0;
         _slideLine.hidden = YES;
