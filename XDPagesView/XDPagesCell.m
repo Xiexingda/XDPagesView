@@ -24,6 +24,7 @@
 @property (nonatomic, assign) XDPagesPullStyle pagePullStyle;  // 风格
 @property (nonatomic, assign) BOOL isRectChanging;      // 是否正在调整rect
 @property (nonatomic, assign) BOOL skipLoop; //跳过当前loop
+@property (nonatomic,   copy) void (^reloadToPageDelayBlock)(void);
 @end
 @implementation XDPagesCell
 - (void)dealloc {
@@ -49,9 +50,7 @@
         _currentPage = config.beginPage;
         self.contentView.frame = self.frame;
         [self createUI];
-        [self statusBarOrientationDidChange];
         [self reloadToPage:config.beginPage finish:nil];
-        [self setKVOForCurrentPage:config.beginPage];
         [self registerForNotifications];
     }
     
@@ -78,8 +77,12 @@
 - (void)statusBarOrientationDidChange {
     self.isRectChanging = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self rectChanged];
+        [self rectChangedToPage:self.currentPage];
         self.isRectChanging = NO;
+        if (self.reloadToPageDelayBlock) {
+            self.reloadToPageDelayBlock();
+            self.reloadToPageDelayBlock = nil;
+        }
     });
 }
 
@@ -111,19 +114,24 @@
         [self.pagesCache cancelPageForTitle:obj];
     }];
     
-    [self resetAllRect];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __weak typeof(self) weakSelf = self;
+        [self setReloadToPageDelayBlock:^{
+            [weakSelf rectChangedToPage:page];
+            [weakSelf scrollViewDidScroll:weakSelf.pagesContainer];
+            [weakSelf pageIndexDidChangedToPage:page];
+        }];
+        
+        if (!weakSelf.isRectChanging) {
+            if (weakSelf.reloadToPageDelayBlock) {
+                weakSelf.reloadToPageDelayBlock();
+                weakSelf.reloadToPageDelayBlock = nil;
+            }
+        }
+    });
     
     if (finish) {
         finish(self.pagesCache.titles);
-    }
-    
-    [self changeToPage:page animate:NO];
-    
-    if (self.pagesCache.titles.count) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self scrollViewDidScroll:self.pagesContainer];
-            [self pageIndexDidChangedToPage:page];
-        });
     }
 }
 
@@ -162,7 +170,7 @@
 }
 
 // 监听到rect变化，比如横屏
-- (void)rectChanged {
+- (void)rectChangedToPage:(NSInteger)page {
     if (!CGRectEqualToRect(self.contentView.bounds, self.bounds)) {
         self.contentView.frame = self.frame;
     }
@@ -171,7 +179,7 @@
     
     [self resetAllRect];
     
-    [self changeToPage:self.currentPage animate:NO];
+    [self changeToPage:page animate:NO];
 }
 
 // 重置所有rect
