@@ -34,7 +34,7 @@
     //遵循代理
     pagesView.delegate = self;
     
-    //设置header试图
+    //设置header视图
     pagesView.pagesHeader = self.header;
     
     [self.view addSubview:pagesView];
@@ -211,7 +211,7 @@ config.titleBarBackColor = [UIColor yellowColor];
 
 # 详细XDPagesConfig配置项
 #### 具体可参考demo中的<其他用法>
-#### 注意*：其中标记了(⚠️不可被刷新)的配置，不能会在调用- (void)reloadConfigs方法时刷新
+#### 注意*：其中标记了(⚠️不可被刷新)的配置，不会在调用- (void)reloadConfigs方法时刷新
 
 ```
 /**
