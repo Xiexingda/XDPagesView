@@ -2,7 +2,7 @@
 
 # 最近更新2023-12-7(未在cocopods更新，直接把XDPagesView文件夹拉入项目中)
 
-#功能简介：
+# 功能简介：
 - XDPagesView是一个多控制器视图，代码结构简单，拥有极多的自定义配置项，使用起来非常简介灵活（该控件不采用分类，也不需要继承，对源代码没有任何代码污染）
 
 1. 支持横竖屏
@@ -11,7 +11,7 @@
 4. 支持header视图
 5. 还有很多，就不一一列举了，自己看吧...
 
-#基本用法:
+# 基本用法:
 
 
 ```
@@ -79,7 +79,7 @@
 
 # 基础功能
 
-####1. 跳转到某一页
+#### 1. 跳转到某一页
 
 ```
 应用场景:
@@ -93,7 +93,7 @@
 [pagesView jumpToPage:1];
 ```
 
-####2. 刷新列表
+#### 2. 刷新列表
 
 ```
 应用场景:
@@ -107,7 +107,7 @@
 [pagesView reloadataToPage:1];
 ```
 
-####3. 刷新配置
+#### 3. 刷新配置
 
 ```
 应用场景:
@@ -133,7 +133,7 @@ config.titleBarBackColor = [UIColor yellowColor];
 [pagesView reloadConfigs];
 ```
 
-####4. 滚动到吸顶位置
+#### 4. 滚动到吸顶位置
 
 ```
 应用场景:
@@ -146,7 +146,7 @@ config.titleBarBackColor = [UIColor yellowColor];
 [pagesView scrollToCeiling:YES];
 ```
 
-####5. 添加标题栏未读标记
+#### 5. 添加标题栏未读标记
 
 ```
 应用场景:
@@ -166,7 +166,7 @@ config.titleBarBackColor = [UIColor yellowColor];
 [pagesView showBadgeNumber:5 index:0 color:[UIColor greenColor] isNumber:YES];
 ```
 
-#其他可用delegate
+# 其他可用delegate
 
 ```
 /**
@@ -209,9 +209,9 @@ config.titleBarBackColor = [UIColor yellowColor];
 
 ```
 
-#详细XDPagesConfig配置项
-####具体可参考demo中的<其他用法>
-####注意*：其中标记了(⚠️不可被刷新)的配置，不能会在调用- (void)reloadConfigs方法时刷新
+# 详细XDPagesConfig配置项
+#### 具体可参考demo中的<其他用法>
+#### 注意*：其中标记了(⚠️不可被刷新)的配置，不能会在调用- (void)reloadConfigs方法时刷新
 
 ```
 /**
@@ -280,7 +280,7 @@ typedef NS_ENUM(NSInteger, TitleVerticalAlignment) {
 ![show3 style.gifo动](https://github.com/Xiexingda/XDPagesView/blob/master/show3.gif)
 
 
-# 如果有别的需求或发现了问题还请issue 或加群提问：
+### 如果有别的需求或发现了问题还请issue 或加群提问：
 
 群：659700776
 
