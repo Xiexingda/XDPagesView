@@ -152,7 +152,7 @@
 
 - (void)rightBtnTap {
     NSLog(@"点击右按钮");
-    self.config.titleBarSlideLineWidthRatio = 1;
+    self.config.titleBarSlideLineWidthRatio = 0.3;
     self.config.titleBarBackColor = [UIColor yellowColor];
     self.config.titleBarHeight = 70;
     self.config.titleVerticalAlignment = XDVerticalAlignmentBottom;

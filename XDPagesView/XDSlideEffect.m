@@ -13,10 +13,12 @@
 // 下划线伸缩效果
 - (void)slideLineScaleEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage percent:(CGFloat)percent ratio:(CGFloat)ratio {
     
-    if (attributes.count == 0) {
+    if (attributes.count == 0 || ratio <= 0) {
         view.hidden = YES;
         return;
     }
+    
+    ratio = ratio > 1 ? 1 : ratio;
     
     if (view.isHidden) {
         view.hidden = NO;
@@ -51,10 +53,12 @@
 // 下划线平移效果
 - (void)slideLineTransEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage percent:(CGFloat)percent ratio:(CGFloat)ratio {
     
-    if (attributes.count == 0) {
+    if (attributes.count == 0 || ratio <= 0) {
         view.hidden = YES;
         return;
     }
+    
+    ratio = ratio > 1 ? 1 : ratio;
     
     if (view.isHidden) {
         view.hidden = NO;
@@ -92,10 +96,12 @@
 // 无滑动效果
 - (void)slideLineNoneEffectForView:(UIView *)view attributes:(NSArray<UICollectionViewLayoutAttributes *> *)attributes currentPage:(NSInteger)cpage willPage:(NSInteger)wpage ratio:(CGFloat)ratio {
     
-    if (attributes.count == 0) {
+    if (attributes.count == 0 || ratio <= 0) {
         view.hidden = YES;
         return;
     }
+    
+    ratio = ratio > 1 ? 1 : ratio;
     
     if (view.isHidden) {
         view.hidden = NO;
@@ -115,4 +121,5 @@
         [view setFrame:c_frame];
     }
 }
+
 @end
