@@ -60,7 +60,7 @@
     config.needTitleBarBottomLine = YES;
     
     // 底线颜色
-    config.titleBarBottomLineColor = [UIColor lightGrayColor];
+    config.titleBarBottomLineColor = [UIColor redColor];
     
     // 是否需要下滑线
     config.needTitleBarSlideLine = YES;
@@ -152,11 +152,7 @@
 
 - (void)rightBtnTap {
     NSLog(@"点击右按钮");
-    self.config.titleBarSlideLineWidthRatio = 0.3;
-    self.config.titleBarBackColor = [UIColor yellowColor];
-    self.config.titleBarHeight = 70;
-    self.config.titleVerticalAlignment = XDVerticalAlignmentBottom;
-    self.config.titleBarMarginTop = 120;
+    self.config.titleBarBackColor = UIColor.yellowColor;
     [self.pages reloadConfigs];
 }
 

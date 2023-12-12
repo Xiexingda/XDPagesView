@@ -46,7 +46,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
 }
 
 - (void)configTitleByTitle:(NSString *)title focusIdx:(NSInteger)fidx config:(XDPagesConfig *)config badge:(XDBADGE)badge indexPath:(NSIndexPath *)indexPath {
-    self.title.verticalAlignment = config.titleVerticalAlignment;
+    self.title.config = config;
     self.title.text = title;
     
     self.tipLabel.hidden = badge.badgeNumber > 0 ? NO : YES;
@@ -238,7 +238,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:5];
+                                     constant:0];
     NSLayoutConstraint *title_lef = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeLeading
@@ -254,7 +254,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeBottom
                                      multiplier:1
-                                     constant:-5];
+                                     constant:0];
     NSLayoutConstraint *title_rit = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeTrailing
@@ -400,30 +400,41 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
     return self;
 }
 
-- (void)setVerticalAlignment:(TitleVerticalAlignment)verticalAlignment {
-    _verticalAlignment = verticalAlignment;
+- (void)setConfig:(XDPagesConfig *)config {
+    _config = config;
     [self setNeedsDisplay];
 }
 
 - (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    TitleVerticalAlignment alignment = _config.titleVerticalAlignment;
     CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
-    CGFloat reviseHeight = (self.frame.size.height - bounds.size.height) * (textRect.size.height / bounds.size.height);
-
-    switch (_verticalAlignment) {
+    CGFloat topSpace = 2;
+    CGFloat bottomSpace = _config.needTitleBarSlideLine ? 5 : 2;
+    CGFloat hf_edge = (bounds.size.height-textRect.size.height) / 2.0;
+    
+    switch (alignment) {
         case XDVerticalAlignmentTop:
-            textRect.origin.y = bounds.origin.y;
+            if (hf_edge > topSpace) {
+                textRect.origin.y = bounds.origin.y + topSpace;
+            } else {
+                textRect.origin.y = bounds.origin.y + hf_edge;
+            }
             break;
 
         case XDVerticalAlignmentMiddle:
-            textRect.origin.y = bounds.origin.y + (bounds.size.height-textRect.size.height) / 2.0;
+            textRect.origin.y = bounds.origin.y + hf_edge;
             break;
 
         case XDVerticalAlignmentBottom:
-            textRect.origin.y = bounds.origin.y + bounds.size.height-textRect.size.height - reviseHeight / 2.0;
+            if (hf_edge > bottomSpace) {
+                textRect.origin.y =  bounds.origin.y + hf_edge * 2 - bottomSpace;
+            } else {
+                textRect.origin.y = bounds.origin.y + hf_edge;
+            }
             break;
 
         default:
-            textRect.origin.y = bounds.origin.y + (bounds.size.height-textRect.size.height) / 2.0;
+            textRect.origin.y = bounds.origin.y + hf_edge;
             break;
     }
     

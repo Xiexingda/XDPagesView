@@ -29,6 +29,11 @@
 @property (nonatomic, strong) UIView *rightBtn;
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIView *slideLine;
+
+@property (nonatomic,   copy) NSArray *backImage_layouts;
+@property (nonatomic,   copy) NSArray *titleBar_layouts;
+@property (nonatomic,   copy) NSArray *rightBtn_layouts;
+@property (nonatomic,   copy) NSArray *bottomLine_layouts;
 @end
 
 @implementation XDPagesTitleBar
@@ -39,18 +44,42 @@
     if (self) {
         self.config = config;
         self.titles = titles;
-        [self creatBar];
+        
+        [self addSubview:self.backImage];
+        [self addSubview:self.titleBar];
+        [self addSubview:self.rightBtn];
+        [self addSubview:self.bottomLine];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.titleBar addSubview:self.slideLine];
+        });
+        
+        self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
+        self.titleBar.translatesAutoresizingMaskIntoConstraints = NO;
+        self.rightBtn.translatesAutoresizingMaskIntoConstraints = NO;
+        self.bottomLine.translatesAutoresizingMaskIntoConstraints = NO;
+        [self barLayouts];
     }
     
     return self;
 }
 
 - (void)reloadConfigs {
+    [self barLayouts];
     _backImage.image = _config.titleBarBackImage;
     _backImage.backgroundColor = _config.titleBarBackColor;
+    
     _titleBar.bounces = _config.titleBarHorizontalBounce;
+    
+    _bottomLine.hidden = !_config.needTitleBarBottomLine;
     _bottomLine.backgroundColor = _config.titleBarBottomLineColor;
+    
+    _slideLine.hidden = !_config.needTitleBarSlideLine;
     _slideLine.backgroundColor = _config.titleBarSlideLineColor;
+    CGRect c_slideLine_Frame = _slideLine.frame;
+    c_slideLine_Frame.origin.y = CGRectGetHeight(self.frame) - 3 - (_config.needTitleBarBottomLine ? 0.4 : 0);
+    _slideLine.frame = c_slideLine_Frame;
+    
     [_titleBar reloadData];
 }
 
@@ -231,10 +260,9 @@
 
 - (UIView *)slideLine {
     if (!_slideLine) {
-        CGFloat height = 3;
-        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame)-height-(_config.needTitleBarBottomLine ? 0.5 : 0), 0, height)];
+        _slideLine = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame)-3-(_config.needTitleBarBottomLine ? 0.4 : 0), 0, 3)];
         _slideLine.clipsToBounds = YES;
-        _slideLine.layer.cornerRadius = height/2.0;
+        _slideLine.layer.cornerRadius = 1.5;
         _slideLine.hidden = YES;
         _slideLine.backgroundColor = _config.titleBarSlideLineColor;
     }
@@ -276,23 +304,11 @@
 }
 
 #pragma mark -- UI
-- (void)creatBar {
-    
-    [self addSubview:self.backImage];
-    [self addSubview:self.titleBar];
-    [self addSubview:self.rightBtn];
-    [self addSubview:self.bottomLine];
-    
-    if (_config.needTitleBarSlideLine) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.titleBar addSubview:self.slideLine];
-        });
-    }
-    
-    self.backImage.translatesAutoresizingMaskIntoConstraints = NO;
-    self.titleBar.translatesAutoresizingMaskIntoConstraints = NO;
-    self.rightBtn.translatesAutoresizingMaskIntoConstraints = NO;
-    self.bottomLine.translatesAutoresizingMaskIntoConstraints = NO;
+- (void)barLayouts {
+    if (self.backImage_layouts) [NSLayoutConstraint deactivateConstraints:self.backImage_layouts];
+    if (self.titleBar_layouts) [NSLayoutConstraint deactivateConstraints:self.titleBar_layouts];
+    if (self.rightBtn_layouts) [NSLayoutConstraint deactivateConstraints:self.rightBtn_layouts];
+    if (self.bottomLine_layouts) [NSLayoutConstraint deactivateConstraints:self.bottomLine_layouts];
     
     // 背景
     NSLayoutConstraint *back_top = [NSLayoutConstraint
@@ -327,7 +343,8 @@
                                     attribute:NSLayoutAttributeTrailing
                                     multiplier:1
                                     constant:0];
-    [NSLayoutConstraint activateConstraints:@[back_top, back_lef, back_btm, back_rit]];
+    self.backImage_layouts = @[back_top, back_lef, back_btm, back_rit];
+    [NSLayoutConstraint activateConstraints:self.backImage_layouts];
     
     // 标题栏
     NSLayoutConstraint *title_top = [NSLayoutConstraint
@@ -362,7 +379,8 @@
                                      attribute:NSLayoutAttributeLeft
                                      multiplier:1
                                      constant:0];
-    [NSLayoutConstraint activateConstraints:@[title_top, title_led, title_btm, title_tal]];
+    self.titleBar_layouts = @[title_top, title_led, title_btm, title_tal];
+    [NSLayoutConstraint activateConstraints:self.titleBar_layouts];
     
     // 右按钮
     NSLayoutConstraint *btn_top = [NSLayoutConstraint
@@ -405,7 +423,8 @@
                                      attribute:NSLayoutAttributeNotAnAttribute
                                      multiplier:1
                                      constant:(self.config.needRightBtn ? self.config.rightBtnSize.width : 0)];
-    [NSLayoutConstraint activateConstraints:@[btn_top, btn_led, btn_btm, btn_tal, btn_width]];
+    self.rightBtn_layouts = @[btn_top, btn_led, btn_btm, btn_tal, btn_width];
+    [NSLayoutConstraint activateConstraints:self.rightBtn_layouts];
     
     // 底线
     NSLayoutConstraint *bottom_bottom = [NSLayoutConstraint
@@ -415,7 +434,7 @@
                                          toItem:self
                                          attribute:NSLayoutAttributeBottom
                                          multiplier:1
-                                         constant:0];
+                                         constant:-0];
     NSLayoutConstraint *bottom_left = [NSLayoutConstraint
                                        constraintWithItem:self.bottomLine
                                        attribute:NSLayoutAttributeLeading
@@ -440,11 +459,11 @@
                                          attribute:NSLayoutAttributeNotAnAttribute
                                          multiplier:1
                                          constant:(self.config.needTitleBarBottomLine ? 0.5 : 0)];
-    [NSLayoutConstraint activateConstraints:@[bottom_bottom, bottom_left, bottom_right, bottom_height]];
+    self.bottomLine_layouts = @[bottom_bottom, bottom_left, bottom_right, bottom_height];
+    [NSLayoutConstraint activateConstraints:self.bottomLine_layouts];
     
+    [self layoutIfNeeded];
     if (_config.needRightBtn) {
-        
-        [self layoutIfNeeded];
         
         [_config.rightBtn setFrame:CGRectMake(0, 0, _config.rightBtnSize.width, _config.rightBtnSize.height-(self.config.needTitleBarBottomLine ? 0.5 : 0))];
         

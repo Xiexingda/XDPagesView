@@ -27,5 +27,5 @@
 @end
 
 @interface XDPagesTitleLabel : UILabel
-@property (nonatomic, assign) TitleVerticalAlignment verticalAlignment;
+@property (nonatomic, strong) XDPagesConfig *config;
 @end
