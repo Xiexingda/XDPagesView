@@ -238,7 +238,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeTop
                                      multiplier:1
-                                     constant:10];
+                                     constant:5];
     NSLayoutConstraint *title_lef = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeLeading
@@ -254,7 +254,7 @@ XDRGBMake(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha) {
                                      toItem:self.contentView
                                      attribute:NSLayoutAttributeBottom
                                      multiplier:1
-                                     constant:-10];
+                                     constant:-5];
     NSLayoutConstraint *title_rit = [NSLayoutConstraint
                                      constraintWithItem:self.title
                                      attribute:NSLayoutAttributeTrailing
