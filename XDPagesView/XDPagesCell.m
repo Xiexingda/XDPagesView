@@ -300,13 +300,6 @@
     [self.delegate cell_mainTableNeedLock:need offsety:y];
 }
 
-// 当横向滚动时不需要手势共享，达到禁止一切竖直滚动
-- (void)mainTabelNeedGesturePublick:(BOOL)publick {
-    if (self.mainTable && self.mainTable.gesturePublic != publick) {
-        self.mainTable.gesturePublic = publick;
-    }
-}
-
 #pragma mark -- kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
    
@@ -400,21 +393,21 @@
 
 //以下代理用于判断pagesContainer是否在滚动状态
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self mainTabelNeedGesturePublick:NO];
+    self.mainTable.scrollEnabled = NO;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [self mainTabelNeedGesturePublick:YES];
+    self.mainTable.scrollEnabled = YES;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (!decelerate) {
-        [self mainTabelNeedGesturePublick:YES];
+        self.mainTable.scrollEnabled = YES;
     }
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    [self mainTabelNeedGesturePublick:YES];
+    self.mainTable.scrollEnabled = YES;
 }
 
 #pragma mark -- getter
